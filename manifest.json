@@ -1,0 +1,24 @@
+{
+    "name": "Howrse Tracker Daily Horses",
+    "version": "0",
+    "description": "",
+    "manifest_version": 3,
+    "permissions": [
+        "pageCapture",
+        "unlimitedStorage",
+        "storage"
+    ],
+    "options_page": "app/settings/settings.html",
+    "action": {
+        "default_title": "Howrse Tracker Daily Horses",
+        "default_popup": "app/popup/popup.html"
+    },
+    "background": {
+        "service_worker": "app/background.js"
+    },
+    "content_scripts": [{
+        "js": ["app/jquery.js", "app/Database/HorseLoggingObject.js", "app/horseLogging.js"],
+        "matches": ["https://www.howrse.com/*"]
+    }]
+    
+}
