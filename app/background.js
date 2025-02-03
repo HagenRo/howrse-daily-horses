@@ -1,5 +1,6 @@
 importScripts("Database/Datamanagement.js");
 const dataAccessForOlympRuns = new DataAccessForDailyHorses();
+//ökjbpkbhjöpjibp
 
 //Message broker
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
