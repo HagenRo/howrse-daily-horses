@@ -62,3 +62,21 @@ $('#history-0 .grid-cell.last').each(function() {
 });
 
 
+//speichernund lesen einer variablen auf der aktuellen hauptdomain als key value pair:
+window.localStorage.setItem("key", "value");
+item = window.localStorage.getItem("key");
+
+//senden einer nachricht ans backend (z.B. zum speichern):
+chrome.runtime.sendMessage({ function: "<funktionDieAufgerufenWerdenSoll>", param1: "variable", param2: "variable" }, (response) => { //param1 und param2 und beliebig viele weitere können frei benannt werden, müssen dann entsprechend in backroundscript benannt sein
+    //hier sind wir in der Funktion, die vom empfänger der Nachricht aufgerufen wird.
+    console.log(response);
+});
+//damit das dann auch was tut muss dann in der backround.js die nachricht entsprechend angenommen und die entsprechende Methode auch ausgeführt werden (siehe backround.js)
+
+//cheetsheet für basic jquery zum auslesen von daten aus der webseite: https://www.jquerycheatsheet.com/
+
+
+
+
+
+

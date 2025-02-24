@@ -333,25 +333,27 @@ class Queue {
 }
 /**
  * Class responsible for accessing OlympRun data in a database.
- * TODO: hier die methodn definiren, die die Daten in die datenbank wegschreiben.
+ * 
  */
 class DataAccessForDailyHorses {
     constructor() {
         this.databaseConnection = new DatabaseConnection('DailyHorses', 'Horses', 'id');
         this.promisQueue = Queue;
-        this.initDataAccessForOlympRuns();
+        this.initDataAccessForDailyHorses();
     }
     /**
-     * Initializes data access for Olymp runs.
+     * Initializes data access for Daily Horses Logging.
      * Enqueues the initialization of the database connection.
      */
-    initDataAccessForOlympRuns() {
+    initDataAccessForDailyHorses() {
         this.promisQueue.enqueue(() => {
             return this.databaseConnection.init();
         });
 
     }
 
+
+    //TODO: hier die methodn definiren, die mit der Datenbank interagieren
     /**
      * Adds a new run to the database.
      * @param {Object} olympRun - The Olympic run object to be added.
