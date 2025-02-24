@@ -332,13 +332,13 @@ class Queue {
     }
 }
 /**
- * Class responsible for accessing OlympRun data in a database.
+ * Class responsible for accessing daily horse data in a database.
  * 
  */
 class DataAccessForDailyHorses {
     constructor() {
         this.databaseConnection = new DatabaseConnection('DailyHorses', 'Horses', 'id');
-        this.promisQueue = Queue;
+        this.promiseQueue = Queue;
         this.initDataAccessForDailyHorses();
     }
     /**
@@ -346,23 +346,23 @@ class DataAccessForDailyHorses {
      * Enqueues the initialization of the database connection.
      */
     initDataAccessForDailyHorses() {
-        this.promisQueue.enqueue(() => {
+        this.promiseQueue.enqueue(() => {
             return this.databaseConnection.init();
         });
 
     }
 
 
-    //TODO: hier die methodn definiren, die mit der Datenbank interagieren
+    //TODO: hier die methoden definieren, die mit der Datenbank interagieren
     /**
      * Adds a new run to the database.
-     * @param {Object} olympRun - The Olympic run object to be added.
+     * @param {Object} horseData - The Olympic run object to be added.
      * @returns {Promise} A Promise that resolves when the run is added.
      */
-    addRunToDB(olympRun) {
+    addDailyDataToDB(horseData) {
 
-        return this.promisQueue.enqueue(() => {
-            return this.databaseConnection.insertOrErrorItem(olympRun);
+        return this.promiseQueue.enqueue(() => {
+            return this.databaseConnection.insertOrErrorItem(horseData);
         })
     }
     /**
@@ -372,7 +372,7 @@ class DataAccessForDailyHorses {
      */
     updateRunToDB(olympRun) {
 
-        return this.promisQueue.enqueue(() => {
+        return this.promiseQueue.enqueue(() => {
             return this.databaseConnection.insertOrOverrideItem(olympRun);
         })
     }
@@ -384,7 +384,7 @@ class DataAccessForDailyHorses {
      */
     addStartHorsesToRun(startHorsesFull, dateRunStarted) {
 
-        return this.promisQueue.enqueue(() => {
+        return this.promiseQueue.enqueue(() => {
             return this.databaseConnection.getItem(dateRunStarted)
                 .then(({ msg, result }) => {
                     result.startHorses = startHorsesFull;
@@ -401,7 +401,7 @@ class DataAccessForDailyHorses {
      */
     addFightToRun(fight, dateRunStarted) {
 
-        return this.promisQueue.enqueue(() => {
+        return this.promiseQueue.enqueue(() => {
             return this.databaseConnection.getItem(dateRunStarted)
                 .then(({ msg, result }) => {
                     if (result.arrayOfFights.length == 0 || !(result.arrayOfFights[result.arrayOfFights.length - 1].room === fight.room && result.arrayOfFights[result.arrayOfFights.length - 1].threshold === fight.threshold)) {
@@ -424,7 +424,7 @@ class DataAccessForDailyHorses {
      */
     addRewardsToRun(rewards, dateRunStarted) {
 
-        return this.promisQueue.enqueue(() => {
+        return this.promiseQueue.enqueue(() => {
             return this.databaseConnection.getItem(dateRunStarted)
                 .then(({ msg, result }) => {
                     if (result.arrayOfRewards.length == 0 || !(result.arrayOfRewards[result.arrayOfRewards.length - 1].room === rewards.room && result.arrayOfRewards[result.arrayOfRewards.length - 1].threshold === rewards.threshold)) {
@@ -445,7 +445,7 @@ class DataAccessForDailyHorses {
      */
     addHorseIdToReward(id, dateRunStarted) {
 
-        return this.promisQueue.enqueue(() => {
+        return this.promiseQueue.enqueue(() => {
             return this.databaseConnection.getItem(dateRunStarted)
                 .then(({ msg, result }) => {
                     let lastRewards = result.arrayOfRewards[result.arrayOfRewards.length - 1].arrayOfRewards;
@@ -469,7 +469,7 @@ class DataAccessForDailyHorses {
      */
     addBossToRun(rewards, fight, dateRunStarted) {
 
-        return this.promisQueue.enqueue(() => {
+        return this.promiseQueue.enqueue(() => {
             return this.databaseConnection.getItem(dateRunStarted)
                 .then(({ msg, result }) => {
                     if (!(result.arrayOfRewards[result.arrayOfRewards.length - 1].room === rewards.room && result.arrayOfRewards[result.arrayOfRewards.length - 1].threshold === rewards.threshold)) {
@@ -492,7 +492,7 @@ class DataAccessForDailyHorses {
      */
     addLostRunToBossRewards(dateRunStarted) {
 
-        return this.promisQueue.enqueue(() => {
+        return this.promiseQueue.enqueue(() => {
             return this.databaseConnection.getItem(dateRunStarted)
                 .then(({ msg, result }) => {
                     let lastRewards = result.arrayOfRewards[result.arrayOfRewards.length - 1];
@@ -508,7 +508,7 @@ class DataAccessForDailyHorses {
      * @returns {Promise} A Promise that resolves with an array of all runs.
      */
     getAllRuns() {
-        return this.promisQueue.enqueue(() => {
+        return this.promiseQueue.enqueue(() => {
             return this.databaseConnection.getAllItems();
         });
 
@@ -520,7 +520,7 @@ class DataAccessForDailyHorses {
      * @returns {Promise} A Promise that resolves with an array of all runs.
      */
     getRunsInRange(dateTimeMin, dateTimeMax) {//TODO: damit das funktionieren kann datenbank key umbauen
-        return this.promisQueue.enqueue(() => {
+        return this.promiseQueue.enqueue(() => {
             return this.databaseConnection.getItemsInRange(dateTimeMin, dateTimeMax);
         });
 
@@ -531,7 +531,7 @@ class DataAccessForDailyHorses {
      * @returns {Promise} A Promise that resolves with the requested run data.
      */
     getRunFromTimestamp(dateRunStarted) {
-        return this.promisQueue.enqueue(() => {
+        return this.promiseQueue.enqueue(() => {
             return this.databaseConnection.getItem(dateRunStarted);
         });
     }
@@ -541,7 +541,7 @@ class DataAccessForDailyHorses {
      * @returns {Promise} A Promise that resolves when the run is deleted.
      */
     deleteRunFromTimestamp(dateRunStarted) {
-        return this.promisQueue.enqueue(() => {
+        return this.promiseQueue.enqueue(() => {
             return this.databaseConnection.deleteItem(dateRunStarted);
         });
     }
@@ -550,7 +550,7 @@ class DataAccessForDailyHorses {
      * @returns {Promise} A Promise that resolves with an array of all keys.
      */
     getKeys() {
-        return this.promisQueue.enqueue(() => {
+        return this.promiseQueue.enqueue(() => {
             return this.databaseConnection.getAllKeys();
         });
     }

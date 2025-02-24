@@ -18,7 +18,7 @@ let groom_en = [/You found (\d) .+ by grooming .+./]; // minerals or scales
 let japanese_en = [equus_en,/.+ brings you (\d+) x  Ageing point/]; // can we replace ageing point by ".+"? 
 let jade_en = [/You won (\d) !/]; // there's a passes icon in there, but should just be 1 space in text
 // amber drops either droppings or passes - today it was droppings, passes will be tomorrow.
-let amber_en = [/You won 10 !/,/Amber produced 2 pounds of droppings yesterday/,]; // uk and au would say "kg" instead of pounds; but this is another EXEMPTION
+let amber_en = [/You won 10 !/,/Amber produced \d+ pounds of droppings yesterday/]; // uk and au would say "kg" instead of pounds; but this is another EXEMPTION
 let skinfaxi_au = [/Skínfaxi gave +(\d+) rays of light/]; // if that's okay
 let chinese_en = [/.+ won (\d+) skill points you can spend whichever way you like/]; // skill points watched on au
 
@@ -62,7 +62,7 @@ $('#history-0 .grid-cell.last').each(function() {
 });
 
 
-//speichernund lesen einer variablen auf der aktuellen hauptdomain als key value pair:
+//speichern und lesen einer variablen auf der aktuellen hauptdomain als key value pair:
 window.localStorage.setItem("key", "value");
 item = window.localStorage.getItem("key");
 
