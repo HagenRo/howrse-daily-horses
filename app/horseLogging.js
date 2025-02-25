@@ -43,7 +43,7 @@ let maori_se = [/.+ hittade (\d+) x sköldpaddsunge. Deras tiki fick (\d+) x man
 let egypt_se = [/.+ ger dig  (\d+) färdighetspoäng./]; // fk
 
 
-let shenma = new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=81394568",skillsChinese,true,"Bonus");
+let shenma = new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=81394568",skillsChinese_de,true,"Bonus");
 
 let horses =[
     new Horse(), 
@@ -53,7 +53,7 @@ let horses =[
 
 
 // Erstelle ein leeres Array, um die Werte zu speichern
-var values = [];
+let values = [];
 
 // Wähle alle Elemente mit der Klasse 'grid-cell last' innerhalb von 'history-0'
 $('#history-0 .grid-cell.last').each(function() {
@@ -61,6 +61,14 @@ $('#history-0 .grid-cell.last').each(function() {
     values.push($(this).text().trim());
 });
 
+
+let match = checkTimeLines();
+// datenbankobjekt erstellen mit all dem zeug (notizen bei krita) und aus dem match die info, wie viel (und ggf. was) es geworfen hat (bzw. ob)
+// aufruf von sendmessage (zum tatsächlichen speichern in der datenbank)
+// tatsächliche implementierung der datenbankfunktion
+
+// vieles wird wohl in Klasse Horse untergebracht sein
+// einiges wird eine custom methode des exemption-horse-objekts sein
 
 //speichern und lesen einer variablen auf der aktuellen hauptdomain als key value pair:
 window.localStorage.setItem("key", "value");
@@ -71,6 +79,16 @@ chrome.runtime.sendMessage({ function: "<funktionDieAufgerufenWerdenSoll>", para
     //hier sind wir in der Funktion, die vom empfänger der Nachricht aufgerufen wird.
     console.log(response);
 });
+
+function checkTimeLines() {
+    let ergebnis = [];
+    values.forEach(timeLine => {
+        skillsChinese_de.forEach(searchString => {
+            ergebnis = timeLine.match(searchString)?timeLine.match(searchString):ergebnis; 
+        });
+    });
+    return ergebnis;
+}
 //damit das dann auch was tut muss dann in der backround.js die nachricht entsprechend angenommen und die entsprechende Methode auch ausgeführt werden (siehe backround.js)
 
 //cheetsheet für basic jquery zum auslesen von daten aus der webseite: https://www.jquerycheatsheet.com/
