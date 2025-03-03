@@ -4,13 +4,14 @@ class Horse{
     searchStrings = []; // gonna be some regex stuff
     isReadyOnWakeup;
     valueIfStringNotFound; // value // bonus, 0 // on wakeup except pluto
-    isUnimportant;
+    isUnimportant; // die kann ich hinzufügen, sodass sie geloggt (?) werden, wenn ich sie bespiele, aber sie tauchen nicht in der Liste der "TODO HEUTE DRINGEND" tiere auf
     isExemption; // exception // is pluto
     exemptionFunction; // in case you are an EXEMPTION
-    buttonIdentifier; // String, Klasse, ID, die den Button eindeutig identifiziert, nachdem ein Pferd keine Drop mehr durchführen kann an dem Tag. //TODO: in Konstruktorsignatur hinzufügen
     amountRequiredClicks; // maximum amount of required clicks to finish horse; usually 1? // on some button
     defaultType; // drop type if nothing found (Bonus for chinese) // TODO: add to constructor 
     defaultAmount; // drop amount if nothing found (1 Bonus for chinese) // TODO: add to constructor
+    buttonIdentifier; // String, Klasse, ID, die den Button eindeutig identifiziert, nachdem ein Pferd keine Drop mehr durchführen kann an dem Tag. //TODO: in Konstruktorsignatur hinzufügen
+    isAsleep; // "nur so mit semi" - eigentlich in chrome local storage schreiben weil wirs zwischen sessions brauchen?
 
     horseLoggingObject = {
         horseURL,
@@ -21,22 +22,29 @@ class Horse{
         dropSubType, // japanese: coloured tack
         timeStamp,
         timeStampHumanReadable,
-        amountClicks // amount of clicks used to finish horse // together with drop amount for spice horses
+        amountClicks, // amount of clicks used to finish horse // together with drop amount for spice horses
     }
 
-    constructor(url,searchStrings,isReadyOnWakeup,valueIfStringNotFound,isUnimportant,isExemption,exemptionFunction){
+    constructor(url,searchStrings,isReadyOnWakeup,valueIfStringNotFound,horseType,horseName,isExemption,exemptionFunction,amountRequiredClicks,defaultType,defaultAmount,buttonIdentifier,isUnimportant){
         this.url = url;
         this.searchStrings = searchStrings; // which regex expressions we're looking for
         this.isReadyOnWakeup = isReadyOnWakeup; // whether the message will be there when the horse wakes up
         this.valueIfStringNotFound = valueIfStringNotFound;
-        this.isUnimportant = isUnimportant;
         this.isExemption = isExemption; // like Onyx with the UFOs or Pluto, with a message that doesn't trigger at one specific point in time
         this.exemptionFunction = exemptionFunction; // how to work this exemption
+        this.amountRequiredClicks = amountRequiredClicks;
+        this.defaultType = defaultType;
+        this.defaultAmount = defaultAmount;
+        this.buttonIdentifier = buttonIdentifier;
+        this.isUnimportant = isUnimportant;
         //
 
         this.horseLoggingObject.horseURL = url;
-        this.horseLoggingObject.horseType = horseType; //TODO: in methodensignatur hinzufügen
-        this.horseLoggingObject.horseName = horseName; //TODO: in methodensignatur hinzufügen
+        this.horseLoggingObject.horseType = horseType; 
+        this.horseLoggingObject.horseName = horseName; // von howrse gesetzter internationaler name
+        this.horseLoggingObject.dropAmount = this.defaultAmount;
+        this.horseLoggingObject.dropType = this.defaultType;
+        this.horseLoggingObject.amountClicks = this.amountRequiredClicks;
 
     }
 
@@ -52,9 +60,19 @@ class Horse{
     }
 
     #onWakeup(){
-        //TODO: hier muss geprüft werden, ob an diesem tag schon ein eintrag geschrieben wurde
-        //item = window.localStorage.getItem(this.url);
+        //TODO: hier muss geprüft werden, ob an diesem tag schon ein eintrag geschrieben wurde 
+        let timeStamp = window.localStorage.getItem(this.url);
         //damit dann die berechnung machen mithilfe des reset objekts
+        let yesterdayyyyyy = new Date().setDate(new Date().getDate() - 1);
+        // letzter timestamp
+        // letztes howrse reset = resetzeit + url
+        // jetzt
+        // timestamp - howsrereset < 0
+        // falls (gestern und (jetzt < resetzeit)) oder ((heute und vor resetzeit) und (jetzt > resetzeit))
+        // oder man kopiert einfach deine magie aus popup.js
+        if (timeStamp && new Date(timeStamp) - new Date()) {
+
+        }
 
         let horseTimeLines = [];
         $('#history-0 .grid-cell.last').each(function() {
@@ -133,6 +151,14 @@ class Horse{
             this.#saveHorseDropToDB();
         });
 
+    }
+
+    #onSleep(){
+        // check whether sleep button was pressed AND whether it will be in an EC if required ! 
+        // now + timer > end date?
+        $(document).on('click', '#boutonCoucher.action.action-style-4.coucher', function () {
+            // nachschauen wann sich das hier drauf registriert ob up oder down; da man evtl. die änderung des buttons dann schon einlesen könnte
+        });
     }
 
     //wird vom script aus aufgerufen

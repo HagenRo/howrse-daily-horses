@@ -555,3 +555,12 @@ class DataAccessForDailyHorses {
         });
     }
 }
+
+// TODO: 
+// neue Klasse
+// für die Popup-Anzeige, ob ein Pferd bespielt werden muss
+// wird jedes Mal beschrieben, wenn äh ein Pferd ähm mit der DataAccessForDailyHorses geschrieben wird dass dann hier der entsprechende Timestamp geschrieben wird für den Drop 
+// und dass von extern also von der horselogging.js äh der ähm der schlafen-gelegt-timestamp geschrieben wird. wenn der schlafen-legen-knpf gedrückt wird.
+// 
+// abspeichern der timestamps, wann ein pferd schlafen gelegt wurde, und wann es gedropt hat, für den fall dass die daten sich unterscheiden
+// da ein pferd erst abgehandelt ist, wenn beides erfüllt ist

@@ -46,11 +46,12 @@ let egypt_se = [/.+ ger dig  (\d+) färdighetspoäng./,/.+ ger dig (\d+) x Järn
 
 let shenma = new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=81394568",skillsChinese_de,true,"Bonus");
 
-let horses =[
-    new Horse(), 
-    new Horse(),
-    new Horse() //etc.
-]
+
+
+let horses ={
+    "https://www.howrse.de/elevage/chevaux/cheval?id=81394568": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=81394568",skillsChinese_de,true,"Bonus") 
+    //, etc.
+}
 
 
 // Erstelle ein leeres Array, um die Werte zu speichern
