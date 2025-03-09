@@ -44,6 +44,27 @@ let maori_se = [/.+ hittade (\d+) x sköldpaddsunge. Deras tiki fick (\d+) x man
 let egypt_se = [/.+ ger dig  (\d+) färdighetspoäng./,/.+ ger dig (\d+) x Järn./]; // fk
 
 
+let resetsWinter = {
+    'www.howrse.de': 5,
+    'www.howrse.com': 8,
+    'www.howrse.co.uk': 5,
+    'nl.howrse.com': 4,
+    'www.howrse.se': 4,
+    'au.howrse.com': 19
+}
+
+
+let resetsSommer = {
+    'www.howrse.de': 5,
+    'www.howrse.com': 9,
+    'www.howrse.co.uk': 6,
+    'nl.howrse.com': 4,
+    'www.howrse.se': 4,
+    'au.howrse.com': 20,
+    'co.www.howrse.de': 5
+}
+
+
 let shenma = new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=81394568",skillsChinese_de,true,"Bonus");
 
 
@@ -54,13 +75,63 @@ let horses ={
 }
 
 
-let currentHorse = $('horse-name a[href]')[0].href;
+let currentHorse = $('.horse-name a[href]')[0].href;
 
-horses[currentHorse].check();
+//horses[currentHorse].check();
+
+let sleepButtonParent = $('#night-body-content')[0];
+const callback = (mutationRecords) => {
+    console.log(mutationRecords);
+    mutationRecords.forEach( mutationRecord => {
+        if (mutationRecord.type === 'childList') {
+            mutationRecord.addedNodes.forEach( addedNode => {
+                let sleepButton = $(addedNode).find('#boutonCoucher')?.[0];
+                // hier schauen ob das element da ist 
+                if (sleepButton) {
+                    //prüfen nach klasse ob wiese oder box
+                    if (sleepButton.classList.contains("coucher-box")) {
+                        console.log("in box");
+                        let now = new Date(); // default now
+                        let key = window.location.hostname;
+                        let resetHour = new Date().getTimezoneOffset() == -120 ? resetsSommer[key] : resetsWinter[key]; //winter und sommerzeit wirken sich unterschiedlich auf die einzelnen domains aus
+                        let lastResetDate = new Date(new Date().setHours(resetHour, 0, 0)) > new Date ? new Date(new Date(new Date().setDate(new Date().getDate() - 1)).setHours(resetHour, 0, 0)) : new Date(new Date().setHours(resetHour, 0, 0));
+                        let todaysResetDate = new Date(new Date().setHours(resetHour, 0, 0));
+
+                        let endOfRegistration = DateParser.parseRegistrationEndDate($("#center-tab-main").find(".tab-action.tab-action-select.button.button-style-14").parent().parent().find(".grid-cell.align-top")[0].textContent,window.location.hostname); // $("#center-tab-main").find(".tab-action.tab-action-select.button.button-style-14").parent().parent().find(".grid-cell.align-top")[0].textContent;
+                        console.log(endOfRegistration);
+                        if (todaysResetDate.getTime() > now.getTime() || endOfRegistration.getTime() > now.getTime()) { // date > today
+                            // alles gut
+                            // reset kommt erst noch, Pferd schläft, wird schlafen, und wird geschlafen haben
+                            // oder es steht eh noch länger
+                            // variable setzen: schläft
+                            window.localStorage.setItem("asleep"+currentHorse,now.getTime());
+                        } else {
+                            // gefahr! O.O
+                            // aber egal muss man nix tun
+                        }
+                    } else if (sleepButton.classList.contains("coucher-pre")) {
+                        // done
+                        console.log("auf wiese");
+                        // variable setzen: schläft
+                        window.localStorage.setItem("asleep"+currentHorse,new Date().getTime());
+                    }
+                }
+                //prüfen nach ist new Date kleiner als das reset heute?
+                //prüfen ob datum des RZ heute ist
+                //daraus col berechen ob schlafengehen erfolgreich war
+                // ähnliche überprüfung onLoad, weil man eventuell nochmal im reitzentrum anmelden muss und dann auf die seite zurück geworfen wird.
+                //6prüfen, ob ich hier den initialen create beim aufbau der seite mitbekomme^^
+            });
+        }
+    });
+};
+
+let observer = new MutationObserver(callback);
+
+observer.observe(sleepButtonParent, {childList: true}); // subtree: true, // das im kommentar vermutlich unnötig
 
 
-
-
+/*
 // Erstelle ein leeres Array, um die Werte zu speichern
 let values = [];
 
@@ -97,7 +168,7 @@ function checkTimeLines() {
         });
     });
     return ergebnis;
-}
+} // */
 //damit das dann auch was tut muss dann in der backround.js die nachricht entsprechend angenommen und die entsprechende Methode auch ausgeführt werden (siehe backround.js)
 
 //cheetsheet für basic jquery zum auslesen von daten aus der webseite: https://www.jquerycheatsheet.com/

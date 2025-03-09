@@ -17,7 +17,7 @@
         "service_worker": "app/background.js"
     },
     "content_scripts": [{
-        "js": ["app/jquery.js", "app/Database/Horse.js", "app/horseLogging.js"],
+        "js": ["app/jquery.js", "app/DateParser.js","app/Database/Horse.js", "app/horseLogging.js"],
         "matches": [
             "https://www.howrse.de/elevage/chevaux/cheval?id=*",
             "https://www.howrse.com/elevage/chevaux/cheval?id=*",

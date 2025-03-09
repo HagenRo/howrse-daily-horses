@@ -14,15 +14,15 @@ class Horse{
     isAsleep; // "nur so mit semi" - eigentlich in chrome local storage schreiben weil wirs zwischen sessions brauchen?
 
     horseLoggingObject = {
-        horseURL,
-        horseType,
-        horseName, // intern vereinheitlichten
-        dropAmount,
-        dropType,
-        dropSubType, // japanese: coloured tack
-        timeStamp,
-        timeStampHumanReadable,
-        amountClicks, // amount of clicks used to finish horse // together with drop amount for spice horses
+        horseURL : null,
+        horseType : null,
+        horseName : null, // intern vereinheitlichten
+        dropAmount : null,
+        dropType : null,
+        dropSubType : null, // japanese: coloured tack
+        timeStamp : null,
+        timeStampHumanReadable : null,
+        amountClicks : null, // amount of clicks used to finish horse // together with drop amount for spice horses
     }
 
     constructor(url,searchStrings,isReadyOnWakeup,valueIfStringNotFound,horseType,horseName,isExemption,exemptionFunction,amountRequiredClicks,defaultType,defaultAmount,buttonIdentifier,isUnimportant){
@@ -159,49 +159,55 @@ class Horse{
     }
 
     #onSleep(){
-        //wenn wiesensymbol kommt ist alles gut
-        //wenn box kommt muss man noch schauen, wenn der reset schon war und das datum heute ist ist böse
-        // check whether sleep button was pressed AND whether it will be in an EC if required ! 
-        // now + timer > end date?
-
-        //MutationObserver API anschauen um dom elemente zu beobachten ob sich css klassen ändern 
-        // // $(document).on('click', '#boutonCoucher.action.action-style-4.coucher', function () {
-
-
-        // //     setTimeout(function() {
-        // //         //hier kann geprüft werden, welches icon der button jetzt bekommen hat, und ob das reitzentrum heute noch auslaufen wird
-        // //         console.log($('#boutonCoucher'))
-        // //         //entsprechend in den localStorage schreiben, dass heute das pferd erfolgreich schlafen gelegt wurde
-
-        // //     }, 500);
-        // //     // nachschauen wann sich das hier drauf registriert ob up oder down; da man evtl. die änderung des buttons dann schon einlesen könnte
-        // // });
-        
         let sleepButtonParent = $('#night-body-content')[0];
         const callback = (mutationRecords) => {
             console.log(mutationRecords);
             mutationRecords.forEach( mutationRecord => {
                 if (mutationRecord.type === 'childList') {
                     mutationRecord.addedNodes.forEach( addedNode => {
-                        $(addedNode).find('#boutonCoucher');
+                        let sleepButton = $(addedNode).find('#boutonCoucher')?.[0];
                         // hier schauen ob das element da ist 
-                        //prüfen nach klasse ob wiese oder box
-                        //prüfen nach ist new Date kleiner als das reset heute?
-                        //prüfen ob datum des RZ heute ist
-                        //daraus col berechen ob schlafengehen erfolgreich war
+                        if (sleepButton) {
+                            //prüfen nach klasse ob wiese oder box
+                            if (sleepButton.classList.contains("coucher-box")) {
+                                console.log("in box");
+                                let now = new Date(); // default now
+                                let key = window.location.hostname;
+                                let resetHour = new Date().getTimezoneOffset() == -120 ? resetsSommer[key] : resetsWinter[key]; //winter und sommerzeit wirken sich unterschiedlich auf die einzelnen domains aus
+                                let lastResetDate = new Date(new Date().setHours(resetHour, 0, 0)) > new Date ? new Date(new Date(new Date().setDate(new Date().getDate() - 1)).setHours(resetHour, 0, 0)) : new Date(new Date().setHours(resetHour, 0, 0));
+                                let todaysResetDate = new Date(new Date().setHours(resetHour, 0, 0));
+        
+                                let endOfRegistration = DateParser.parseRegistrationEndDate($("#center-tab-main").find(".tab-action.tab-action-select.button.button-style-14").parent().parent().find(".grid-cell.align-top")[0].textContent,window.location.hostname); // $("#center-tab-main").find(".tab-action.tab-action-select.button.button-style-14").parent().parent().find(".grid-cell.align-top")[0].textContent;
+                                console.log(endOfRegistration);
+                                if (todaysResetDate.getTime() > now.getTime() || endOfRegistration.getTime() > now.getTime()) { // date > today
+                                    // alles gut
+                                    // reset kommt erst noch, Pferd schläft, wird schlafen, und wird geschlafen haben
+                                    // oder es steht eh noch länger
+                                    // variable setzen: schläft
+                                    window.localStorage.setItem("asleep"+this.url,now.getTime());
+                                } else {
+                                    // gefahr! O.O
+                                    // aber egal muss man nix tun
+                                }
+                            } else if (sleepButton.classList.contains("coucher-pre")) {
+                                // done
+                                console.log("auf wiese");
+                                // variable setzen: schläft
+                                window.localStorage.setItem("asleep"+this.url,new Date().getTime());
+                            }
+                        }
+                        // Daten müssen auch noch in Datenbank gespeichert werden.
                         // ähnliche überprüfung onLoad, weil man eventuell nochmal im reitzentrum anmelden muss und dann auf die seite zurück geworfen wird.
-                        //6prüfen, ob ich hier den initialen create beim aufbau der seite mitbekomme^^
+                        // prüfen, ob ich hier den initialen create beim aufbau der seite mitbekomme^^ -> nö
                     });
                 }
             });
         };
-
+        
         let observer = new MutationObserver(callback);
-
-        observer.observe(sleepButtonParent, {subtree: true, childList: true});
-        //funktioniert irgendwie nicht, da der button werder verändert noch gelöscht oder replaced wird
-
-
+        
+        observer.observe(sleepButtonParent, {childList: true}); // subtree: true, // das im kommentar vermutlich unnötig
+        
 
     }
 

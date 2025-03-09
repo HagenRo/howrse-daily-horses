@@ -25,6 +25,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 sendResponse({msg: e});
             });
             break;
+        case "saveHorseDropToDB":
+            // DataAccessForDailyHorses.saveHorseToDB(message.horseLoggingObject)
+            sendResponse({msg: "[background.js saveHorseToDB]"});
+            break;
         // case "addRunToDB":
         //     dataAccessForDailyHorses.addRunToDB(message.olympRun)
         //     .then(({msg, result})=>{
