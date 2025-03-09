@@ -60,6 +60,7 @@ class Horse{
     }
 
     #onWakeup(){
+        //TODO: onLoad prüfen ob reitzentrum heute ausläuft -> wenn ja dann speichern, das sleep bu
         //TODO: hier muss geprüft werden, ob an diesem tag schon ein eintrag geschrieben wurde 
         let timeStamp = window.localStorage.getItem(this.url);
         //damit dann die berechnung machen mithilfe des reset objekts
@@ -86,6 +87,8 @@ class Horse{
                 ergebnis = timeLine.match(searchString)?timeLine.match(searchString):ergebnis; 
             });
         });
+// kann eventuell ersetzt werden mithilfe der childlistoption von MutationObserver
+
         if (ergebnis) {
             let date = new Date();
             this.horseLoggingObject.timeStamp = date.getTime();
@@ -118,6 +121,8 @@ class Horse{
                     ergebnis = timeLine.match(searchString)?timeLine.match(searchString):ergebnis; 
                 });
             });
+// kann ersetzt werden mithilfe der childlistoption von MutationObserver
+
             if (ergebnis) {
                 let date = new Date();
                 this.horseLoggingObject.timeStamp = date.getTime();
@@ -154,15 +159,55 @@ class Horse{
     }
 
     #onSleep(){
+        //wenn wiesensymbol kommt ist alles gut
+        //wenn box kommt muss man noch schauen, wenn der reset schon war und das datum heute ist ist böse
         // check whether sleep button was pressed AND whether it will be in an EC if required ! 
         // now + timer > end date?
-        $(document).on('click', '#boutonCoucher.action.action-style-4.coucher', function () {
-            // nachschauen wann sich das hier drauf registriert ob up oder down; da man evtl. die änderung des buttons dann schon einlesen könnte
-        });
+
+        //MutationObserver API anschauen um dom elemente zu beobachten ob sich css klassen ändern 
+        // // $(document).on('click', '#boutonCoucher.action.action-style-4.coucher', function () {
+
+
+        // //     setTimeout(function() {
+        // //         //hier kann geprüft werden, welches icon der button jetzt bekommen hat, und ob das reitzentrum heute noch auslaufen wird
+        // //         console.log($('#boutonCoucher'))
+        // //         //entsprechend in den localStorage schreiben, dass heute das pferd erfolgreich schlafen gelegt wurde
+
+        // //     }, 500);
+        // //     // nachschauen wann sich das hier drauf registriert ob up oder down; da man evtl. die änderung des buttons dann schon einlesen könnte
+        // // });
+        
+        let sleepButtonParent = $('#night-body-content')[0];
+        const callback = (mutationRecords) => {
+            console.log(mutationRecords);
+            mutationRecords.forEach( mutationRecord => {
+                if (mutationRecord.type === 'childList') {
+                    mutationRecord.addedNodes.forEach( addedNode => {
+                        $(addedNode).find('#boutonCoucher');
+                        // hier schauen ob das element da ist 
+                        //prüfen nach klasse ob wiese oder box
+                        //prüfen nach ist new Date kleiner als das reset heute?
+                        //prüfen ob datum des RZ heute ist
+                        //daraus col berechen ob schlafengehen erfolgreich war
+                        // ähnliche überprüfung onLoad, weil man eventuell nochmal im reitzentrum anmelden muss und dann auf die seite zurück geworfen wird.
+                        //6prüfen, ob ich hier den initialen create beim aufbau der seite mitbekomme^^
+                    });
+                }
+            });
+        };
+
+        let observer = new MutationObserver(callback);
+
+        observer.observe(sleepButtonParent, {subtree: true, childList: true});
+        //funktioniert irgendwie nicht, da der button werder verändert noch gelöscht oder replaced wird
+
+
+
     }
 
     //wird vom script aus aufgerufen
     check(){
+        this.#onSleep()
         if (this.isReadyOnWakeup) {
             this.#onWakeup();
         }

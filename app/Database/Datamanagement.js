@@ -564,3 +564,93 @@ class DataAccessForDailyHorses {
 // 
 // abspeichern der timestamps, wann ein pferd schlafen gelegt wurde, und wann es gedropt hat, für den fall dass die daten sich unterscheiden
 // da ein pferd erst abgehandelt ist, wenn beides erfüllt ist
+
+/*
+{
+    horseName,
+    horseURL,
+    sleepTimestamp,
+    dropTimestamp,
+    showInPopup
+}
+*/
+
+/**
+ * Class responsible for accessing popup horse data in a database.
+ * 
+ */
+class DataAccessForPopupHorses {
+    constructor() {
+        this.databaseConnection = new DatabaseConnection('PopupHorses', 'Horses', 'horseURL');
+        this.promiseQueue = Queue;
+        this.initDataAccessForDailyHorses();
+    }
+    /**
+     * Initializes data access for popup Horses.
+     * Enqueues the initialization of the database connection.
+     */
+    initDataAccessForDailyHorses() {
+        this.promiseQueue.enqueue(() => {
+            return this.databaseConnection.init();
+        });
+
+    }
+
+    /**
+     * 
+     * @param {Object} popupHorse 
+     * @returns {Promise} A Promise that resolves when the run is added.
+     */
+    addPopupHorseToDB(popupHorse) {
+
+        return this.promiseQueue.enqueue(() => {
+            return this.databaseConnection.insertOrErrorItem(popupHorse);
+        })
+    }
+
+    updateSleepTimestamp(horseURL, sleepTimestamp) {
+
+        return this.promiseQueue.enqueue(() => {
+            return this.databaseConnection.getItem(horseURL)
+                .then(({ msg, result }) => {
+                    result.sleepTimestamp = sleepTimestamp;
+                    return this.databaseConnection.insertOrOverrideItem(result);
+                })
+        });
+    }
+
+    updateDropTimestamp(horseURL, dropTimestamp) {
+
+        return this.promiseQueue.enqueue(() => {
+            return this.databaseConnection.getItem(horseURL)
+                .then(({ msg, result }) => {
+                    result.dropTimestamp = dropTimestamp;
+                    return this.databaseConnection.insertOrOverrideItem(result);
+                })
+        });
+    }
+
+    updateShowInPopup(horseURL, showInPopup) {
+
+        return this.promiseQueue.enqueue(() => {
+            return this.databaseConnection.getItem(horseURL)
+                .then(({ msg, result }) => {
+                    result.showInPopup = showInPopup;
+                    return this.databaseConnection.insertOrOverrideItem(result);
+                })
+        });
+
+    }
+    
+    /**
+     * Fetches all PopupHorses from the database.
+     * @returns {Promise} A Promise that resolves with an array of all PopupHorses.
+     */
+    getAllPopupHorses() {
+        return this.promiseQueue.enqueue(() => {
+            return this.databaseConnection.getAllItems();
+        });
+
+    }
+    
+}

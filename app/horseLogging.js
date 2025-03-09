@@ -54,6 +54,13 @@ let horses ={
 }
 
 
+let currentHorse = $('horse-name a[href]')[0].href;
+
+horses[currentHorse].check();
+
+
+
+
 // Erstelle ein leeres Array, um die Werte zu speichern
 let values = [];
 
