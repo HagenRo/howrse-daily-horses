@@ -25,9 +25,18 @@ class Horse{
         amountClicks : null, // amount of clicks used to finish horse // together with drop amount for spice horses
     }
 
+    popupHorseObject = {
+        horseName : null,
+        horseURL : null,
+        sleepTimestamp : null,
+        dropTimestamp : null,
+        showInPopup : null
+    }
+
     constructor(url,searchStrings,isReadyOnWakeup,valueIfStringNotFound,horseType,horseName,isExemption,exemptionFunction,amountRequiredClicks,defaultType,defaultAmount,buttonIdentifier,isUnimportant){
         this.url = url;
         this.searchStrings = searchStrings; // which regex expressions we're looking for
+        console.log(searchStrings);
         this.isReadyOnWakeup = isReadyOnWakeup; // whether the message will be there when the horse wakes up
         this.valueIfStringNotFound = valueIfStringNotFound;
         this.isExemption = isExemption; // like Onyx with the UFOs or Pluto, with a message that doesn't trigger at one specific point in time
@@ -46,14 +55,30 @@ class Horse{
         this.horseLoggingObject.dropType = this.defaultType;
         this.horseLoggingObject.amountClicks = this.amountRequiredClicks;
 
+        this.popupHorseObject.horseName = horseName;
+        this.popupHorseObject.horseURL = url;
+        this.popupHorseObject.showInPopup = !isUnimportant;
+        console.log(url);
+
+        chrome.runtime.sendMessage({ function: "addOrUpdatePopupHorseToDB", popupHorseObject: this.popupHorseObject}, (response) => {
+            console.log(response);
+        });
     }
 
     #saveHorseDropToDB(){
-        chrome.runtime.sendMessage({ function: "saveHorseDropToDB", horseLoggingObject: horseLoggingObject}, (response) => { //param1 und param2 und beliebig viele weitere können frei benannt werden, müssen dann entsprechend in backroundscript benannt sein
+        chrome.runtime.sendMessage({ function: "saveHorseDropToDB", horseLoggingObject: this.horseLoggingObject}, (response) => { //param1 und param2 und beliebig viele weitere können frei benannt werden, müssen dann entsprechend in backroundscript benannt sein
             //hier sind wir in der Funktion, die vom empfänger der Nachricht aufgerufen wird.
 
             //wenn wir einen eintrag in die Datenbank schreiben, dann wollen wir einen timeStamp setzen, anhand dessen wir ermitteln können, ob dieses pferd schon abgehandelt ist oder nicht.
-            window.localStorage.setItem(url, this.horseLoggingObject.timeStamp);
+            window.localStorage.setItem(this.url, this.horseLoggingObject.timeStamp);
+
+            console.log(response);
+        });
+    }
+
+    #updateSleepingToDB(){
+        chrome.runtime.sendMessage({ function: "updateSleepingToDB", popupHorseObject: this.popupHorseObject}, (response) => { //param1 und param2 und beliebig viele weitere können frei benannt werden, müssen dann entsprechend in backroundscript benannt sein
+            //hier sind wir in der Funktion, die vom empfänger der Nachricht aufgerufen wird.
 
             console.log(response);
         });
@@ -83,7 +108,7 @@ class Horse{
 
         let ergebnis = [];
         horseTimeLines.forEach(timeLine => {
-            searchStrings.forEach(searchString => {
+            this.searchStrings.forEach(searchString => {
                 ergebnis = timeLine.match(searchString)?timeLine.match(searchString):ergebnis; 
             });
         });
@@ -104,7 +129,8 @@ class Horse{
     }
 
     #onClick(){
-        $(document).on('click', function () {
+        console.log(this.searchStrings);
+        $(document).on('click', () => {
             //TODO: hier muss geprüft werden, ob an diesem tag schon ein eintrag geschrieben wurde
             //item = window.localStorage.getItem(this.url);
             //damit dann die berechnung machen mithilfe des reset objekts
@@ -117,7 +143,7 @@ class Horse{
     
             let ergebnis = [];
             horseTimeLines.forEach(timeLine => {
-                searchStrings.forEach(searchString => {
+                this.searchStrings.forEach(searchString => {
                     ergebnis = timeLine.match(searchString)?timeLine.match(searchString):ergebnis; 
                 });
             });
@@ -135,7 +161,7 @@ class Horse{
             }
         });
 
-        $(document).on('click', this.buttonIdentifier, function () {
+        $(document).on('click', this.buttonIdentifier, () => {
             //TODO: hier muss geprüft werden, ob an diesem tag schon ein eintrag geschrieben wurde
             //item = window.localStorage.getItem(this.url);
             //damit dann die berechnung machen mithilfe des reset objekts
@@ -178,13 +204,15 @@ class Horse{
                                 let todaysResetDate = new Date(new Date().setHours(resetHour, 0, 0));
         
                                 let endOfRegistration = DateParser.parseRegistrationEndDate($("#center-tab-main").find(".tab-action.tab-action-select.button.button-style-14").parent().parent().find(".grid-cell.align-top")[0].textContent,window.location.hostname); // $("#center-tab-main").find(".tab-action.tab-action-select.button.button-style-14").parent().parent().find(".grid-cell.align-top")[0].textContent;
-                                console.log(endOfRegistration);
+                                console.log("registration end: "+endOfRegistration);
                                 if (todaysResetDate.getTime() > now.getTime() || endOfRegistration.getTime() > now.getTime()) { // date > today
                                     // alles gut
                                     // reset kommt erst noch, Pferd schläft, wird schlafen, und wird geschlafen haben
                                     // oder es steht eh noch länger
                                     // variable setzen: schläft
                                     window.localStorage.setItem("asleep"+this.url,now.getTime());
+                                    this.popupHorseObject.sleepTimestamp = now.getTime();
+                                    this.#updateSleepingToDB();
                                 } else {
                                     // gefahr! O.O
                                     // aber egal muss man nix tun
@@ -194,6 +222,7 @@ class Horse{
                                 console.log("auf wiese");
                                 // variable setzen: schläft
                                 window.localStorage.setItem("asleep"+this.url,new Date().getTime());
+                                this.#updateSleepingToDB();
                             }
                         }
                         // Daten müssen auch noch in Datenbank gespeichert werden.

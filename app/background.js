@@ -2,6 +2,7 @@
 importScripts("Database/Datamanagement.js");
 //Erstellung der Schnittstelle zur Datenbankverwaltung
 const dataAccessForDailyHorses = new DataAccessForDailyHorses();
+const dataAccessForPopupHorses = new DataAccessForPopupHorses();
 
 //nimmt Messages entgegen, die vom horseLoggingscript verschickt werden
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -28,6 +29,30 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         case "saveHorseDropToDB":
             // DataAccessForDailyHorses.saveHorseToDB(message.horseLoggingObject)
             sendResponse({msg: "[background.js saveHorseToDB]"});
+            break;
+        case "updateSleepingToDB":
+            console.log("updateSleepToDB, message: ",message);
+            dataAccessForPopupHorses.updateSleepTimestamp(message.popupHorseObject.horseURL,message.popupHorseObject.sleepTimestamp)
+            .then(({msg, result})=>{
+                //hier wird die mitgegebene funktion aufgerufen als antwort (mit der rückgabe von funktionDieAufgerufenWerdenSoll ({msg, result})), nachdem die funktionDieAufgerufenWerdenSoll vollständig abgearbeitet wurde
+                sendResponse({msg: msg});
+            })
+            //falls ein fehler auftritt in der funktionDieAufgerufenWerdenSoll
+            .catch((e)=>{
+                sendResponse({msg: e});
+            });
+            break;
+        case "addOrUpdatePopupHorseToDB":
+            console.log("[background.js addOrUpdatePopupHorseToDB] called");
+            dataAccessForPopupHorses.addOrUpdatePopupHorseToDB(message.popupHorseObject)
+            .then(({msg, result})=>{
+                //hier wird die mitgegebene funktion aufgerufen als antwort (mit der rückgabe von funktionDieAufgerufenWerdenSoll ({msg, result})), nachdem die funktionDieAufgerufenWerdenSoll vollständig abgearbeitet wurde
+                sendResponse({msg: result});
+            })
+            //falls ein fehler auftritt in der funktionDieAufgerufenWerdenSoll
+            .catch((e)=>{
+                sendResponse({msg: e});
+            });
             break;
         // case "addRunToDB":
         //     dataAccessForDailyHorses.addRunToDB(message.olympRun)

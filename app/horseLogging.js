@@ -70,15 +70,20 @@ let shenma = new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=81394568
 
 
 let horses ={
-    "https://www.howrse.de/elevage/chevaux/cheval?id=81394568": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=81394568",skillsChinese_de,true,"Bonus") 
+    "https://www.howrse.de/elevage/chevaux/cheval?id=81394568": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=81394568",skillsChinese_de,true,"Bonus"),
+    "https://www.howrse.de/elevage/chevaux/cheval?id=101194996": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=101194996",groom_de,false), // Gold de
+    "https://www.howrse.de/elevage/chevaux/cheval?id=101164900": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=101164900",groom_de,false), // rose gold de
+    "https://www.howrse.de/elevage/chevaux/cheval?id=100844463": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=100844463",jade_de,true,0), // jade de
+    "https://www.howrse.de/elevage/chevaux/cheval?id=100800447": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=100800447",japanese_de,false), // maneki-neko de
+    "https://www.howrse.de/elevage/chevaux/cheval?id=100358235": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=100358235",egypt_de,false) // osiris de  // TODO
     //, etc.
 }
 
 
 let currentHorse = $('.horse-name a[href]')[0].href;
 
-//horses[currentHorse].check();
-
+horses[currentHorse].check();
+/*
 let sleepButtonParent = $('#night-body-content')[0];
 const callback = (mutationRecords) => {
     console.log(mutationRecords);
@@ -105,6 +110,7 @@ const callback = (mutationRecords) => {
                             // oder es steht eh noch länger
                             // variable setzen: schläft
                             window.localStorage.setItem("asleep"+currentHorse,now.getTime());
+                            
                         } else {
                             // gefahr! O.O
                             // aber egal muss man nix tun
@@ -129,7 +135,7 @@ const callback = (mutationRecords) => {
 let observer = new MutationObserver(callback);
 
 observer.observe(sleepButtonParent, {childList: true}); // subtree: true, // das im kommentar vermutlich unnötig
-
+*/
 
 /*
 // Erstelle ein leeres Array, um die Werte zu speichern
