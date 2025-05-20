@@ -1,5 +1,5 @@
 const myButton = document.getElementById("clearbtn");
-myButton.innerHTML = myButton.textContent + "<br>" + window.localStorage.getItem("lastDelete");
+/*myButton.innerHTML = myButton.textContent + "<br>" + window.localStorage.getItem("lastDelete");
 myButton.addEventListener("click", () => {
     if (confirm("You did Download first right?")) {
         chrome.runtime.sendMessage({ mdText: "clear" }, (response) => {
@@ -48,7 +48,7 @@ function overrideLog(olympRunLogging) {
     arrayOfRuns.push(olympRunLogging);
     chrome.storage.local.set({ "arrayOfRuns": arrayOfRuns }, function () {
     });
-}
+}*/
 
 
 
@@ -76,16 +76,39 @@ let resetsSommer = {
     'co.www.howrse.de': 5
 }
 
+chrome.runtime.sendMessage({ function: "getPopupHorsesFromDB"}, (response) => {
+    // code um unser popup-fenster aufzubauen
+    console.log(response);
+    showPopupHorses(response.msg);
+})
 
-function getObolusReceived() {
-    chrome.storage.local.get(["obolusReceived"], function (keyValuePairs) {
-        if (keyValuePairs.obolusReceived) {//if exists
+function showPopupHorses(popupHorses) {
+    //chrome.storage.local.get(["obolusReceived"], function (keyValuePairs) {
+    console.log(popupHorses.length);
+        if (popupHorses.length>0) {//if exists
             let textContent = '';
-            for (const [key, value] of Object.entries(keyValuePairs.obolusReceived)) {
-                console.log(`${key}: ${value}`);
+            let amountPopupHorsesTodoPerVersion = {
+                'www.howrse.de': {},
+                'www.howrse.com': {},
+                'www.howrse.co.uk': {},
+                'nl.howrse.com': {},
+                'www.howrse.se': {},
+                'au.howrse.com': {},
+            }; 
+            for (const popupHorse of popupHorses) {
+                // get domain // get whether it's already done // if not, add it to the "amountPopupHorsesTodoPerVersion" at its version
+                //console.log(popupHorse);
+                let key = new URL(popupHorse.horseURL).hostname; // nice
+                //console.log(key);
+                // müsste so stimmen
+                //console.log(`${key}: ${value}`);
 
                 let reset = new Date().getTimezoneOffset() == -120 ? resetsSommer[key] : resetsWinter[key]; //winter und sommerzeit wirken sich unterschiedlich auf die einzelnen domains aus
                 let lastResetDate = new Date(new Date().setHours(reset, 0, 0)) > new Date ? new Date(new Date(new Date().setDate(new Date().getDate() - 1)).setHours(reset, 0, 0)) : new Date(new Date().setHours(reset, 0, 0));
+                // muss ich da das erste "new Date" ohne Klammern durch popupHorse.sleepTimestamp ersetzen? und dann weiß ich dinge?
+                // if not sleeping: add popupHorse to 
+                // amountPopupHorsesTodoPerVersion[key]
+                /*
                 let domElement = document.getElementsByName(key);
                 if (domElement[0]) {
 
@@ -94,18 +117,16 @@ function getObolusReceived() {
 
 
                     } else {
-                        domElement[0].textContent = `\u2718`;//u2718
+                        domElement[0].textContent = 0;//`\u2718`;//u2718
                         domElement[0].parentNode.className = 'obolusReceived';
                         domElement[0].parentNode.children[0].className = 'obolusReceived';
                         domElement[0].className = 'obolusReceived'
                     }
-                }
-
-
+                }// */
             }
 
         }
-    });
+    //});
 }
 
-getObolusReceived()
+//getObolusReceived()

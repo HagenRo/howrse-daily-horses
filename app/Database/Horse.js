@@ -222,6 +222,7 @@ class Horse{
                                 console.log("auf wiese");
                                 // variable setzen: schläft
                                 window.localStorage.setItem("asleep"+this.url,new Date().getTime());
+                                this.popupHorseObject.sleepTimestamp = now.getTime();
                                 this.#updateSleepingToDB();
                             }
                         }

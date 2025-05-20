@@ -54,6 +54,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 sendResponse({msg: e});
             });
             break;
+        case "getPopupHorsesFromDB":
+            dataAccessForPopupHorses.getAllPopupHorses()
+            .then(({msg, result}) =>{
+                sendResponse({msg: result});
+            })
+            .catch((e)=>{
+                sendResponse({msg: e});
+            })
+            break;
         // case "addRunToDB":
         //     dataAccessForDailyHorses.addRunToDB(message.olympRun)
         //     .then(({msg, result})=>{
