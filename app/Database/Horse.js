@@ -66,6 +66,7 @@ class Horse{
     }
 
     #saveHorseDropToDB(){
+        /*
         chrome.runtime.sendMessage({ function: "saveHorseDropToDB", horseLoggingObject: this.horseLoggingObject}, (response) => { //param1 und param2 und beliebig viele weitere können frei benannt werden, müssen dann entsprechend in backroundscript benannt sein
             //hier sind wir in der Funktion, die vom empfänger der Nachricht aufgerufen wird.
 
@@ -73,7 +74,7 @@ class Horse{
             window.localStorage.setItem(this.url, this.horseLoggingObject.timeStamp);
 
             console.log(response);
-        });
+        }); // */
     }
 
     #updateSleepingToDB(){
@@ -81,7 +82,7 @@ class Horse{
             //hier sind wir in der Funktion, die vom empfänger der Nachricht aufgerufen wird.
 
             console.log(response);
-        });
+        }); 
     }
 
     #onWakeup(){
@@ -195,9 +196,9 @@ class Horse{
                         // hier schauen ob das element da ist 
                         if (sleepButton) {
                             //prüfen nach klasse ob wiese oder box
+                            let now = new Date(); // default now
                             if (sleepButton.classList.contains("coucher-box")) {
                                 console.log("in box");
-                                let now = new Date(); // default now
                                 let key = window.location.hostname;
                                 let resetHour = new Date().getTimezoneOffset() == -120 ? resetsSommer[key] : resetsWinter[key]; //winter und sommerzeit wirken sich unterschiedlich auf die einzelnen domains aus
                                 let lastResetDate = new Date(new Date().setHours(resetHour, 0, 0)) > new Date ? new Date(new Date(new Date().setDate(new Date().getDate() - 1)).setHours(resetHour, 0, 0)) : new Date(new Date().setHours(resetHour, 0, 0));
@@ -217,12 +218,13 @@ class Horse{
                                     // gefahr! O.O
                                     // aber egal muss man nix tun
                                 }
-                            } else if (sleepButton.classList.contains("coucher-pre")) {
-                                // done
+                            } else if (sleepButton.classList.contains("coucher-pre")) { // auf wiese
+                                // TODO: Debuggen wenn wieder pferde wach sind
                                 console.log("auf wiese");
                                 // variable setzen: schläft
                                 window.localStorage.setItem("asleep"+this.url,new Date().getTime());
                                 this.popupHorseObject.sleepTimestamp = now.getTime();
+                                console.log(now);
                                 this.#updateSleepingToDB();
                             }
                         }

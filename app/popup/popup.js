@@ -88,12 +88,12 @@ function showPopupHorses(popupHorses) {
         if (popupHorses.length>0) {//if exists
             let textContent = '';
             let amountPopupHorsesTodoPerVersion = {
-                'www.howrse.de': {},
-                'www.howrse.com': {},
-                'www.howrse.co.uk': {},
-                'nl.howrse.com': {},
-                'www.howrse.se': {},
-                'au.howrse.com': {},
+                'www.howrse.de': [],
+                'www.howrse.com': [],
+                'www.howrse.co.uk': [],
+                'nl.howrse.com': [],
+                'www.howrse.se': [],
+                'au.howrse.com': []
             }; 
             for (const popupHorse of popupHorses) {
                 // get domain // get whether it's already done // if not, add it to the "amountPopupHorsesTodoPerVersion" at its version
@@ -106,25 +106,30 @@ function showPopupHorses(popupHorses) {
                 let reset = new Date().getTimezoneOffset() == -120 ? resetsSommer[key] : resetsWinter[key]; //winter und sommerzeit wirken sich unterschiedlich auf die einzelnen domains aus
                 let lastResetDate = new Date(new Date().setHours(reset, 0, 0)) > new Date ? new Date(new Date(new Date().setDate(new Date().getDate() - 1)).setHours(reset, 0, 0)) : new Date(new Date().setHours(reset, 0, 0));
                 // muss ich da das erste "new Date" ohne Klammern durch popupHorse.sleepTimestamp ersetzen? und dann weiß ich dinge?
-                // if not sleeping: add popupHorse to 
-                // amountPopupHorsesTodoPerVersion[key]
-                /*
-                let domElement = document.getElementsByName(key);
+                if (lastResetDate > new Date(popupHorse.sleepTimestamp)) { // if not sleeping
+                    amountPopupHorsesTodoPerVersion[key].push(popupHorse); // add insert whatever
+                }
+            }
+            let sumRemaining = 0;
+            for (const [url,values] of Object.entries(amountPopupHorsesTodoPerVersion)) {
+                let domElement = document.getElementsByName(url);
                 if (domElement[0]) {
-
+                    domElement[0].textContent=values.length;
+                    sumRemaining += values.length;
+                    /*
                     if (lastResetDate < new Date(value)) {
-                        domElement[0].textContent = `\u2713`;//u2713
+                        domElement[0].textContent = `\u2713`;//u2713 // checkmark
 
 
                     } else {
-                        domElement[0].textContent = 0;//`\u2718`;//u2718
+                        domElement[0].textContent = 0;//`\u2718`;//u2718 // "X"
                         domElement[0].parentNode.className = 'obolusReceived';
                         domElement[0].parentNode.children[0].className = 'obolusReceived';
                         domElement[0].className = 'obolusReceived'
-                    }
-                }// */
+                    }// */
+                }
             }
-
+            chrome.action.setBadgeText({text: sumRemaining.toString()});
         }
     //});
 }

@@ -28,13 +28,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             break;
         case "saveHorseDropToDB":
             // DataAccessForDailyHorses.saveHorseToDB(message.horseLoggingObject)
-            sendResponse({msg: "[background.js saveHorseToDB]"});
+            DataAccessForDailyHorses.addDropDataToDB(message.horseLoggingObject);
+            sendResponse({msg: "[background.js saveHorseToDB] not doing anything yet"});
             break;
         case "updateSleepingToDB":
             console.log("updateSleepToDB, message: ",message);
             dataAccessForPopupHorses.updateSleepTimestamp(message.popupHorseObject.horseURL,message.popupHorseObject.sleepTimestamp)
             .then(({msg, result})=>{
                 //hier wird die mitgegebene funktion aufgerufen als antwort (mit der rückgabe von funktionDieAufgerufenWerdenSoll ({msg, result})), nachdem die funktionDieAufgerufenWerdenSoll vollständig abgearbeitet wurde
+                console.log("updatesleepingtodb, result",result);
                 sendResponse({msg: msg});
             })
             //falls ein fehler auftritt in der funktionDieAufgerufenWerdenSoll

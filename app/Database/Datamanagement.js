@@ -337,7 +337,7 @@ class Queue {
  */
 class DataAccessForDailyHorses {
     constructor() {
-        this.databaseConnection = new DatabaseConnection('DailyHorses', 'Horses', 'id');
+        this.databaseConnection = new DatabaseConnection('DailyHorses', 'Horses', ['horseURL','timeStamp']);
         this.promiseQueue = Queue;
         this.initDataAccessForDailyHorses();
     }
@@ -359,7 +359,7 @@ class DataAccessForDailyHorses {
      * @param {Object} horseData - The Olympic run object to be added.
      * @returns {Promise} A Promise that resolves when the run is added.
      */
-    addDailyDataToDB(horseData) {
+    addDropDataToDB(horseData) {
 
         return this.promiseQueue.enqueue(() => {
             return this.databaseConnection.insertOrErrorItem(horseData);
