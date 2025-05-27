@@ -50,7 +50,7 @@ class DateParser{
 
     static parseRegistrationEndDate(dateString,version) {
         //
-        dateString = dateString.replace(/(\d+)(th|st|nd|rd|.)/, '$1');
+        dateString = dateString.replace(/(\d+)(th|st|nd|rd|\.)/, '$1');
         // map zuweisen
         let [day, month, year] = dateString.split(" ");
         switch (version) {

@@ -61,11 +61,12 @@ class Horse{
         console.log(url);
 
         chrome.runtime.sendMessage({ function: "addOrUpdatePopupHorseToDB", popupHorseObject: this.popupHorseObject}, (response) => {
-            console.log(response);
+            //console.log(response);
         });
     }
 
     #saveHorseDropToDB(){
+        //console.log(this.horseLoggingObject);
         /*
         chrome.runtime.sendMessage({ function: "saveHorseDropToDB", horseLoggingObject: this.horseLoggingObject}, (response) => { //param1 und param2 und beliebig viele weitere können frei benannt werden, müssen dann entsprechend in backroundscript benannt sein
             //hier sind wir in der Funktion, die vom empfänger der Nachricht aufgerufen wird.
@@ -158,7 +159,7 @@ class Horse{
                 this.horseLoggingObject.dropAmount = ergebnis[1];
                 //hier muss manchmal noch der typ ermittelt werden.
                 //mal schauen, wie man das coden kann, dass man keine ausnamefälle betrachten muss.
-                this.#saveHorseDropToDB();
+                this.#saveHorseDropToDB(); // das wird ständig aufgerufen, auch... vor dem Drop...? 
             }
         });
 
@@ -183,6 +184,63 @@ class Horse{
             this.#saveHorseDropToDB();
         });
 
+    }
+
+    #onDrop(){
+        let historyParent = $('#history-body-content')[0];
+        console.log("onDrop is here");
+        const callback = (mutationRecords) => {
+            console.log("onDrop mutationRecords",mutationRecords);
+            let horseTimeLines = [];
+            let ergebnis = [];
+            console.log("added nodes",mutationRecords[0].addedNodes);
+            let historyoderso = mutationRecords[0].addedNodes[0].firstChild;
+            console.log("history die durchsucht wird",historyoderso);
+            $(historyoderso).find("li").each(function() {
+                // Füge den Textinhalt jedes gefundenen Elements dem Array hinzu
+                console.log(this);
+                horseTimeLines.push({string: $(this).text().trim(), domElement: this});
+            });
+            console.log("horseTimeLines",horseTimeLines);
+            let timeLineWithLink;
+            horseTimeLines.forEach(timeLine => {
+                this.searchStrings.forEach(searchString => {
+                    if (ergebnis.length > 0) return;
+                    ergebnis = timeLine.string.match(searchString)?timeLine.string.match(searchString):ergebnis; 
+                    timeLineWithLink = timeLine.domElement;
+                    /* 
+                    console.log("searchString: ",searchString);
+                    console.log("compared with: ",timeLine);
+                    console.log("ergebnis: ",ergebnis); // */
+                });
+            });
+            if (ergebnis.length > 0) {
+                let date = new Date();
+                this.horseLoggingObject.timeStamp = date.getTime();
+                this.horseLoggingObject.timeStampHumanReadable = date.toISOString()
+                console.log("link! ",$(timeLineWithLink).find("[href]").attr("href")); 
+
+                // console.log("ergebnis: ",ergebnis);
+                this.horseLoggingObject.dropAmount = ergebnis[1];
+                console.log("dropAmount: ",this.horseLoggingObject.dropAmount);
+                if (ergebnis.length > 2) {
+                    if (ergebnis[2].match(/.+ 2\*\* .+/)) {
+                        this.horseLoggingObject.dropType = "tack";
+                        this.horseLoggingObject.dropSubType = ergebnis[2]
+                        console.log("drop subtype: ",this.horseLoggingObject.dropSubType);
+                    } else {
+                        this.horseLoggingObject.dropType = ergebnis[2];
+                    }
+                    console.log("drop type: ",this.horseLoggingObject.dropType);
+                }
+                //hier muss manchmal noch der typ ermittelt werden.
+                //mal schauen, wie man das coden kann, dass man keine ausnamefälle betrachten muss.
+                this.#saveHorseDropToDB();
+            }
+        }
+        let observer = new MutationObserver(callback);
+        
+        observer.observe(historyParent, {childList: true}); // subtree: true, // das im kommentar vermutlich unnötig
     }
 
     #onSleep(){
@@ -245,7 +303,8 @@ class Horse{
 
     //wird vom script aus aufgerufen
     check(){
-        this.#onSleep()
+        this.#onSleep();
+        this.#onDrop();
         if (this.isReadyOnWakeup) {
             this.#onWakeup();
         }

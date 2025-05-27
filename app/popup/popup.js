@@ -127,6 +127,7 @@ function showPopupHorses(popupHorses) {
                         domElement[0].parentNode.children[0].className = 'obolusReceived';
                         domElement[0].className = 'obolusReceived'
                     }// */
+                    console.log(url,values);
                 }
             }
             chrome.action.setBadgeText({text: sumRemaining.toString()});
