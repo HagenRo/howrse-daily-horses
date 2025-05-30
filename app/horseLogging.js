@@ -1,61 +1,85 @@
+/**
+ * The regex return/store/? either 1 or 2 values.
+ * For divine families, where only the amount of dropping is interesting, they only return 1 value: the amount.
+ * For divine families, where the drop may have another type, they return two values: the amount and the type. These families are japanese, egypts (sherlock holmes) so far.
+ */
+
 // de
 let equus_de = /.+ bringt Dir  (\d+) x  Equus\./; // hilfsregex
+
+// log types for proper classification (2 results)
+let japanese_de = [/.+ bringt Dir (\d+) x  (.+)\./]///.+ bringt Dir (\d+) x  Englische Satteldecke 2\*\* ([a-zA-Z ]+)\./]; // da gibts nen haufen möglicher gegenstände, aber es ist auch ein Link im Chat. Können wir es daraus auslesen?
+let egypt_de = [/.+ bringt Dir (\d+) x  (.+)./]; // equus_de,/.+ bringt Dir  (\d+) Fähigkeitenpunkte./ // geht das so?
+
+// only the amount
 let skillsChinese_de = [/.+ hat (\d+) Fähigkeitspunkte gewonnen, die verteilt werden können/];
 let maori_de = [/.+ hat \d+ x Schildkrötenbabies entdeckt. Sein Tiki hat (\d+) x Mana erhalten./];
-let egypt_de = [equus_de,/.+ bringt Dir  (\d+) Fähigkeitenpunkte./,/.+ bringt Dir (\d+) x  (.+)./]; // geht das so?
 let groom_de = [/Du hast durch Striegeln von .+ (\d+) .+ gefunden./]; // 1. Punkt: Name; 2. Punkt: Mineralien, Federn oder, in com, Schuppen // hier müsste man auf Buchstaben oder Zahlen eingrenzen
 let stellar_de = [/Du hast (\d+) x Sternstaub gefunden, indem Du den Stern der Odyssee im Weltraum enthüllst./];
 let spice_de = [/Du hast (\d+) Gewürze für Deine Fortschrittsanzeige erhalten./]; // auch exemptions?
 let jade_de = [/Du hast (\d+)  gewonnen\!/];
-let japanese_de = [equus_de,/.+ bringt Dir (\d+) x  (.+)\./]///.+ bringt Dir (\d+) x  Englische Satteldecke 2\*\* ([a-zA-Z ]+)\./]; // da gibts nen haufen möglicher gegenstände, aber es ist auch ein Link im Chat. Können wir es daraus auslesen?
 let fairytale_de = [/.+ hat eine Geschichte gelesen/]; // handlungselemente entdeckt?
 
 // english
+// log types for proper classification (2 results)
+let japanese_en = [/.+ brings you (\d+) x  (.+)\./]; // can we replace ageing point by ".+"? //equus_en,/.+ brings you (\d+) x  Ageing point/,
+let egypt_en = [/.+ brings you  (\d+) (.+)./]; // /.+ brings you  (\d+) skill points./
+
+// only the amount
 let equus_en = /.+ brings you (\d+) x  Equus./;
 let stellar_en = [/You found (\d+) x Stardusts by uncovering the Space Odyssey star./];
 let spice_en = [/You have obtained (\d+) spices for your meter./];
 let spice_uk_au = [/You have obtained (\d+) spices for your metre./];
-let groom_en = [/You found (\d+) .+ by grooming .+./]; // minerals or scales
-let japanese_en = [/.+ brings you (\d+) x  (.+)\./]; // can we replace ageing point by ".+"? //equus_en,/.+ brings you (\d+) x  Ageing point/,
+let groom_en = [/You found (\d+) .+ by grooming .+\./]; // minerals or scales
 let jade_en = [/You won (\d+) \!/]; // there's a passes icon in there, but should just be 1 space in text
 // amber drops either droppings or passes - today it was droppings, passes will be tomorrow.
-let amber_en = [/You won 10 !/,/Amber produced (\d+) pounds of droppings yesterday/]; // uk and au would say "kg" instead of pounds; but this is another EXEMPTION
+let amber_en = [/You won 10 !/,/Amber produced \d+ pounds of droppings yesterday/]; // uk and au would say "kg" instead of pounds; but this is another EXEMPTION
 let skinfaxi_au = [/Skínfaxi gave \+(\d+) rays of light/]; // if that's okay
 let chinese_en = [/.+ won (\d+) skill points you can spend whichever way you like/]; // skill points watched on au
-let egypt_en = [/.+ brings you  (\d+) skill points./];
 let fairytale_en = [/.+ has read a story\./,/.+ has read a story and discovered (\d+) plot element/]; // TODO ergänzen wenn er 2 handlungselemente findet
 let celtic_en = [/.+ used their powers of divination but found no letter from the prediction/,/.+ used their powers of divination and found (\d+) new letter from the prediction/]; // TODO ergänzen wenn er 2 findet
 
 // exemptions from com english?
 
 // nl
+// log types for proper classification (2 results)
+let japanese_nl = [/.+ brengt je (\d+) x  (.+)\./]; // [/.+ brengt je (\d+) x  Verouderingspunt./,/.+ brengt je (\d+) x  Equus./,/.+ brengt je (\d+) x  Appelzaden./,/.+ brengt je (\d+) x  (.+)\./];
+let egypt_nl = [/.+ brengt je  (\d+) (.+)\./];//,/.+ brengt je (\d+) x  Leder./, /.+ brengt je (\d+) x  IJzer./];
+
+// only the amount
 let stellar_nl = [/Je hebt (\d+) x Sterrenstof gevonden door de ster van de Tocht door de ruimte te onthullen./];
 let spice_nl = [/Je hebt (\d+) specerijen voor je meter verkregen./];
 let groom_nl = [/Je vond (\d+) stukken erts door .+ te verzorgen./]; // only metal horses if it stays like this
-let japanese_nl = [/.+ brengt je (\d+) x  Verouderingspunt./,/.+ brengt je (\d+) x  Equus./,/.+ brengt je (\d+) x  Appelzaden./,/.+ brengt je (\d+) x  (.+)\./];
 let jade_nl = [/Je won (\d+) \!/];
 let maori_nl = [/.+ vond \d+ x babyschildpad. Zijn of haar Tiki ontving (\d+) x mana./];
-let egypt_nl = [/.+ brengt je  (\d+) .+\./,/.+ brengt je (\d+) x  Leder./, /.+ brengt je (\d+) x  IJzer./];
 let fairytale_nl = [/. heeft een verhaal gelezen/,/. heeft een verhaal gelezen en (\d+) plotelement ontdekt/]; // es fehlt noch 2
 
 
 // se
+// log types for proper classification (2 results)
+let japanese_se = [/.+ ger dig (\d+) x  (.+)\./]///,/.+ ger dig (\d+) x  Åldrandepoäng./,/.+ ger dig (\d+) x  Equus./]; // APs, Eq
+let egypt_se = [/.+ ger dig (\d+) x (.+)\./]// /.+ ger dig  (\d+) färdighetspoäng./,/.+ ger dig (\d+) x Järn./]; // fk
+
+// only the amount
 let stellar_se = [/Du hittade (\d+) x Stjärnstoft genom att upptäcka rymdodysséstjärnan./,/Du hittade (\d+) x Stjärnstoft genom att upptäcka rymdodysséstjärnan./];
 let spice_se = [/Du har fått tag på (\d+) kryddor till din mätare./];
-let japanese_se = [/.+ ger dig (\d+) x  (.+)\./]///,/.+ ger dig (\d+) x  Åldrandepoäng./,/.+ ger dig (\d+) x  Equus./]; // APs, Eq
 let jade_se = [/Du vann (\d+) \!/];
 let maori_se = [/.+ hittade \d+ x sköldpaddsunge. Deras tiki fick (\d+) x mana./];
-let egypt_se = [/.+ ger dig  (\d+) färdighetspoäng./,/.+ ger dig (\d+) x (.+)\./]///.+ ger dig (\d+) x Järn./]; // fk
 let fairytale_se = [/.+ har läst en saga/]; 
 
 
 // drop types
 // /marche/voir?qName=defi-titans // HdT
+// /marche/voir?qName=don-hestia // Hestias Gabe
 // (kein Link) // Equus
+// /marche/voir?qName=vieillissement // APs
 // /marche/voir?qName=ressource-cuir // Leder
 // /marche/voir?qName=ressource-fer // Eisen
+// /marche/voir?qName=avoine // Hafer | Oats
+// /marche/voir?qName=ressource-lin // Flachs
 // /marche/voir?qName=graines-pomme // Apfelsamen
 // /marche/voir?qName=bande-2x-rose // Bandagen (rosa)
+// /marche/voir?qName=bonnet-2x-rouge-bleu // Fliegenohren
 // /marche/voir?qName=tapis-classique-2x-noir // Satteldecke (schwarz)
 // /marche/voir?qName=tapis-classique-2x-rouge // " (rot)
 
@@ -80,14 +104,14 @@ let resetsSommer = {
 }
 
 
-let shenma = new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=81394568",skillsChinese_de,true,"Bonus");
+//let shenma = new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=81394568",skillsChinese_de,true,"Bonus");
 
 
 
 let horses ={
     "https://www.howrse.de/elevage/chevaux/cheval?id=81394568": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=81394568",skillsChinese_de,true,"Bonus"), // shenma
     // de athos
-    "https://www.howrse.de/elevage/chevaux/cheval?id=103173953": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=103173953",jade_de,false), // de opal
+    "https://www.howrse.de/elevage/chevaux/cheval?id=103173953": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=103173953",jade_de,false), // de opal TODO
     "https://www.howrse.de/elevage/chevaux/cheval?id=103159709": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=103159709",jade_de,true), // de Bernstein
     "https://www.howrse.de/elevage/chevaux/cheval?id=102537929": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=102537929",fairytale_de,false), // de Jack 2
     "https://www.howrse.de/elevage/chevaux/cheval?id=102537911": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=102537911",egypt_de,false), // de ptah
@@ -195,7 +219,9 @@ let horses ={
 
 let currentHorse = $('.horse-name a[href]')[0].href;
 
-horses[currentHorse].check();
+if (horses[currentHorse]) {
+    horses[currentHorse].check();
+}
 /*
 let sleepButtonParent = $('#night-body-content')[0];
 const callback = (mutationRecords) => {

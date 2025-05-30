@@ -13,6 +13,33 @@ class Horse{
     buttonIdentifier; // String, Klasse, ID, die den Button eindeutig identifiziert, nachdem ein Pferd keine Drop mehr durchführen kann an dem Tag. //TODO: in Konstruktorsignatur hinzufügen
     isAsleep; // "nur so mit semi" - eigentlich in chrome local storage schreiben weil wirs zwischen sessions brauchen?
 
+    // general types
+    type_equus = {"type": "Equus","searchStrings": [/.+ bringt Dir  (\d+) x  Equus\./,/.+ brings you (\d+) x  Equus./,/.+ brengt je (\d+) x  Equus\./,/.+ ger dig (\d+) x  Equus\./]};
+    type_skills = {"type": "Skillpunkte","searchStrings": [/.+ hat (\d+) Fähigkeitspunkte gewonnen, die verteilt werden können/,/.+ bringt Dir  (\d+) Fähigkeitenpunkte./,/.+ brings you  (\d+) skill points./,/.+ won (\d+) skill points you can spend whichever way you like/,/.+ brengt je chevalcompetences (\d+) vaardigheidspunten./]};
+    type_passes = {"type": "Pässe","searchStrings": [/Du hast (\d+)  gewonnen\!/,/You won (\d+) \!/,/Je won (\d+) \!/,/Du vann (\d+) \!/]};
+
+    dropTypesToSearch = [this.type_equus,this.type_skills,this.type_passes];
+
+    dropMapping = {
+        // main prize
+        "/marche/voir?qName=defi-titans": "Herausforderung der Titanen | Titans Challenge",
+        "/marche/voir?qName=don-hestia": "Hestias Gabe",
+        "/marche/noir/object?qName=pack-poseidon": "Poseidon-Paket",
+        "/marche/noir/object?qName=pack-bonus": "Bonuspaket",
+
+        "/marche/voir?qName=vieillissement": "Alterungspunkte",
+        "/marche/voir?qName=ressource-cuir": "Leder",
+        "/marche/voir?qName=ressource-fer": "Eisen",
+        "/marche/voir?qName=avoine": "Hafer | Oats",
+        "/marche/voir?qName=ressource-lin": "Flachs",
+        "/marche/voir?qName=graines-pomme": "Apfelsamen",
+        // subtype
+        "/marche/voir?qName=bande-2x-": "Bandagen",
+        "/marche/voir?qName=bonnet-2x-": "Fliegenohren",
+        "/marche/voir?qName=tapis-classique-2x-": "Satteldecke (klassisch)"
+    }
+
+
     horseLoggingObject = {
         horseURL : null,
         horseType : null,
@@ -215,21 +242,38 @@ class Horse{
                 });
             });
             if (ergebnis.length > 0) {
+                // drop time stamp
                 let date = new Date();
                 this.horseLoggingObject.timeStamp = date.getTime();
                 this.horseLoggingObject.timeStampHumanReadable = date.toISOString()
+
                 console.log("link! ",$(timeLineWithLink).find("[href]").attr("href")); 
 
-                // console.log("ergebnis: ",ergebnis);
+                // drop amount
                 this.horseLoggingObject.dropAmount = ergebnis[1];
                 console.log("dropAmount: ",this.horseLoggingObject.dropAmount);
-                if (ergebnis.length > 2) {
+
+                // drop type
+                if (ergebnis.length > 2) { // only japanese and egypts currently (?)
                     if (ergebnis[2].match(/.+ 2\*\* .+/)) {
-                        this.horseLoggingObject.dropType = "tack";
-                        this.horseLoggingObject.dropSubType = ergebnis[2]
+                        this.horseLoggingObject.dropType = this.dropMapping[currentLink.substring(0, currentLink.indexOf("2x-")+3)];
+                        let currentLink = $(timeLineWithLink).find("[href]").attr("href");
+                        this.horseLoggingObject.dropSubType = currentLink.substring(currentLink.indexOf("2x-")+4);//ergebnis[2]; was am ende gecuttet wird
                         console.log("drop subtype: ",this.horseLoggingObject.dropSubType);
                     } else {
-                        this.horseLoggingObject.dropType = ergebnis[2];
+                        this.horseLoggingObject.dropType = this.dropMapping[$(timeLineWithLink).find("[href]").attr("href")];//ergebnis[2];
+                        if (this.horseLoggingObject.dropType == undefined) {
+                            this.dropTypesToSearch.forEach(dropType => {
+                                dropType.searchStrings.forEach(typeSearchString => {
+                                    //console.log("das vor dem match",$(timeLineWithLink).text().trim());
+                                    //console.log("typeSearchString",typeSearchString);
+                                    //console.log("das ganze ohne length",$(timeLineWithLink).text().trim().match(typeSearchString));
+                                    if($(timeLineWithLink).text().trim().match(typeSearchString)) {
+                                        this.horseLoggingObject.dropType = dropType.type;
+                                    }
+                                });
+                            });
+                        }
                     }
                     console.log("drop type: ",this.horseLoggingObject.dropType);
                 }
