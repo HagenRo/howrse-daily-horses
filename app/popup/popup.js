@@ -114,7 +114,15 @@ function showPopupHorses(popupHorses) {
             for (const [url,values] of Object.entries(amountPopupHorsesTodoPerVersion)) {
                 let domElement = document.getElementsByName(url);
                 if (domElement[0]) {
-                    domElement[0].textContent=values.length;
+                    // Neues <a>-Element erstellen
+                    console.log("val len ",values.length);
+                    const link = document.createElement('a');
+                    link.href = values[0]?.horseURL;
+                    //const text = document.createElement('p'); 
+                    link.textContent=values.length;
+                    //link.innerHTML=text;
+                    console.log(link);
+                    domElement[0].appendChild(link);//+link;
                     sumRemaining += values.length;
                     /*
                     if (lastResetDate < new Date(value)) {

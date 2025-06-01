@@ -14,8 +14,9 @@ class Horse{
     isAsleep; // "nur so mit semi" - eigentlich in chrome local storage schreiben weil wirs zwischen sessions brauchen?
 
     // general types
-    type_equus = {"type": "Equus","searchStrings": [/.+ bringt Dir  (\d+) x  Equus\./,/.+ brings you (\d+) x  Equus./,/.+ brengt je (\d+) x  Equus\./,/.+ ger dig (\d+) x  Equus\./]};
-    type_skills = {"type": "Skillpunkte","searchStrings": [/.+ hat (\d+) Fähigkeitspunkte gewonnen, die verteilt werden können/,/.+ bringt Dir  (\d+) Fähigkeitenpunkte./,/.+ brings you  (\d+) skill points./,/.+ won (\d+) skill points you can spend whichever way you like/,/.+ brengt je chevalcompetences (\d+) vaardigheidspunten./]};
+    type_equus = {"type": "Equus","searchStrings": [/.+ bringt Dir  (\d+) x  Equus\./,/.+ bringt Dir (\d+) x  Equus\./,/.+ brings you (\d+) x  Equus./,/.+ brengt je (\d+) x  Equus\./,/.+ ger dig (\d+) x  Equus\./]};
+    // skills TODO: NL & SE chinese!
+    type_skills = {"type": "Skillpunkte","searchStrings": [/.+ hat (\d+) Fähigkeitspunkte gewonnen, die verteilt werden können/,/.+ bringt Dir  (\d+) Fähigkeitenpunkte./,/.+ brings you  (\d+) skill points./,/.+ won (\d+) skill points you can spend whichever way you like/,/.+ brengt je  (\d+) vaardigheidspunten./,/.+ ger dig  (\d+) färdighetspoäng./]};
     type_passes = {"type": "Pässe","searchStrings": [/Du hast (\d+)  gewonnen\!/,/You won (\d+) \!/,/Je won (\d+) \!/,/Du vann (\d+) \!/]};
 
     dropTypesToSearch = [this.type_equus,this.type_skills,this.type_passes];
@@ -60,10 +61,10 @@ class Horse{
         showInPopup : null
     }
 
-    constructor(url,searchStrings,isReadyOnWakeup,valueIfStringNotFound,horseType,horseName,isExemption,exemptionFunction,amountRequiredClicks,defaultType,defaultAmount,buttonIdentifier,isUnimportant){
+    constructor(url,searchStrings,isReadyOnWakeup,valueIfStringNotFound,horseType,horseName,defaultType,defaultAmount,isExemption,exemptionFunction,amountRequiredClicks,buttonIdentifier,isUnimportant){
         this.url = url;
         this.searchStrings = searchStrings; // which regex expressions we're looking for
-        console.log(searchStrings);
+        //console.log(searchStrings);
         this.isReadyOnWakeup = isReadyOnWakeup; // whether the message will be there when the horse wakes up
         this.valueIfStringNotFound = valueIfStringNotFound;
         this.isExemption = isExemption; // like Onyx with the UFOs or Pluto, with a message that doesn't trigger at one specific point in time
@@ -79,13 +80,13 @@ class Horse{
         this.horseLoggingObject.horseType = horseType; 
         this.horseLoggingObject.horseName = horseName; // von howrse gesetzter internationaler name
         this.horseLoggingObject.dropAmount = this.defaultAmount;
-        this.horseLoggingObject.dropType = this.defaultType;
+        //this.horseLoggingObject.dropType = this.defaultType;
         this.horseLoggingObject.amountClicks = this.amountRequiredClicks;
 
         this.popupHorseObject.horseName = horseName;
         this.popupHorseObject.horseURL = url;
         this.popupHorseObject.showInPopup = !isUnimportant;
-        console.log(url);
+        //console.log(url);
 
         chrome.runtime.sendMessage({ function: "addOrUpdatePopupHorseToDB", popupHorseObject: this.popupHorseObject}, (response) => {
             //console.log(response);
@@ -251,13 +252,16 @@ class Horse{
 
                 // drop amount
                 this.horseLoggingObject.dropAmount = ergebnis[1];
+                if (this.horseLoggingObject.dropAmount == undefined) this.horseLoggingObject.dropAmount = this.valueIfStringNotFound;
                 console.log("dropAmount: ",this.horseLoggingObject.dropAmount);
+
+                //console.log("ergebnis: ",ergebnis);
 
                 // drop type
                 if (ergebnis.length > 2) { // only japanese and egypts currently (?)
-                    if (ergebnis[2].match(/.+ 2\*\* .+/)) {
-                        this.horseLoggingObject.dropType = this.dropMapping[currentLink.substring(0, currentLink.indexOf("2x-")+3)];
+                    if (ergebnis[2].match(/.*2\*\* .+/)) {
                         let currentLink = $(timeLineWithLink).find("[href]").attr("href");
+                        this.horseLoggingObject.dropType = this.dropMapping[currentLink.substring(0, currentLink.indexOf("2x-")+3)];
                         this.horseLoggingObject.dropSubType = currentLink.substring(currentLink.indexOf("2x-")+4);//ergebnis[2]; was am ende gecuttet wird
                         console.log("drop subtype: ",this.horseLoggingObject.dropSubType);
                     } else {
@@ -265,9 +269,10 @@ class Horse{
                         if (this.horseLoggingObject.dropType == undefined) {
                             this.dropTypesToSearch.forEach(dropType => {
                                 dropType.searchStrings.forEach(typeSearchString => {
-                                    //console.log("das vor dem match",$(timeLineWithLink).text().trim());
-                                    //console.log("typeSearchString",typeSearchString);
-                                    //console.log("das ganze ohne length",$(timeLineWithLink).text().trim().match(typeSearchString));
+                                    /*
+                                    console.log("das vor dem match",$(timeLineWithLink).text().trim());
+                                    console.log("typeSearchString",typeSearchString);
+                                    console.log("das ganze ohne length",$(timeLineWithLink).text().trim().match(typeSearchString)); // */
                                     if($(timeLineWithLink).text().trim().match(typeSearchString)) {
                                         this.horseLoggingObject.dropType = dropType.type;
                                     }
@@ -277,8 +282,10 @@ class Horse{
                     }
                     console.log("drop type: ",this.horseLoggingObject.dropType);
                 }
+                if (!this.horseLoggingObject.dropType) this.horseLoggingObject.dropType = this.defaultType;
                 //hier muss manchmal noch der typ ermittelt werden.
                 //mal schauen, wie man das coden kann, dass man keine ausnamefälle betrachten muss.
+                showNotification(this.horseLoggingObject.dropAmount,this.horseLoggingObject.dropType,this.horseLoggingObject.dropSubType);
                 this.#saveHorseDropToDB();
             }
         }
