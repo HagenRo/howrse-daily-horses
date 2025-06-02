@@ -17,7 +17,7 @@ class Horse{
     type_equus = {"type": "Equus","searchStrings": [/.+ bringt Dir  (\d+) x  Equus\./,/.+ bringt Dir (\d+) x  Equus\./,/.+ brings you (\d+) x  Equus./,/.+ brengt je (\d+) x  Equus\./,/.+ ger dig (\d+) x  Equus\./]};
     // skills TODO: NL & SE chinese!
     type_skills = {"type": "Skillpunkte","searchStrings": [/.+ hat (\d+) Fähigkeitspunkte gewonnen, die verteilt werden können/,/.+ bringt Dir  (\d+) Fähigkeitenpunkte./,/.+ brings you  (\d+) skill points./,/.+ won (\d+) skill points you can spend whichever way you like/,/.+ brengt je  (\d+) vaardigheidspunten./,/.+ ger dig  (\d+) färdighetspoäng./]};
-    type_passes = {"type": "Pässe","searchStrings": [/Du hast (\d+)  gewonnen\!/,/You won (\d+) \!/,/Je won (\d+) \!/,/Du vann (\d+) \!/]};
+    type_passes = {"type": "Pässe","searchStrings": [/Du hast (\d+)  gewonnen\!/,/.+ bringt Dir (\d+) \./,/You won (\d+) \!/,/Je won (\d+) \!/,/Du vann (\d+) \!/]};
 
     dropTypesToSearch = [this.type_equus,this.type_skills,this.type_passes];
 
@@ -25,8 +25,8 @@ class Horse{
         // main prize
         "/marche/voir?qName=defi-titans": "Herausforderung der Titanen | Titans Challenge",
         "/marche/voir?qName=don-hestia": "Hestias Gabe",
-        "/marche/noir/object?qName=pack-poseidon": "Poseidon-Paket",
-        "/marche/noir/object?qName=pack-bonus": "Bonuspaket",
+        "/marche/voir?qName=pack-poseidon": "Poseidon-Paket",
+        "/marche/voir?qName=pack-bonus": "Bonuspaket",
 
         "/marche/voir?qName=vieillissement": "Alterungspunkte",
         "/marche/voir?qName=ressource-cuir": "Leder",
@@ -262,7 +262,7 @@ class Horse{
                     if (ergebnis[2].match(/.*2\*\* .+/)) {
                         let currentLink = $(timeLineWithLink).find("[href]").attr("href");
                         this.horseLoggingObject.dropType = this.dropMapping[currentLink.substring(0, currentLink.indexOf("2x-")+3)];
-                        this.horseLoggingObject.dropSubType = currentLink.substring(currentLink.indexOf("2x-")+4);//ergebnis[2]; was am ende gecuttet wird
+                        this.horseLoggingObject.dropSubType = currentLink.substring(currentLink.indexOf("2x-")+3);//ergebnis[2]; was am ende gecuttet wird
                         console.log("drop subtype: ",this.horseLoggingObject.dropSubType);
                     } else {
                         this.horseLoggingObject.dropType = this.dropMapping[$(timeLineWithLink).find("[href]").attr("href")];//ergebnis[2];

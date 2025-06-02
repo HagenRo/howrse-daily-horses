@@ -9,7 +9,7 @@ let equus_de = /.+ bringt Dir  (\d+) x  Equus\./; // hilfsregex
 
 // log types for proper classification (2 results)
 let japanese_de = [/.+ bringt Dir (\d+) x  (.+)\./]///.+ bringt Dir (\d+) x  Englische Satteldecke 2\*\* ([a-zA-Z ]+)\./]; // da gibts nen haufen möglicher gegenstände, aber es ist auch ein Link im Chat. Können wir es daraus auslesen?
-let egypt_de = [/.+ bringt Dir (\d+) x  (.+)./,/.+ bringt Dir  (\d+) (.+)./]; // equus_de,/.+ bringt Dir  (\d+) Fähigkeitenpunkte./ // geht das so?
+let egypt_de = [/.+ bringt Dir (\d+) x  (.+)./,/.+ bringt Dir (\d+) (.+)/,/.+ bringt Dir  (\d+) (.+)/]; // equus_de,/.+ bringt Dir  (\d+) Fähigkeitenpunkte./ // geht das so?
 
 // only the amount
 let skillsChinese_de = [/.+ hat (\d+) (.+) gewonnen, die verteilt werden können/]; //Fähigkeitspunkte
@@ -36,7 +36,7 @@ let jade_en = [/You won (\d+) \!/]; // there's a passes icon in there, but shoul
 // amber drops either droppings or passes - today it was droppings, passes will be tomorrow.
 let amber_en = [/You won 10 !/,/Amber produced \d+ pounds of droppings yesterday/]; // uk and au would say "kg" instead of pounds; but this is another EXEMPTION
 let skinfaxi_au = [/Skínfaxi gave \+(\d+) rays of light/]; // if that's okay
-let fairytale_en = [/.+ has read a story/,/.+ has read a story and discovered (\d+) plot element/]; // TODO ergänzen wenn er 2 handlungselemente findet
+let fairytale_en = [/.+ has read a story and discovered (\d+) plot element/,/.+ has read a story/]; // TODO ergänzen wenn er 2 handlungselemente findet
 let celtic_en = [/.+ used their powers of divination but found no letter from the prediction/,/.+ used their powers of divination and found (\d+) new letter from the prediction/]; // TODO ergänzen wenn er 2 findet
 
 // exemptions from com english?
@@ -116,7 +116,7 @@ let horses ={
     "https://www.howrse.de/elevage/chevaux/cheval?id=103159709": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=103159709",jade_de,true,0,"pierres","ambre","pass"), // de Bernstein
     "https://www.howrse.de/elevage/chevaux/cheval?id=102537929": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=102537929",fairytale_de,false,0,"fairyTales","jack-and-the-beanstalk","Handlungselement"), // de Jack 2
     "https://www.howrse.de/elevage/chevaux/cheval?id=102537911": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=102537911",egypt_de,false), // de ptah
-    "https://www.howrse.de/elevage/chevaux/cheval?id=101962013": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=101962013",maori_de,false,undefined,"maori","rongo"), // de rongo
+    "https://www.howrse.de/elevage/chevaux/cheval?id=101962013": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=101962013",maori_de,false,undefined,"maori","rongo","Mana"), // de rongo
     "https://www.howrse.de/elevage/chevaux/cheval?id=101748916": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=101748916",stellar_de,false,undefined,"stellar","red-giant","star dust"), // de r. riese
     "https://www.howrse.de/elevage/chevaux/cheval?id=101747778": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=101747778",spice_de,false,undefined,"spice","vanilla","Spices"), // de vanille
     "https://www.howrse.de/elevage/chevaux/cheval?id=101198532": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=101198532",groom_de,false,undefined,"metals","metal-osmium","minerals"), // de Osmium

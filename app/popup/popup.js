@@ -116,10 +116,10 @@ function showPopupHorses(popupHorses) {
                 if (domElement[0]) {
                     // Neues <a>-Element erstellen
                     console.log("val len ",values.length);
-                    const link = document.createElement('a');
-                    link.href = values[0]?.horseURL;
+                    const link = document.createElement('a'); // to create an element that links?
+                    link.href = values[0]?.horseURL; // where it links to
                     //const text = document.createElement('p'); 
-                    link.textContent=values.length;
+                    link.textContent=values.length; // what's shown for the link
                     //link.innerHTML=text;
                     console.log(link);
                     domElement[0].appendChild(link);//+link;
