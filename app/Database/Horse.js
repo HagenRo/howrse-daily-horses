@@ -252,7 +252,10 @@ class Horse{
 
                 // drop amount
                 this.horseLoggingObject.dropAmount = ergebnis[1];
-                if (this.horseLoggingObject.dropAmount == undefined) this.horseLoggingObject.dropAmount = this.valueIfStringNotFound;
+                if (this.horseLoggingObject.dropAmount == undefined) {
+                    console.log("value not found. setting amount to default");
+                    this.horseLoggingObject.dropAmount = this.valueIfStringNotFound;
+                }
                 console.log("dropAmount: ",this.horseLoggingObject.dropAmount);
 
                 //console.log("ergebnis: ",ergebnis);

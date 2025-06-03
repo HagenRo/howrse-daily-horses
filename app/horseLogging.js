@@ -34,7 +34,7 @@ let spice_uk_au = [/You have obtained (\d+) spices for your metre./];
 let groom_en = [/You found (\d+) .+ by grooming .+\./]; // minerals or scales
 let jade_en = [/You won (\d+) \!/]; // there's a passes icon in there, but should just be 1 space in text
 // amber drops either droppings or passes - today it was droppings, passes will be tomorrow.
-let amber_en = [/You won 10 !/,/Amber produced \d+ pounds of droppings yesterday/]; // uk and au would say "kg" instead of pounds; but this is another EXEMPTION
+let amber_en = [/You won (\d+) !/,/Amber produced \d+ pounds of droppings yesterday/]; // uk and au would say "kg" instead of pounds; but this is another EXEMPTION
 let skinfaxi_au = [/Skínfaxi gave \+(\d+) rays of light/]; // if that's okay
 let fairytale_en = [/.+ has read a story and discovered (\d+) plot element/,/.+ has read a story/]; // TODO ergänzen wenn er 2 handlungselemente findet
 let celtic_en = [/.+ used their powers of divination but found no letter from the prediction/,/.+ used their powers of divination and found (\d+) new letter from the prediction/]; // TODO ergänzen wenn er 2 findet
@@ -52,7 +52,7 @@ let spice_nl = [/Je hebt (\d+) specerijen voor je meter verkregen./];
 let groom_nl = [/Je vond (\d+) stukken erts door .+ te verzorgen./]; // only metal horses if it stays like this
 let jade_nl = [/Je won (\d+) \!/];
 let maori_nl = [/.+ vond \d+ x babyschildpad. Zijn of haar Tiki ontving (\d+) x mana./];
-let fairytale_nl = [/. heeft een verhaal gelezen/,/. heeft een verhaal gelezen en (\d+) plotelement ontdekt/]; // es fehlt noch 2
+let fairytale_nl = [/. heeft een verhaal gelezen en (\d+) plotelement ontdekt/,/. heeft een verhaal gelezen/]; // es fehlt noch 2
 
 
 // se
@@ -208,9 +208,10 @@ let horses ={
     "https://au.howrse.com/elevage/chevaux/cheval?id=3900809": new Horse("https://au.howrse.com/elevage/chevaux/cheval?id=3900809",japanese_en,false), // au maneki neko
     "https://au.howrse.com/elevage/chevaux/cheval?id=3854470": new Horse("https://au.howrse.com/elevage/chevaux/cheval?id=3854470",stellar_en,false,undefined,"stellar","yellow-dwarf","star dust"), // au yellow dwarf
     "https://au.howrse.com/elevage/chevaux/cheval?id=3838078": new Horse("https://au.howrse.com/elevage/chevaux/cheval?id=3838078",fairytale_en,false,0,"fairyTales","little-poucet","Handlungselement"), // au tom thumb
-    "https://au.howrse.com/elevage/chevaux/cheval?id=3829117": new Horse("https://au.howrse.com/elevage/chevaux/cheval?id=3829117",celtic_en,false,undefined,"celtic","cernunnos","ogham letter"), // au cernunnos
+    "https://au.howrse.com/elevage/chevaux/cheval?id=3829117": new Horse("https://au.howrse.com/elevage/chevaux/cheval?id=3829117",celtic_en,false,0,"celtic","cernunnos","ogham letter"), // au cernunnos
     "https://au.howrse.com/elevage/chevaux/cheval?id=3818348": new Horse("https://au.howrse.com/elevage/chevaux/cheval?id=3818348",japanese_en,false), // au kigurumi
     "https://au.howrse.com/elevage/chevaux/cheval?id=3801726": new Horse("https://au.howrse.com/elevage/chevaux/cheval?id=3801726",chinese_en,true), // au tianma
+    "https://au.howrse.com/elevage/chevaux/cheval?id=3704043": new Horse("https://au.howrse.com/elevage/chevaux/cheval?id=3704043",[]), // au Mixed Chocolate für den GP 
 
 
 
