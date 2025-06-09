@@ -149,7 +149,7 @@ class Horse{
             this.horseLoggingObject.timeStamp = date.getTime();
             this.horseLoggingObject.timeStampHumanReadable = date.toISOString()
 
-            this.horseLoggingObject.dropAmount = ergebnis[1];
+            //this.horseLoggingObject.dropAmount = ergebnis[1];
             //hier muss manchmal noch der typ ermittelt werden.
             //mal schauen, wie man das coden kann, dass man keine ausnamefälle betrachten muss.
             this.#saveHorseDropToDB();
@@ -355,12 +355,93 @@ class Horse{
 
     }
 
+    #testOnDrop(){
+        let historyItems = $('#history-body-content').find('.grid-row.dashed');
+        console.log("[test] testOnDrop is here");
+        let horseTimeLines = [];
+        let ergebnis = [];
+        //console.log("[test] added nodes",mutationRecords[0].addedNodes);
+        //let historyoderso = mutationRecords[0].addedNodes[0].firstChild;
+        //console.log("[test] history die durchsucht wird",historyoderso);
+        $('#history-body-content').find("li").each(function() {
+            // Füge den Textinhalt jedes gefundenen Elements dem Array hinzu
+            console.log(this);
+            horseTimeLines.push({string: $(this).text().trim(), domElement: this});
+        });
+        console.log("[test] horseTimeLines",horseTimeLines);
+        let timeLineWithLink;
+        horseTimeLines.forEach(timeLine => {
+            this.searchStrings.forEach(searchString => {
+                if (ergebnis.length > 0) return;
+                ergebnis = timeLine.string.match(searchString)?timeLine.string.match(searchString):ergebnis; 
+                timeLineWithLink = timeLine.domElement;
+                /* 
+                console.log("searchString: ",searchString);
+                console.log("compared with: ",timeLine);
+                console.log("ergebnis: ",ergebnis); // */
+            });
+        });
+        console.log("[test] ",ergebnis);
+        if (ergebnis.length > 0) {
+            // drop time stamp
+            let date = new Date();
+            this.horseLoggingObject.timeStamp = date.getTime();
+            this.horseLoggingObject.timeStampHumanReadable = date.toISOString()
+
+            console.log("[test] link! ",$(timeLineWithLink).find("[href]").attr("href")); 
+
+            // drop amount
+            this.horseLoggingObject.dropAmount = ergebnis[1];
+            if (this.horseLoggingObject.dropAmount == undefined) {
+                console.log("[test] value not found. setting amount to default");
+                this.horseLoggingObject.dropAmount = this.valueIfStringNotFound;
+            }
+            console.log("[test] dropAmount: ",this.horseLoggingObject.dropAmount);
+
+            //console.log("ergebnis: ",ergebnis);
+
+            // drop type
+            if (ergebnis.length > 2) { // only japanese and egypts currently (?)
+                if (ergebnis[2].match(/.*2\*\* .+/)) {
+                    let currentLink = $(timeLineWithLink).find("[href]").attr("href");
+                    this.horseLoggingObject.dropType = this.dropMapping[currentLink.substring(0, currentLink.indexOf("2x-")+3)];
+                    this.horseLoggingObject.dropSubType = currentLink.substring(currentLink.indexOf("2x-")+3);//ergebnis[2]; was am ende gecuttet wird
+                    console.log("[test] drop subtype: ",this.horseLoggingObject.dropSubType);
+                } else {
+                    this.horseLoggingObject.dropType = this.dropMapping[$(timeLineWithLink).find("[href]").attr("href")];//ergebnis[2];
+                    if (this.horseLoggingObject.dropType == undefined) {
+                        this.dropTypesToSearch.forEach(dropType => {
+                            dropType.searchStrings.forEach(typeSearchString => {
+                                /*
+                                console.log("das vor dem match",$(timeLineWithLink).text().trim());
+                                console.log("typeSearchString",typeSearchString);
+                                console.log("das ganze ohne length",$(timeLineWithLink).text().trim().match(typeSearchString)); // */
+                                if($(timeLineWithLink).text().trim().match(typeSearchString)) {
+                                    this.horseLoggingObject.dropType = dropType.type;
+                                }
+                            });
+                        });
+                    }
+                }
+                console.log("[test] drop type: ",this.horseLoggingObject.dropType);
+            }
+            if (!this.horseLoggingObject.dropType) this.horseLoggingObject.dropType = this.defaultType;
+            //hier muss manchmal noch der typ ermittelt werden.
+            //mal schauen, wie man das coden kann, dass man keine ausnamefälle betrachten muss.
+            console.log("[test] horseLoggingObject",this.horseLoggingObject);
+            setTimeout(() => {showNotification(this.horseLoggingObject.dropAmount,this.horseLoggingObject.dropType,this.horseLoggingObject.dropSubType,true)},1000);
+            //this.#saveHorseDropToDB();
+        }
+    
+    }
+
     //wird vom script aus aufgerufen
     check(){
+        this.#testOnDrop(); // testing
         this.#onSleep();
         this.#onDrop();
         if (this.isReadyOnWakeup) {
-            this.#onWakeup();
+            //this.#onWakeup();
         }
         else{
             this.#onClick();
