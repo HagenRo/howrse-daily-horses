@@ -1,8 +1,6 @@
 //einbinden des Skripts mit der Datenbankverwaltung
 importScripts("Database/Datamanagement.js");
 //Erstellung der Schnittstelle zur Datenbankverwaltung
-const dataAccessForDailyHorses = new DataAccessForDailyHorses();
-const dataAccessForPopupHorses = new DataAccessForPopupHorses();
 
 //nimmt Messages entgegen, die vom horseLoggingscript verschickt werden
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -26,11 +24,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 sendResponse({msg: e});
             });
             break;
-        case "saveHorseDropToDB":
+        case "addDropDataToDB":
             // DataAccessForDailyHorses.saveHorseToDB(message.horseLoggingObject)
-            DataAccessForDailyHorses.addDropDataToDB(message.horseLoggingObject);
-            sendResponse({msg: "[background.js saveHorseToDB] not doing anything yet"});
+            console.log("[background] addDropDataToDB erreicht");
+            dataAccessForDailyHorses.addDropDataToDB(message.horseLoggingObject)
+            .then(({msg, result})=>{
+                sendResponse({msg,result});
+            })
+            //sendResponse({msg: "[background.js saveHorseToDB] not doing anything yet - but called, yay"});
             break;
+        case "updateHorseDropAge":
+            dataAccessForPopupHorses.updateHorseDropAge(message.horseURL,message.dropHorseAge)
+            .then(({msg, result})=>{
+                sendResponse({msg,result});
+            })
         case "updateSleepingToDB":
             console.log("updateSleepToDB, message: ",message);
             dataAccessForPopupHorses.updateSleepTimestamp(message.popupHorseObject.horseURL,message.popupHorseObject.sleepTimestamp)
@@ -57,9 +64,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             });
             break;
         case "getPopupHorsesFromDB":
+            console.log("[background, getPopupHorsesFromDB]");
             dataAccessForPopupHorses.getAllPopupHorses()
             .then(({msg, result}) =>{
+                console.log("[background, getPopupHorsesFromDB] sending response now");
                 sendResponse({msg: result});
+            })
+            .catch((e)=>{
+                sendResponse({msg: e});
+            })
+            break;
+        case "getPopupHorse":
+            dataAccessForPopupHorses.getPopupHorse(message.horseURL)
+            .then(({msg, result}) =>{
+                sendResponse({msg: result,result: result});
             })
             .catch((e)=>{
                 sendResponse({msg: e});

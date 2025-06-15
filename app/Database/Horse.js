@@ -50,6 +50,7 @@ class Horse{
         dropSubType : null, // japanese: coloured tack
         timeStamp : null,
         timeStampHumanReadable : null,
+        dropHorseAge: null,
         amountClicks : null, // amount of clicks used to finish horse // together with drop amount for spice horses
     }
 
@@ -58,6 +59,7 @@ class Horse{
         horseURL : null,
         sleepTimestamp : null,
         dropTimestamp : null,
+        dropHorseAge: null,
         showInPopup : null
     }
 
@@ -86,6 +88,8 @@ class Horse{
         this.popupHorseObject.horseName = horseName;
         this.popupHorseObject.horseURL = url;
         this.popupHorseObject.showInPopup = !isUnimportant;
+        // this.popupHorseObject.dropHorseAge = [0,0]; // initial
+        // this.horseLoggingObject.dropHorseAge = [0,0];
         //console.log(url);
 
         chrome.runtime.sendMessage({ function: "addOrUpdatePopupHorseToDB", popupHorseObject: this.popupHorseObject}, (response) => {
@@ -93,17 +97,48 @@ class Horse{
         });
     }
 
+    setHorseAge(){
+        this.horseLoggingObject.dropHorseAge = this.#getHorseAge();
+        this.popupHorseObject.dropHorseAge = this.horseLoggingObject.dropHorseAge;
+        //console.log("setter präsentiert stolz: das drop horse age: ",this.popupHorseObject.dropHorseAge);
+    }
+
+    #getHorseAge(){
+        let searchString = /[^\d]+(\d+)[^\d]+(\d*).*/;
+        let searchElement = $("#characteristics-body-content").find("td")[1].textContent;
+        let result = searchElement.match(searchString);
+        //console.log("horse age result",result);
+        let years = result[1];
+        let months = 0; // default
+        if (result[2]) months = result[2];
+        return [years, months];
+    }
+
     #saveHorseDropToDB(){
         //console.log(this.horseLoggingObject);
-        /*
-        chrome.runtime.sendMessage({ function: "saveHorseDropToDB", horseLoggingObject: this.horseLoggingObject}, (response) => { //param1 und param2 und beliebig viele weitere können frei benannt werden, müssen dann entsprechend in backroundscript benannt sein
-            //hier sind wir in der Funktion, die vom empfänger der Nachricht aufgerufen wird.
+        //*
+        chrome.runtime.sendMessage({ function: "getPopupHorse", horseURL: this.horseLoggingObject.horseURL}, (response) => {
+            console.log("response vor check ob heute schon was war",response);
+            console.log("this dropAge:",this.horseLoggingObject.dropHorseAge);
+            if (response.result.dropHorseAge.toString() != this.horseLoggingObject.dropHorseAge.toString()) {
+                chrome.runtime.sendMessage({ function: "addDropDataToDB", horseLoggingObject: this.horseLoggingObject}, (response) => { //param1 und param2 und beliebig viele weitere können frei benannt werden, müssen dann entsprechend in backroundscript benannt sein
+                    //hier sind wir in der Funktion, die vom empfänger der Nachricht aufgerufen wird.
 
-            //wenn wir einen eintrag in die Datenbank schreiben, dann wollen wir einen timeStamp setzen, anhand dessen wir ermitteln können, ob dieses pferd schon abgehandelt ist oder nicht.
-            window.localStorage.setItem(this.url, this.horseLoggingObject.timeStamp);
+                    //wenn wir einen eintrag in die Datenbank schreiben, dann wollen wir einen timeStamp setzen, anhand dessen wir ermitteln können, ob dieses pferd schon abgehandelt ist oder nicht.
+                    window.localStorage.setItem(this.url, this.horseLoggingObject.timeStamp);
+                    console.log("[#saveHorseDropToDB]", response);
+                    if (response.message == "success") {
+                        showStatusNotification("\u1F4BE" + response.result.dropAmount + " " + response.result.dropType + " to DB",true);
+                    }
 
-            console.log(response);
-        }); // */
+                    console.log("response falls noch nix war",response);
+                }); 
+            } else {
+                showStatusNotification("\u1F4BE" + response.result.dropAmount + " " + response.result.dropType + " NOT to DB",true);
+            }
+        });
+        
+        // */
     }
 
     #updateSleepingToDB(){
@@ -429,8 +464,8 @@ class Horse{
             //hier muss manchmal noch der typ ermittelt werden.
             //mal schauen, wie man das coden kann, dass man keine ausnamefälle betrachten muss.
             console.log("[test] horseLoggingObject",this.horseLoggingObject);
-            setTimeout(() => {showNotification(this.horseLoggingObject.dropAmount,this.horseLoggingObject.dropType,this.horseLoggingObject.dropSubType,true)},1000);
-            //this.#saveHorseDropToDB();
+            //setTimeout(() => {showNotification(this.horseLoggingObject.dropAmount,this.horseLoggingObject.dropType,this.horseLoggingObject.dropSubType,true)},1000);
+            this.#saveHorseDropToDB();
         }
     
     }

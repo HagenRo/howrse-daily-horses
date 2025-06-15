@@ -71,7 +71,7 @@ let spice_se = [/Du har fått tag på (\d+) kryddor till din mätare./];
 let jade_se = [/Du vann (\d+) \!/,/Jade har precis vaknat/];
 let opal_se = [/Du vann (\d+) \!/,/Opal åt en morot .+/];
 let maori_se = [/.+ hittade \d+ x sköldpaddsunge. Deras tiki fick (\d+) x mana./];
-let fairytale_se = [/.+ har läst en saga/]; 
+let fairytale_se = [/.+ har läst en saga och upptäckt (\d+) berättelseelement/,/.+ har läst en saga/]; // /.+ ger dig (\d+) x (.+)/
 
 
 // drop types
@@ -231,6 +231,7 @@ let horses ={
 let currentHorse = $('.horse-name a[href]')[0].href;
 
 if (horses[currentHorse]) {
+    horses[currentHorse].setHorseAge();
     horses[currentHorse].check();
 }
 
@@ -271,18 +272,34 @@ document.body.appendChild(notificationDiv);
 
 // 3. Funktion, um die Notification zu zeigen
 function showNotification(notifDropAmount, notifDropType, notifDropSubType, notifTesting) {
-  const notif = document.getElementById('my-extension-notification');
-  notif.classList.remove('hide');
-  notif.classList.add('show');
-  notif.innerHTML = ""; // horse name?
-  if (notifTesting) notif.innerHTML = notif.innerHTML + "[test] ";
-  notif.innerHTML = notif.innerHTML + notifDropAmount + " x " + notifDropType;
-  if (notifDropSubType) notif.innerHTML = notif.innerHTML + " ("+notifDropSubType+")";
+    const notif = document.getElementById('my-extension-notification');
+    notif.classList.remove('hide');
+    notif.classList.add('show');
+    notif.innerHTML = ""; // horse name?
 
-  setTimeout(() => {
-    notif.classList.remove('show');
-    notif.classList.add('hide');
-  }, 3000);
+    if (notifTesting) notif.innerHTML = notif.innerHTML + "[test] ";
+    notif.innerHTML = notif.innerHTML + notifDropAmount + " x " + notifDropType;
+    if (notifDropSubType) notif.innerHTML = notif.innerHTML + " ("+notifDropSubType+")";
+
+    setTimeout(() => {
+        notif.classList.remove('show');
+        notif.classList.add('hide');
+    }, 3000);
+}
+
+function showStatusNotification(whatthisisabout,whetheritworked) {
+    const notif = document.getElementById('my-extension-notification');
+    notif.classList.remove('hide');
+    notif.classList.add('show');
+    notif.innerHTML = ""; // horse name?
+
+    notif.innerHTML = notif.innerHTML + whatthisisabout;
+    if (whetheritworked) notif.innerHTML = notif.innerHTML + " erfolgreich"; else notif.innerHTML = notif.innerHTML + " fehlgeschlagen";
+
+    setTimeout(() => {
+        notif.classList.remove('show');
+        notif.classList.add('hide');
+    }, 3000);
 }
 
 // 4. Beispiel: Notification beim Laden anzeigen

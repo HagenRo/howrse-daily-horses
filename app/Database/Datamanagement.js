@@ -99,7 +99,7 @@ class DatabaseConnection {
             const transaction = this.db.transaction(this.storeName, 'readonly');
             const store = transaction.objectStore(this.storeName);
             const request = store.get(id);
-            console.log("getItem test hilfe",request);
+            // console.log("getItem test hilfe",request);
             request.onsuccess = (event) => {
                 resolve({ msg: 'success', result: event.target.result });
             };
@@ -172,6 +172,7 @@ class DatabaseConnection {
      * @returns {Promise<Object>} - A promise that resolves with an array of items or an error message.
      */
     async getAllItems() {
+        console.log("[Datamanagement, getAllItems] called");
         return new Promise((resolve, reject) => {
 
             const transaction = this.db.transaction(this.storeName, 'readonly');
@@ -355,159 +356,22 @@ class DataAccessForDailyHorses {
 
     //TODO: hier die methoden definieren, die mit der Datenbank interagieren
     /**
-     * Adds a new run to the database.
-     * @param {Object} horseData - The Olympic run object to be added.
-     * @returns {Promise} A Promise that resolves when the run is added.
+     * Adds a drop data to the database.
+     * @param {Object} horseLoggingObject - The Horse object to be added.
+     * @returns {Promise} A Promise that resolves when the horse is added.
      */
-    addDropDataToDB(horseData) {
-
+    addDropDataToDB(horseLoggingObject) {
+        //console.log("[addDropDataToDB in Datamanagement] horseLoggingObject",horseLoggingObject);
         return this.promiseQueue.enqueue(() => {
-            return this.databaseConnection.insertOrErrorItem(horseData);
+            return this.databaseConnection.insertOrErrorItem(horseLoggingObject)
+            /*.then(({msg,result}) => {
+                // console.log("zeile 367"); // erreicht
+                return dataAccessForPopupHorses.updateHorseDropAge(horseLoggingObject.horseURL,horseLoggingObject.dropHorseAge);
+                //return new Promise({msg,result});
+            }) */
         })
     }
-    /**
-     * Updates an existing run in the database.
-     * @param {Object} olympRun - The Olympic run object to be updated.
-     * @returns {Promise} A Promise that resolves when the run is updated.
-     */
-    updateRunToDB(olympRun) {
-
-        return this.promiseQueue.enqueue(() => {
-            return this.databaseConnection.insertOrOverrideItem(olympRun);
-        })
-    }
-    /**
-     * Adds starting horses to an existing run in the database.
-     * @param {Array} startHorsesFull - The array of starting horses to be added.
-     * @param {string} dateRunStarted - The timestamp of the run to update.
-     * @returns {Promise} A Promise that resolves when the horses are added.
-     */
-    addStartHorsesToRun(startHorsesFull, dateRunStarted) {
-
-        return this.promiseQueue.enqueue(() => {
-            return this.databaseConnection.getItem(dateRunStarted)
-                .then(({ msg, result }) => {
-                    result.startHorses = startHorsesFull;
-                    return this.databaseConnection.insertOrOverrideItem(result);
-                })
-        });
-
-    }
-    /**
-     * Adds a fight to an existing run in the database.
-     * @param {Object} fight - The fight object to be added.
-     * @param {string} dateRunStarted - The timestamp of the run to update.
-     * @returns {Promise} A Promise that resolves when the fight is added or rejects if already exists.
-     */
-    addFightToRun(fight, dateRunStarted) {
-
-        return this.promiseQueue.enqueue(() => {
-            return this.databaseConnection.getItem(dateRunStarted)
-                .then(({ msg, result }) => {
-                    if (result.arrayOfFights.length == 0 || !(result.arrayOfFights[result.arrayOfFights.length - 1].room === fight.room && result.arrayOfFights[result.arrayOfFights.length - 1].threshold === fight.threshold)) {
-                        result.arrayOfFights.push(fight);
-                        return this.databaseConnection.insertOrOverrideItem(result);
-                    }
-                    else {
-                        return Promise.reject("figth already in database.");
-                    }
-
-                })
-        });
-
-    }
-    /**
-     * Adds rewards to an existing run in the database.
-     * @param {Object} rewards - The rewards object to be added.
-     * @param {string} dateRunStarted - The timestamp of the run to update.
-     * @returns {Promise} A Promise that resolves when the rewards are added or rejects if already exists.
-     */
-    addRewardsToRun(rewards, dateRunStarted) {
-
-        return this.promiseQueue.enqueue(() => {
-            return this.databaseConnection.getItem(dateRunStarted)
-                .then(({ msg, result }) => {
-                    if (result.arrayOfRewards.length == 0 || !(result.arrayOfRewards[result.arrayOfRewards.length - 1].room === rewards.room && result.arrayOfRewards[result.arrayOfRewards.length - 1].threshold === rewards.threshold)) {
-                        result.arrayOfRewards.push(rewards);
-                        return this.databaseConnection.insertOrOverrideItem(result);
-                    }
-                    else {
-                        return Promise.reject("rewards already in database.");
-                    }
-                })
-        });
-    }
-    /**
-     * Adds a horse ID to the last reward in the run's rewards array.
-     * @param {string} id - The horse ID to be added.
-     * @param {string} dateRunStarted - The timestamp of the run to update.
-     * @returns {Promise} A Promise that resolves when the horse ID is added.
-     */
-    addHorseIdToReward(id, dateRunStarted) {
-
-        return this.promiseQueue.enqueue(() => {
-            return this.databaseConnection.getItem(dateRunStarted)
-                .then(({ msg, result }) => {
-                    let lastRewards = result.arrayOfRewards[result.arrayOfRewards.length - 1].arrayOfRewards;
-                    for (let i = 0; i < lastRewards.length; i++) {
-                        const element = lastRewards[i];
-                        if (element.arrayOfTargetIds) {
-                            element.id = id;
-                            break;
-                        }
-                    }
-                    return this.databaseConnection.insertOrOverrideItem(result);
-                })
-        });
-    }
-    /**
-     * Adds the boss fight and rewards to an existing run.
-     * @param {Object} rewards - The rewards object to be added for the boss.
-     * @param {Object} fight - The fight object to be added for the boss.
-     * @param {string} dateRunStarted - The timestamp of the run to update.
-     * @returns {Promise} A Promise that resolves when the boss fight and rewards are added or rejects if already exists.
-     */
-    addBossToRun(rewards, fight, dateRunStarted) {
-
-        return this.promiseQueue.enqueue(() => {
-            return this.databaseConnection.getItem(dateRunStarted)
-                .then(({ msg, result }) => {
-                    if (!(result.arrayOfRewards[result.arrayOfRewards.length - 1].room === rewards.room && result.arrayOfRewards[result.arrayOfRewards.length - 1].threshold === rewards.threshold)) {
-                        result.arrayOfRewards.push(rewards);
-                        result.arrayOfFights.push(fight);
-
-                        return this.databaseConnection.insertOrOverrideItem(result);
-                    }
-                    else {
-                        return Promise.reject("boss already in database.");
-                    }
-                })
-        });
-
-    }
-    /**
-     * Marks a run as lost for the last boss rewards.
-     * @param {string} dateRunStarted - The timestamp of the run to update.
-     * @returns {Promise} A Promise that resolves when the lost run is marked.
-     */
-    addLostRunToBossRewards(dateRunStarted) {
-
-        return this.promiseQueue.enqueue(() => {
-            return this.databaseConnection.getItem(dateRunStarted)
-                .then(({ msg, result }) => {
-                    let lastRewards = result.arrayOfRewards[result.arrayOfRewards.length - 1];
-                    if (lastRewards.room == 'boss') {
-                        lastRewards.lostRun = true;
-                    }
-                    return this.databaseConnection.insertOrOverrideItem(result);
-                })
-        });
-    }
-    /**
-     * Fetches all runs from the database.
-     * @returns {Promise} A Promise that resolves with an array of all runs.
-     */
-    getAllRuns() {
+    getAllDropData() {
         return this.promiseQueue.enqueue(() => {
             return this.databaseConnection.getAllItems();
         });
@@ -519,28 +383,29 @@ class DataAccessForDailyHorses {
      * @param {Int} dateTimeMax - The max timestamp of the runs to fetch.
      * @returns {Promise} A Promise that resolves with an array of all runs.
      */
+    /*
     getRunsInRange(dateTimeMin, dateTimeMax) {//TODO: damit das funktionieren kann datenbank key umbauen
         return this.promiseQueue.enqueue(() => {
             return this.databaseConnection.getItemsInRange(dateTimeMin, dateTimeMax);
         });
 
-    }
+    } // */
     /**
      * Fetches a specific run from the database based on the timestamp.
      * @param {string} dateRunStarted - The timestamp of the run to fetch.
      * @returns {Promise} A Promise that resolves with the requested run data.
      */
-    getRunFromTimestamp(dateRunStarted) {
-        return this.promiseQueue.enqueue(() => {
-            return this.databaseConnection.getItem(dateRunStarted);
-        });
+    getDropDataForURL(dateRunStarted) { // TODO
+        // return this.promiseQueue.enqueue(() => {
+        //    return this.databaseConnection.getItem(dateRunStarted);
+        //});
     }
     /**
      * Deletes a specific run from the database based on the timestamp.
      * @param {string} dateRunStarted - The timestamp of the run to delete.
      * @returns {Promise} A Promise that resolves when the run is deleted.
      */
-    deleteRunFromTimestamp(dateRunStarted) {
+    deleteDropDataFromTimestampAndURL(timeStamp,url) {
         return this.promiseQueue.enqueue(() => {
             return this.databaseConnection.deleteItem(dateRunStarted);
         });
@@ -609,8 +474,8 @@ class DataAccessForPopupHorses {
     }
 
     addOrUpdatePopupHorseToDB(popupHorse) {
-        console.log("Datamanagement: addOrUpdatePopupHorseToDB");
-        console.log(popupHorse);
+        // console.log("Datamanagement: addOrUpdatePopupHorseToDB");
+        // console.log(popupHorse);
         /*return this.promiseQueue.enqueue(() => {
             return this.databaseConnection.insertOrErrorItem(popupHorse);
                 //.catch(error=>this.updateShowInPopup(popupHorse.horseURL,popupHorse.showInPopup)); // und im errorfall das show in popup
@@ -622,7 +487,7 @@ class DataAccessForPopupHorses {
                         return this.databaseConnection.insertOrErrorItem(popupHorse);
                     } else {
                         result.showInPopup = popupHorse.showInPopup;
-                        console.log("[Datamanagement addOrUpdatePopupHorseToDB]",result);
+                        // console.log("[Datamanagement addOrUpdatePopupHorseToDB]",result);
                         return this.databaseConnection.insertOrOverrideItem(result);
                     }
                 })
@@ -656,6 +521,18 @@ class DataAccessForPopupHorses {
         });
     }
 
+    //*
+    updateHorseDropAge(horseURL, dropHorseAge) {
+        //console.log("[Datamangement, updateHorseDropAge] anwesend", horseURL, dropHorseAge);
+        return this.promiseQueue.enqueue(() => {
+            return this.databaseConnection.getItem(horseURL)
+                .then(({ msg, result }) => {
+                    result.dropHorseAge = dropHorseAge;
+                    return this.databaseConnection.insertOrOverrideItem(result);
+                })
+        });
+    } // */
+
     updateShowInPopup(horseURL, showInPopup) {
 
         return this.promiseQueue.enqueue(() => {
@@ -673,10 +550,25 @@ class DataAccessForPopupHorses {
      * @returns {Promise} A Promise that resolves with an array of all PopupHorses.
      */
     getAllPopupHorses() {
+        console.log("[Datamanagement, getAllPopupHorses] called");
         return this.promiseQueue.enqueue(() => {
             return this.databaseConnection.getAllItems();
         });
 
     }
     
+    /**
+     * Fetches one PopupHorse from the database.
+     * @returns {Promise} A Promise that resolves with the required PopupHorse.
+     */
+    getPopupHorse(horseURL) {
+        return this.promiseQueue.enqueue(() => {
+            return this.databaseConnection.getItem(horseURL);
+        });
+
+    }
+    
 }
+
+const dataAccessForDailyHorses = new DataAccessForDailyHorses();
+const dataAccessForPopupHorses = new DataAccessForPopupHorses();
