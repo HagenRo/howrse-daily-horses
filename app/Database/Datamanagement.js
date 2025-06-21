@@ -366,9 +366,9 @@ class DataAccessForDailyHorses {
             return this.databaseConnection.insertOrErrorItem(horseLoggingObject)
             /*.then(({msg,result}) => {
                 // console.log("zeile 367"); // erreicht
-                return dataAccessForPopupHorses.updateHorseDropAge(horseLoggingObject.horseURL,horseLoggingObject.dropHorseAge);
+                return dataAccessForPopupHorses.updateDropHorseAge(horseLoggingObject.horseURL,horseLoggingObject.dropHorseAge);
                 //return new Promise({msg,result});
-            }) */
+            }) // */
         })
     }
     getAllDropData() {
@@ -522,8 +522,8 @@ class DataAccessForPopupHorses {
     }
 
     //*
-    updateHorseDropAge(horseURL, dropHorseAge) {
-        //console.log("[Datamangement, updateHorseDropAge] anwesend", horseURL, dropHorseAge);
+    updateDropHorseAge(horseURL, dropHorseAge) {
+        //console.log("[Datamangement, updateDropHorseAge] anwesend", horseURL, dropHorseAge);
         return this.promiseQueue.enqueue(() => {
             return this.databaseConnection.getItem(horseURL)
                 .then(({ msg, result }) => {

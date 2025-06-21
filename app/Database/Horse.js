@@ -101,6 +101,7 @@ class Horse{
         this.horseLoggingObject.dropHorseAge = this.#getHorseAge();
         this.popupHorseObject.dropHorseAge = this.horseLoggingObject.dropHorseAge;
         //console.log("setter präsentiert stolz: das drop horse age: ",this.popupHorseObject.dropHorseAge);
+        // TODO: Muss noch in DB aktualisiert werden; vorzugsweise ohne die Promise Queue zu verwirren
     }
 
     #getHorseAge(){
@@ -128,7 +129,7 @@ class Horse{
                     window.localStorage.setItem(this.url, this.horseLoggingObject.timeStamp);
                     console.log("[#saveHorseDropToDB]", response);
                     if (response.message == "success") {
-                        showStatusNotification("\u1F4BE" + response.result.dropAmount + " " + response.result.dropType + " to DB",true);
+                        setTimeout(() => {showStatusNotification("\u1F4BE" + response.result.dropAmount + " " + response.result.dropType + " to DB",true)},1000);
                     }
 
                     console.log("response falls noch nix war",response);
@@ -141,8 +142,8 @@ class Horse{
         // */
     }
 
-    #updateSleepingToDB(){
-        chrome.runtime.sendMessage({ function: "updateSleepingToDB", popupHorseObject: this.popupHorseObject}, (response) => { //param1 und param2 und beliebig viele weitere können frei benannt werden, müssen dann entsprechend in backroundscript benannt sein
+    #updateSleepTimestamp(){
+        chrome.runtime.sendMessage({ function: "updateSleepTimestamp", popupHorseObject: this.popupHorseObject}, (response) => { //param1 und param2 und beliebig viele weitere können frei benannt werden, müssen dann entsprechend in backroundscript benannt sein
             //hier sind wir in der Funktion, die vom empfänger der Nachricht aufgerufen wird.
 
             console.log(response);
@@ -360,7 +361,7 @@ class Horse{
                                     // variable setzen: schläft
                                     window.localStorage.setItem("asleep"+this.url,now.getTime());
                                     this.popupHorseObject.sleepTimestamp = now.getTime();
-                                    this.#updateSleepingToDB();
+                                    this.#updateSleepTimestamp();
                                 } else {
                                     // gefahr! O.O
                                     // aber egal muss man nix tun
@@ -372,7 +373,7 @@ class Horse{
                                 window.localStorage.setItem("asleep"+this.url,new Date().getTime());
                                 this.popupHorseObject.sleepTimestamp = now.getTime();
                                 console.log(now);
-                                this.#updateSleepingToDB();
+                                this.#updateSleepTimestamp();
                             }
                         }
                         // Daten müssen auch noch in Datenbank gespeichert werden.
@@ -464,7 +465,7 @@ class Horse{
             //hier muss manchmal noch der typ ermittelt werden.
             //mal schauen, wie man das coden kann, dass man keine ausnamefälle betrachten muss.
             console.log("[test] horseLoggingObject",this.horseLoggingObject);
-            //setTimeout(() => {showNotification(this.horseLoggingObject.dropAmount,this.horseLoggingObject.dropType,this.horseLoggingObject.dropSubType,true)},1000);
+            setTimeout(() => {showNotification(this.horseLoggingObject.dropAmount,this.horseLoggingObject.dropType,this.horseLoggingObject.dropSubType,true)},1000);
             this.#saveHorseDropToDB();
         }
     

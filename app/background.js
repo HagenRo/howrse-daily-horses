@@ -30,15 +30,22 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             dataAccessForDailyHorses.addDropDataToDB(message.horseLoggingObject)
             .then(({msg, result})=>{
                 sendResponse({msg,result});
-            })
+            });
             //sendResponse({msg: "[background.js saveHorseToDB] not doing anything yet - but called, yay"});
             break;
-        case "updateHorseDropAge":
-            dataAccessForPopupHorses.updateHorseDropAge(message.horseURL,message.dropHorseAge)
+        case "updateDropHorseAge":
+            dataAccessForPopupHorses.updateDropHorseAge(message.popupHorseObject.horseURL,message.popupHorseObject.dropHorseAge)
             .then(({msg, result})=>{
                 sendResponse({msg,result});
-            })
-        case "updateSleepingToDB":
+            });
+            break;
+        case "updateDropTimestamp":
+            dataAccessForPopupHorses.updateDropTimestamp(message.popupHorseObject.horseURL,message.popupHorseObject.dropTimestamp)
+            .then(({msg, result})=>{
+                sendResponse({msg,result});
+            });
+            break;
+        case "updateSleepTimestamp":
             console.log("updateSleepToDB, message: ",message);
             dataAccessForPopupHorses.updateSleepTimestamp(message.popupHorseObject.horseURL,message.popupHorseObject.sleepTimestamp)
             .then(({msg, result})=>{
@@ -72,7 +79,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             })
             .catch((e)=>{
                 sendResponse({msg: e});
-            })
+            });
             break;
         case "getPopupHorse":
             dataAccessForPopupHorses.getPopupHorse(message.horseURL)
