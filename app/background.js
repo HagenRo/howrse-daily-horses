@@ -29,20 +29,23 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             console.log("[background] addDropDataToDB erreicht");
             dataAccessForDailyHorses.addDropDataToDB(message.horseLoggingObject)
             .then(({msg, result})=>{
-                sendResponse({msg,result});
+                sendResponse({msg: msg, result: result});
+            })
+            .catch((e)=>{
+                sendResponse({msg: e});
             });
             //sendResponse({msg: "[background.js saveHorseToDB] not doing anything yet - but called, yay"});
             break;
         case "updateDropHorseAge":
             dataAccessForPopupHorses.updateDropHorseAge(message.popupHorseObject.horseURL,message.popupHorseObject.dropHorseAge)
             .then(({msg, result})=>{
-                sendResponse({msg,result});
+                sendResponse({msg: msg, result: result});
             });
             break;
         case "updateDropTimestamp":
             dataAccessForPopupHorses.updateDropTimestamp(message.popupHorseObject.horseURL,message.popupHorseObject.dropTimestamp)
             .then(({msg, result})=>{
-                sendResponse({msg,result});
+                sendResponse({msg: msg, result: result});
             });
             break;
         case "updateSleepTimestamp":

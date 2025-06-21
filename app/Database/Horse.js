@@ -128,14 +128,20 @@ class Horse{
                     //wenn wir einen eintrag in die Datenbank schreiben, dann wollen wir einen timeStamp setzen, anhand dessen wir ermitteln können, ob dieses pferd schon abgehandelt ist oder nicht.
                     window.localStorage.setItem(this.url, this.horseLoggingObject.timeStamp);
                     console.log("[#saveHorseDropToDB]", response);
-                    if (response.message == "success") {
-                        setTimeout(() => {showStatusNotification("\u1F4BE" + response.result.dropAmount + " " + response.result.dropType + " to DB",true)},1000);
+                    if (response.msg == "success") {
+                        setTimeout(() => {showStatusNotification("\uD83D\uDCBE" + response.result.dropAmount + " " + response.result.dropType + " to DB",true)},1000);
+                        chrome.runtime.sendMessage({ function: "updateDropTimestamp", popupHorseObject: this.popupHorseObject}, (response) => {
+                            console.log("updated DropTimestamp",response);
+                        })
+                        chrome.runtime.sendMessage({ function: "updateDropHorseAge", popupHorseObject: this.popupHorseObject}, (response) => {
+                            console.log("updated DropHorseAge",response);
+                        })
                     }
 
                     console.log("response falls noch nix war",response);
                 }); 
             } else {
-                showStatusNotification("\u1F4BE" + response.result.dropAmount + " " + response.result.dropType + " NOT to DB",true);
+                //showStatusNotification("\uD83D\uDCBE" + response.result.dropAmount + " " + response.result.dropType + " NOT to DB",true);
             }
         });
         
@@ -282,6 +288,7 @@ class Horse{
                 // drop time stamp
                 let date = new Date();
                 this.horseLoggingObject.timeStamp = date.getTime();
+                this.popupHorseObject.dropTimestamp = this.horseLoggingObject.timeStamp;
                 this.horseLoggingObject.timeStampHumanReadable = date.toISOString()
 
                 console.log("link! ",$(timeLineWithLink).find("[href]").attr("href")); 
@@ -422,6 +429,7 @@ class Horse{
             // drop time stamp
             let date = new Date();
             this.horseLoggingObject.timeStamp = date.getTime();
+            this.popupHorseObject.dropTimestamp = this.horseLoggingObject.timeStamp;
             this.horseLoggingObject.timeStampHumanReadable = date.toISOString()
 
             console.log("[test] link! ",$(timeLineWithLink).find("[href]").attr("href")); 
