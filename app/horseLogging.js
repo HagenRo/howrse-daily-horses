@@ -6,6 +6,7 @@
 
 // de
 let equus_de = /.+ bringt Dir  (\d+) x  Equus\./; // hilfsregex
+let pass_de = /Du hast (\d+)  gewonnen\!/
 let skillsChinese_de = [/.+ hat (\d+) (.+) gewonnen, die verteilt werden können/]; //Fähigkeitspunkte
 
 // log types for proper classification (2 results)
@@ -20,6 +21,7 @@ let stellar_de = [/Du hast (\d+) x Sternstaub gefunden, indem Du den Stern der O
 let spice_de = [/Du hast (\d+) Gewürze für Deine Fortschrittsanzeige erhalten./]; // auch exemptions?
 let jade_de = [/Du hast (\d+)  gewonnen\!/,/Jade ist gerade aufgewacht\./];
 let opal_de = [/Du hast (\d+)  gewonnen\!/,/Opal hat eine Karotte gefressen \(Energie: \+\d+\)/];
+let agate_de = [pass_de];
 let amber_de = [/Du hast (\d+)  gewonnen\!/,/Bernstein hat gestern \d+ kg Pferdeäpfel produziert/];
 let pluto_de = [/Du hast (\d+)  gewonnen\!/,/Ausflug in der Andromeda-Galaxie mit Pluto .+/];
 let fairytale_de = [/.+ hat eine Geschichte gelesen und (\d+) Handlungselemente entdeckt/,/.+ hat eine Geschichte gelesen/]; // handlungselemente entdeckt?
@@ -32,10 +34,12 @@ let chinese_en = [/.+ won (\d+) (.+) you can spend whichever way you like/,/.+ h
 
 // only the amount
 let equus_en = /.+ brings you (\d+) x  Equus./;
+let pass_en = /You won (\d+) \!/;
 let stellar_en = [/You found (\d+) x Stardusts by uncovering the Space Odyssey star./];
 let spice_en = [/You have obtained (\d+) spices for your meter./];
 let spice_uk_au = [/You have obtained (\d+) spices for your metre./];
 let groom_en = [/You found (\d+) .+ by grooming .+\./]; // minerals or scales
+let agate_en = [pass_en];
 let jade_en = [/You won (\d+) \!/,/Jade has just woken up/]; // there's a passes icon in there, but should just be 1 space in text
 // amber drops either droppings or passes - today it was droppings, passes will be tomorrow.
 let amber_en = [/You won (\d+) !/,/Amber produced \d+ pounds of droppings yesterday/,/Amber produced \d+ kg of droppings yesterday/]; // uk and au would say "kg" instead of pounds; but this is another EXEMPTION
@@ -118,10 +122,11 @@ let resetsSommer = {
 let horses ={
     "https://www.howrse.de/elevage/chevaux/cheval?id=81394568": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=81394568",chinese_de,true,1,"chinois","shenma","Bonus"), // shenma
     // de athos
+    "https://www.howrse.de/elevage/chevaux/cheval?id=103804263": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=103804263",agate_de,false,0,"pierres","agate","pass"), // de achat
     "https://www.howrse.de/elevage/chevaux/cheval?id=103173953": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=103173953",opal_de,false,0,"pierres","opale","pass"), // de opal TODO
     "https://www.howrse.de/elevage/chevaux/cheval?id=103159709": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=103159709",amber_de,true,0,"pierres","ambre","pass"), // de Bernstein
     "https://www.howrse.de/elevage/chevaux/cheval?id=102537929": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=102537929",fairytale_de,false,0,"fairyTales","jack-and-the-beanstalk","Handlungselement"), // de Jack 2
-    "https://www.howrse.de/elevage/chevaux/cheval?id=102537911": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=102537911",egypt_de,false), // de ptah
+    "https://www.howrse.de/elevage/chevaux/cheval?id=102537911": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=102537911",egypt_de,false,undefined,"egypt","ptah",undefined), // de ptah
     "https://www.howrse.de/elevage/chevaux/cheval?id=101962013": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=101962013",maori_de,false,undefined,"maori","rongo","Mana"), // de rongo
     "https://www.howrse.de/elevage/chevaux/cheval?id=101748916": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=101748916",stellar_de,false,undefined,"stellar","red-giant","star dust"), // de r. riese
     "https://www.howrse.de/elevage/chevaux/cheval?id=101747778": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=101747778",spice_de,false,undefined,"spice","vanilla","Spices"), // de vanille
@@ -130,7 +135,7 @@ let horses ={
     "https://www.howrse.de/elevage/chevaux/cheval?id=101164900": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=101164900",groom_de,false,undefined,"metals","metal-rose-gold","minerals"), // rose gold de
     "https://www.howrse.de/elevage/chevaux/cheval?id=100844463": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=100844463",jade_de,true,0,"pierres","jade","pass"), // jade de
     "https://www.howrse.de/elevage/chevaux/cheval?id=100800447": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=100800447",japanese_de,false), // maneki-neko de
-    "https://www.howrse.de/elevage/chevaux/cheval?id=100358235": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=100358235",egypt_de,false), // osiris de  // TODO
+    "https://www.howrse.de/elevage/chevaux/cheval?id=100358235": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=100358235",egypt_de,false,undefined,"egypt","osiris",undefined), // osiris de  // TODO
     "https://www.howrse.de/elevage/chevaux/cheval?id=100050626": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=100050626",stellar_de,false,undefined,"stellar","yellow-dwarf","star dust"), // gelber zwerg de
     "https://www.howrse.de/elevage/chevaux/cheval?id=99509978": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=99509978",fairytale_de,false,0,"fairyTales","little-poucet","Handlungselement"), // de Däuming
     "https://www.howrse.de/elevage/chevaux/cheval?id=99284359": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=99284359",spice_de,false,undefined,"spice","clove","Spices"), // nelke
@@ -185,6 +190,7 @@ let horses ={
     "https://www.howrse.co.uk/elevage/chevaux/cheval?id=8992215": new Horse("https://www.howrse.co.uk/elevage/chevaux/cheval?id=8992215",fairytale_en,false,0,"fairyTales","little-poucet","Handlungselement"), // uk tom
     "https://www.howrse.co.uk/elevage/chevaux/cheval?id=8943937": new Horse("https://www.howrse.co.uk/elevage/chevaux/cheval?id=8943937",japanese_en,false), // uk kigu
 
+    "https://www.howrse.com/elevage/chevaux/cheval?id=86523091": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=86523091",agate_en,false,0,"pierres","agate","pass"),
     "https://www.howrse.com/elevage/chevaux/cheval?id=85973517": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=85973517",opal_en,false,0,"pierres","opale","pass"), // int opal (?)
     "https://www.howrse.com/elevage/chevaux/cheval?id=85961694": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=85961694",amber_en,true,0,"pierres","ambre","pass"), // int amber 2
     "https://www.howrse.com/elevage/chevaux/cheval?id=85550189": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=85550189",fairytale_en,false,0,"fairyTales","jack-and-the-beanstalk","Handlungselement"), // jack

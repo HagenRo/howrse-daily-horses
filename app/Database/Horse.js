@@ -191,6 +191,8 @@ class Horse{
             this.horseLoggingObject.timeStamp = date.getTime();
             this.horseLoggingObject.timeStampHumanReadable = date.toISOString()
 
+            console.log("onWakeup sollte nicht aufgerufen werden gerade",ergebnis);
+
             //this.horseLoggingObject.dropAmount = ergebnis[1];
             //hier muss manchmal noch der typ ermittelt werden.
             //mal schauen, wie man das coden kann, dass man keine ausnamefälle betrachten muss.
@@ -227,9 +229,13 @@ class Horse{
                 this.horseLoggingObject.timeStampHumanReadable = date.toISOString()
 
                 this.horseLoggingObject.dropAmount = ergebnis[1];
+                console.log("onClick ergebnis",ergebnis);
                 //hier muss manchmal noch der typ ermittelt werden.
                 //mal schauen, wie man das coden kann, dass man keine ausnamefälle betrachten muss.
-                this.#saveHorseDropToDB(); // das wird ständig aufgerufen, auch... vor dem Drop...? 
+                if (ergebnis[1] >= 0) {
+                    console.log("onClick Ergebnis >0");
+                    this.#saveHorseDropToDB(); // das wird ständig aufgerufen, auch... vor dem Drop...? 
+                }
             }
         });
 
@@ -251,7 +257,8 @@ class Horse{
             this.horseLoggingObject.dropAmount = 0; // TODO: nicht 0, sondern default
             //hier muss manchmal noch der typ/subtyp ermittelt werden.
             //mal schauen, wie man das coden kann, dass man keine ausnamefälle betrachten muss.
-            this.#saveHorseDropToDB();
+            console.log("[onClick] hier wurde gespeichert wtf");
+            //this.#saveHorseDropToDB();
         });
 
     }
@@ -332,6 +339,7 @@ class Horse{
                 //hier muss manchmal noch der typ ermittelt werden.
                 //mal schauen, wie man das coden kann, dass man keine ausnamefälle betrachten muss.
                 showNotification(this.horseLoggingObject.dropAmount,this.horseLoggingObject.dropType,this.horseLoggingObject.dropSubType);
+                console.log("onDrop speichert den Wert",ergebnis);
                 this.#saveHorseDropToDB();
             }
         }
@@ -474,7 +482,7 @@ class Horse{
             //mal schauen, wie man das coden kann, dass man keine ausnamefälle betrachten muss.
             console.log("[test] horseLoggingObject",this.horseLoggingObject);
             setTimeout(() => {showNotification(this.horseLoggingObject.dropAmount,this.horseLoggingObject.dropType,this.horseLoggingObject.dropSubType,true)},1000);
-            this.#saveHorseDropToDB();
+            //this.#saveHorseDropToDB();
         }
     
     }
