@@ -206,7 +206,7 @@ header.forEach(function (th, i) {
         sortUIRuns(i);
     });
 });
-function loadRuns() {//TODO add chrome.local.storage for the active season key and load seansons depending on this
+function loadRuns() {//TODO add chrome.local.storage for the active season key and load seasons depending on this
 
     chrome.storage.local.get(["activeSeason"], function (keyValuePairs) {
         chrome.runtime.sendMessage({ mdText: "getSeasonFromStartDate", startDate: keyValuePairs.activeSeason }, ({ msg, result }) => {
@@ -239,6 +239,39 @@ function loadRuns() {//TODO add chrome.local.storage for the active season key a
     });
 }
 
+function loadHorses() {//TODO add chrome.local.storage for the active season key and load seasons depending on this
+
+    //chrome.runtime.sendMessage({ mdText: "getSeasonFromStartDate", startDate: keyValuePairs.activeSeason }, ({ msg, result }) => {
+        chrome.runtime.sendMessage({ function: "getAllDailyHorses" }, ({ msg, result }) => {
+            if (msg === 'success') {
+                globalArrayOfHorses = result;
+                g_UIHorses = buildArrayOfUIHorses(result);
+                //g_UIHorses.sort(sortUIRunsDesc);
+                //buildTableForUIRuns(g_UIRuns);
+                console.log("[dataVisualization, loadHorses] läuft durch");
+                //calculateAverage();
+            } else {
+                console.log(msg);
+            }
+    
+        });
+
+    //});
+    /*
+    chrome.runtime.sendMessage({ mdText: "getAllRunsFromDB" }, ({ msg, result }) => {
+        if (msg === 'success') {
+            globalArrayOfRuns = result;
+            g_UIRuns = buildArrayOfUIRuns(result);
+            g_UIRuns.sort(sortUIRunsDesc); // etwas für Version ausdenken
+            buildTableForUIRuns(g_UIRuns);
+            calculateAverage();
+        } else {
+            console.log(msg);
+        }
+
+    }); // */
+}
+
 function sortUIRunsAsc(a, b) {
     if (a[g_collumToSort].sortCriteria > b[g_collumToSort].sortCriteria)
         return 1;
@@ -250,9 +283,14 @@ function sortUIRunsDesc(a, b) {
     return sortUIRunsAsc(a, b) * -1;
 }
 
-let globalArrayOfRuns = [];
-let g_UIRuns = [];
-loadRuns();
+// TODO Sortierfunktion für die Pferde?
+
+let globalArrayOfRuns = []; // evtl. unnötig
+let globalArrayOfHorses = [];
+let g_UIRuns = []; // evtl. unnötig
+let g_UIHorses = [];
+//loadRuns();
+loadHorses();
 //loadSeasons();
 
 $(document).on('mouseover', '.tooltip', function () {
@@ -279,6 +317,29 @@ $(document).on('click', '#loadRunsBySeasons', function () {
     console.log(selectetdSeasons);
 })
 
+function buildArrayOfUIHorses(horses) {
+    uiHorses = [];
+
+    horses.forEach(horse => {
+
+        let uiHorse = [];
+        uiHorse.isVisible = true;
+        uiHorse.id = horse.url; // problem weil aktuell mehrfach das selbe Pferd in der Datenbank steht wegen unterschiedlicher Drops zu unterschiedlichen Tagen?
+
+        // TODO Drop Menge Schnitt FALLS aus entsprechenden Familien!
+
+        // TODO Drop Menge zuletzt
+
+        // TODO Droptyp zuletzt 
+
+        // TODO zuletzt versorgt am - aus Datum errechnen
+
+        // TODO letzter Hauptpreis am - dafür Droptyp des Hauptpreises übergeben (nur falls entsprechende Familie?) sodass das einfach (?) gefunden werden kann
+
+    });
+
+    return uiHorses;
+}
 
 function buildArrayOfUIRuns(runs) {
     uIRuns = [];

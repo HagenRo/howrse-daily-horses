@@ -419,6 +419,18 @@ class DataAccessForDailyHorses {
             return this.databaseConnection.getAllKeys();
         });
     }
+
+    /**
+     * Fetches all Horses from the database.
+     * @returns {Promise} A Promise that resolves with an array of all Horses.
+     */
+    getAllDailyHorses() {
+        console.log("[Datamanagement, getAllDailyHorses] called");
+        return this.promiseQueue.enqueue(() => {
+            return this.databaseConnection.getAllItems();
+        });
+
+    }
 }
 
 // TODO: 

@@ -1,4 +1,14 @@
 const myButton = document.getElementById("clearbtn");
+
+const myButtonToOverview = document.getElementById("runbtn");
+
+myButtonToOverview.addEventListener("click", () => {
+    chrome.tabs.create({ url: 'app/dataVisualization/dataVisualization.html', active: true });
+    //overrideLog();
+    //printLogging();
+
+});
+
 /*myButton.innerHTML = myButton.textContent + "<br>" + window.localStorage.getItem("lastDelete");
 myButton.addEventListener("click", () => {
     if (confirm("You did Download first right?")) {

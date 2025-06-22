@@ -93,6 +93,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 sendResponse({msg: e});
             })
             break;
+        case "getAllDailyHorses":
+            console.log("[background, getAllDailyHorses] called");
+            dataAccessForDailyHorses.getAllDailyHorses()
+            .then(({msg, result}) => {
+                console.log("[background, getAllDailyHorses] sending response now");
+                sendResponse({msg: result});
+            })
+            .catch((e)=>{
+                sendResponse({msg: e});
+            });
+            break;
         // case "addRunToDB":
         //     dataAccessForDailyHorses.addRunToDB(message.olympRun)
         //     .then(({msg, result})=>{
