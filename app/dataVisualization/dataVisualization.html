@@ -1,13 +1,79 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tabs Navigation</title>
+    <style>
+        /* Grundstil für den Header mit Tabs */
+        .tab-header {
+            display: flex;
+            background-color: #333;
+            /* Hintergrundfarbe der Tabs */
+            padding: 0;
+            margin: 0;
+        }
+
+        /* Stil für einzelne Tabs */
+        .tab {
+            padding: 14px 20px;
+            cursor: pointer;
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        /* Hover-Effekt für Tabs */
+        .tab:hover {
+            background-color: #555;
+        }
+
+        /* Aktiver Tab */
+        .tab-active {
+            background-color: #007bff;
+            /* Beispiel für aktive Seite */
+        }
+
+        /* Hover-Effekt für aktiven Tab, bleibt blau */
+        .tab-active:hover {
+            background-color: #459fff;
+        }
+
+
+        /* Inhalte der jeweiligen Tabs */
+        .content {
+            padding: 20px;
+        }
+
+        /* Verstecke nicht ausgewählte Inhalte */
+        .tab-content {
+            display: none;
+        }
+
+        /* Zeige den aktiven Inhalt */
+        .tab-content-active {
+            display: block;
+        }
+    </style>
     <link rel="stylesheet" type="text/css" href="dataVisualization.css">
+
 </head>
 
 <body>
-    <!-- <div> -->
-        <select id="seasons" name="seasons" data-placeholder="Select seasons" multiple data-multi-select></select>
+
+    <!-- Tab Navigation -->
+    <div class="tab-header">
+        <div class="tab tab-active" data-tab="home">Startseite</div>
+        <div class="tab" data-tab="about">Über Uns</div>
+        <div class="tab" data-tab="services">Dienstleistungen</div>
+        <div class="tab" data-tab="contact">Kontakt</div>
+    </div>
+
+    <!-- Inhalte -->
+    <div id="home" class="tab-content tab-content-active">
+        <h2>Willkommen auf der Startseite</h2>
+        <p>Hier finden Sie die neuesten Informationen.</p>
         <button id="loadRunsBySeasons" >Filter anwenden</button>
         <input type="text" id="filterInput" placeholder="'1'!nl&'2'false">
 
@@ -27,8 +93,26 @@
         </thead>
         <tbody id="myTableBody">
 
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="about" class="tab-content">
+        <h2>Über Uns</h2>
+        <p>Informationen über unser Unternehmen.</p>
+    </div>
+
+    <div id="services" class="tab-content">
+        <h2>Dienstleistungen</h2>
+        <p>Unsere angebotenen Services.</p>
+    </div>
+
+    <div id="contact" class="tab-content">
+        <h2>Kontakt</h2>
+        <p>Kontaktinformationen hier.</p>
+    </div>
+
+    <script src="tabControle.js"></script>
     <script src="MultiSelect.js"></script>
     <script src="../jquery.js"></script>
     <script src="dataVisualization.js"></script>
