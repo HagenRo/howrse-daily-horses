@@ -27,17 +27,26 @@ class Horse{
         "/marche/voir?qName=don-hestia": "Hestias Gabe",
         "/marche/voir?qName=pack-poseidon": "Poseidon-Paket",
         "/marche/voir?qName=pack-bonus": "Bonuspaket",
+        "/marche/voir?qName=monster-egg": "Monster-Ei",
+        "/marche/voir?qName=arthur-conan-doyle-inkwell": "Tintenfass von Arthur Conan Doyle",
+        "/marche/voir?qName=alexandre-dumas-inkwell": "Tintenfass von Alexandre Dumas",
 
         "/marche/voir?qName=vieillissement": "Alterungspunkte",
         "/marche/voir?qName=ressource-cuir": "Leder",
+        "/marche/voir?qName=ressource-bois": "Holz",
         "/marche/voir?qName=ressource-fer": "Eisen",
+        "/marche/voir?qName=ressource-sable": "Sand",
         "/marche/voir?qName=avoine": "Hafer | Oats",
+        "/marche/voir?qName=pomme": "Apfel",
+        "/marche/voir?qName=carotte": "Karotte",
+        "/marche/voir?qName=mash": "Mash",
         "/marche/voir?qName=ressource-lin": "Flachs",
         "/marche/voir?qName=graines-pomme": "Apfelsamen",
         // subtype
         "/marche/voir?qName=bande-2x-": "Bandagen",
         "/marche/voir?qName=bonnet-2x-": "Fliegenohren",
-        "/marche/voir?qName=tapis-classique-2x-": "Satteldecke (klassisch)"
+        "/marche/voir?qName=tapis-classique-2x-": "Satteldecke (klassisch)",
+        "/marche/voir?qName=tapis-western-2x-": "Satteldecke (western)"
     }
 
 

@@ -181,15 +181,15 @@ function calculateAverage() {
 document.getElementById("filterInput").addEventListener("input", filterUIRuns);
 
 
-let g_collumToSort = 0;
+let g_columnToSort = 0;
 let asc = true;
-function sortUIRuns(collumToSort) {
-    if (collumToSort == g_collumToSort && asc) {
+function sortUIRuns(columnToSort) {
+    if (columnToSort == g_columnToSort && asc) {
         asc = false;
         g_UIRuns.sort(sortUIRunsAsc);
 
     } else {
-        g_collumToSort = collumToSort;
+        g_columnToSort = columnToSort;
         g_UIRuns.sort(sortUIRunsDesc);
         asc = true
     }
@@ -273,9 +273,9 @@ function loadHorses() {//TODO add chrome.local.storage for the active season key
 }
 
 function sortUIRunsAsc(a, b) {
-    if (a[g_collumToSort].sortCriteria > b[g_collumToSort].sortCriteria)
+    if (a[g_columnToSort].sortCriteria > b[g_columnToSort].sortCriteria)
         return 1;
-    if (a[g_collumToSort].sortCriteria < b[g_collumToSort].sortCriteria)
+    if (a[g_columnToSort].sortCriteria < b[g_columnToSort].sortCriteria)
         return -1;
     return 0;
 }
@@ -284,6 +284,20 @@ function sortUIRunsDesc(a, b) {
 }
 
 // TODO Sortierfunktion für die Pferde?
+function sortDropBlobs(a, b) {// einfach nur damit du quietschst =)
+    // 1.: sort by horseURL
+    if (a.horseURL > b.horseURL)
+        return 1;
+    if (a.horseURL < b.horseURL)
+        return -1;
+    // 2.: sort by timeStamp
+    if (a.timeStamp > b.timeStamp)
+        return 1;
+    if (a.timeStamp < b.timeStamp)
+        return -1;
+    return 0;
+    // können jetzt iterieren, bei neuer URL zum nächsten Horse; letzter timestamp gibt "letzten Drop" an für die andere Spalte
+}
 
 let globalArrayOfRuns = []; // evtl. unnötig
 let globalArrayOfHorses = [];
