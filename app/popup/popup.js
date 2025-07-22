@@ -136,9 +136,9 @@ function showPopupHorses(popupHorses) {
                     amountPopupHorsesTodoPerVersion[key].push(popupHorse); // add insert whatever
                 } else {
                     // if optional, insert in third list
-                    if (!popupHorse.showInPopup) { 
+                    if (!popupHorse.showInPopup && lastResetDate <= new Date(popupHorse.sleepTimestamp)) { 
                         amountOptionalPopupHorsesDonePerVersion[key].push(popupHorse);
-                    } else {
+                    } else if (popupHorse.showInPopup) { // show in Popup and not not sleeping
                         amountPopupHorsesDonePerVersion[key].push(popupHorse); // if not todo anymore ^.^
                     }
                 }
