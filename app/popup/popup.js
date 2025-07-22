@@ -105,6 +105,22 @@ function showPopupHorses(popupHorses) {
                 'www.howrse.se': [],
                 'au.howrse.com': []
             }; 
+            let amountPopupHorsesDonePerVersion = {
+                'www.howrse.de': [],
+                'www.howrse.com': [],
+                'www.howrse.co.uk': [],
+                'nl.howrse.com': [],
+                'www.howrse.se': [],
+                'au.howrse.com': []
+            }; 
+            let amountOptionalPopupHorsesDonePerVersion = {
+                'www.howrse.de': [],
+                'www.howrse.com': [],
+                'www.howrse.co.uk': [],
+                'nl.howrse.com': [],
+                'www.howrse.se': [],
+                'au.howrse.com': []
+            }; 
             for (const popupHorse of popupHorses) {
                 // get domain // get whether it's already done // if not, add it to the "amountPopupHorsesTodoPerVersion" at its version
                 //console.log(popupHorse);
@@ -116,23 +132,40 @@ function showPopupHorses(popupHorses) {
                 let reset = new Date().getTimezoneOffset() == -120 ? resetsSommer[key] : resetsWinter[key]; //winter und sommerzeit wirken sich unterschiedlich auf die einzelnen domains aus
                 let lastResetDate = new Date(new Date().setHours(reset, 0, 0)) > new Date ? new Date(new Date(new Date().setDate(new Date().getDate() - 1)).setHours(reset, 0, 0)) : new Date(new Date().setHours(reset, 0, 0));
                 // muss ich da das erste "new Date" ohne Klammern durch popupHorse.sleepTimestamp ersetzen? und dann weiß ich dinge?
-                if (lastResetDate > new Date(popupHorse.sleepTimestamp)) { // if not sleeping
+                if (popupHorse.showInPopup && lastResetDate > new Date(popupHorse.sleepTimestamp)) { // if not sleeping
                     amountPopupHorsesTodoPerVersion[key].push(popupHorse); // add insert whatever
+                } else {
+                    // if optional, insert in third list
+                    if (!popupHorse.showInPopup) { 
+                        amountOptionalPopupHorsesDonePerVersion[key].push(popupHorse);
+                    } else {
+                        amountPopupHorsesDonePerVersion[key].push(popupHorse); // if not todo anymore ^.^
+                    }
                 }
             }
+            // sums up remaining horses to show the number in the popup
             let sumRemaining = 0;
             for (const [url,values] of Object.entries(amountPopupHorsesTodoPerVersion)) {
                 let domElement = document.getElementsByName(url);
                 if (domElement[0]) {
+                    let todoerledigt = amountPopupHorsesDonePerVersion[url].length;
+                    let todogesamt = amountPopupHorsesDonePerVersion[url].length + amountPopupHorsesTodoPerVersion[url].length;
+                    let extraaufwand = amountOptionalPopupHorsesDonePerVersion[url].length;
                     // Neues <a>-Element erstellen
                     console.log("val len ",values.length);
                     const link = document.createElement('a'); // to create an element that links?
                     link.href = values[0]?.horseURL; // where it links to
                     //const text = document.createElement('p'); 
-                    link.textContent=values.length; // what's shown for the link
+                    // link.textContent=values.length; // what's shown for the link; version 1
+                    //SVGFESpotLightElement.genaudasmeinteichdankeautvervollständigung
+                    link.textContent = ""+todoerledigt+"/"+todogesamt+" (+"+extraaufwand+")";
                     //link.innerHTML=text;
                     console.log(link);
                     domElement[0].appendChild(link);//+link;
+                    if (todoerledigt == todogesamt) {
+                        // ne css klasse anlegen und zuweisen
+                        domElement[0].className = 'horsesDone' //  hab halt unten geschaut
+                    }
                     sumRemaining += values.length;
                     /*
                     if (lastResetDate < new Date(value)) {
@@ -148,6 +181,17 @@ function showPopupHorses(popupHorses) {
                     console.log(url,values);
                 }
             }
+
+            // moment was ist die finale anzeige? getan (+unwichtige erledigte)
+            // vlt todo (notwendig) + getan (nicht notwendig) irgendwie? 
+            // sähe dann irgendwie aus wie (5/20 (+6)) oder so. 5 todo; wenns bei 0 grün wird ist fein oder so; und die 6
+            // versteh ich ich finds auch nicht ideal
+            // aber ich wil lauch was haben was runtergeht eigentlich. 
+            // hm. 
+            // von mir aus erst mal übersichtlich mit farbwechsel >.< GETAN VON TODO PLUS EXTRAAUFWWAND DEN ICHMIR GEMACHT HAB letzteres in ...steht eh untne
+            // also hochzählend halt; hinterer teil in etwas anderer farbe oder kursiv oder so. oder wenigstens klammern. 
+            // das ding ist halt: wo machen wir den link hin? wenn wir keine "todo" mehr haben.
+            // ich finds halt auch komisch wenn die "das hast du bereits geschafft"-zahl zu den todo führt. aber whatever.
             chrome.action.setBadgeText({text: sumRemaining.toString()});
         }
     //});
