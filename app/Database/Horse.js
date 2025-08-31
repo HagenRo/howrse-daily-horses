@@ -144,7 +144,7 @@ class Horse{
                         })
                         chrome.runtime.sendMessage({ function: "updateDropHorseAge", popupHorseObject: this.popupHorseObject}, (response) => {
                             console.log("updated DropHorseAge",response);
-                        })
+                        }) // TODO überprüfendes logging hier?
                     }
 
                     console.log("response falls noch nix war",response);
@@ -459,6 +459,7 @@ class Horse{
             }
             console.log("[test] dropAmount: ",this.horseLoggingObject.dropAmount);
 
+            // TODO überprüfendes logging hier?
             //console.log("ergebnis: ",ergebnis);
 
             // drop type
