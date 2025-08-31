@@ -582,5 +582,50 @@ class DataAccessForPopupHorses {
     
 }
 
+class DailyHorsesApplicationLog {
+    constructor() {
+        this.databaseConnection = new DatabaseConnection('DailyHorsesApplicationLog', 'Log', ['horseURL','timeStamp']);
+        this.promiseQueue = Queue;
+        this.initDailyHorsesApplicationLog();
+    }
+    /**
+     * Initializes data access for Application log.
+     * Enqueues the initialization of the database connection.
+     */
+    initDailyHorsesApplicationLog() {
+        this.promiseQueue.enqueue(() => {
+            return this.databaseConnection.init();
+        });
+
+    }
+
+
+    /**
+     * Adds a drop data to the database.
+     * @param {Object} horseLoggingObject - The Horse object to be added.
+     * @returns {Promise} A Promise that resolves when the horse is added.
+     */
+    addApplicationLog(ApplicationLogObject) {
+        return this.promiseQueue.enqueue(() => {
+            return this.databaseConnection.insertOrErrorItem(ApplicationLogObject)
+        })
+    }
+    getAlladdApplicationLogs() {
+        return this.promiseQueue.enqueue(() => {
+            return this.databaseConnection.getAllItems();
+        });
+
+    }
+    
+    getKeys() {
+        return this.promiseQueue.enqueue(() => {
+            return this.databaseConnection.getAllKeys();
+        });
+    }
+
+}
+
 const dataAccessForDailyHorses = new DataAccessForDailyHorses();
 const dataAccessForPopupHorses = new DataAccessForPopupHorses();
+const dailyHorsesApplicationLog = new DailyHorsesApplicationLog();
+
