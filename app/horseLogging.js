@@ -20,12 +20,12 @@ let maori_de = [/.+ hat \d+ x Schildkrötenbabies entdeckt. Sein Tiki hat (\d+) 
 let groom_de = [/Du hast durch Striegeln von .+ (\d+) .+ gefunden./]; // 1. Punkt: Name; 2. Punkt: Mineralien, Federn oder, in com, Schuppen // hier müsste man auf Buchstaben oder Zahlen eingrenzen
 let stellar_de = [/Du hast (\d+) x Sternstaub gefunden, indem Du den Stern der Odyssee im Weltraum enthüllst./];
 let spice_de = [/Du hast (\d+) Gewürze für Deine Fortschrittsanzeige erhalten./]; // auch exemptions?
-let jade_de = [/Du hast (\d+)  gewonnen\!/,/Jade ist gerade aufgewacht\./];
-let opal_de = [/Du hast (\d+)  gewonnen\!/,/Opal hat eine Karotte gefressen \(Energie: \+\d+\)/];
+let jade_de = [/Du hast (\d+)  gewonnen\!/,/Jade ist gerade aufgewacht\./]; //%
+let opal_de = [/Du hast (\d+)  gewonnen\!/,/Opal hat eine Karotte gefressen \(Energie: \+\d+\)/,/Opal hat eine Karotte gefressen \(Energie: \+\d+, Moral: \+\d+\)/]; //%
 let agate_de = [pass_de];
 let amber_de = [/Du hast (\d+)  gewonnen\!/,/Bernstein hat gestern \d+ kg Pferdeäpfel produziert/];
-let pluto_de = [/Du hast (\d+)  gewonnen\!/,/Ausflug in der Andromeda-Galaxie mit Pluto .+/];
-let fairytale_de = [/.+ hat eine Geschichte gelesen und (\d+) Handlungselemente entdeckt/,/.+ hat eine Geschichte gelesen/]; // handlungselemente entdeckt?
+let pluto_de = [/Du hast (\d+)  gewonnen\!/,/Ausflug in der Andromeda-Galaxie mit Pluto .+/]; //%
+let fairytale_de = [/.+ hat eine Geschichte gelesen und (\d+) Handlungselemente entdeckt/,/.+ hat eine Geschichte gelesen/]; //% // handlungselemente entdeckt?
 
 // english
 // log types for proper classification (2 results)
@@ -45,7 +45,7 @@ let agate_en = [pass_en];
 let jade_en = [/You won (\d+) \!/,/Jade has just woken up/]; // there's a passes icon in there, but should just be 1 space in text
 // amber drops either droppings or passes - today it was droppings, passes will be tomorrow.
 let amber_en = [/You won (\d+) !/,/Amber produced \d+ pounds of droppings yesterday/,/Amber produced \d+ kg of droppings yesterday/]; // uk and au would say "kg" instead of pounds; but this is another EXEMPTION
-let opal_en = [/You won (\d+) !/,/Opal ate a carrot \(energy: \+\d+\)/];
+let opal_en = [/You won (\d+) !/,/Opal ate a carrot \(energy: \+\d+\)/,/Opal ate a carrot \(energy: \+\d+, morale: \+\d+\)/];
 let skinfaxi_au = [/Skínfaxi gave \+(\d+) rays of light/]; // if that's okay
 let fairytale_en = [/.+ has read a story and discovered (\d+) plot element/,/.+ has read a story/]; // TODO ergänzen wenn er 2 handlungselemente findet
 let celtic_en = [/.+ used their powers of divination but found no letter from the prediction/,/.+ used their powers of divination and found (\d+) new letter from the prediction/]; // TODO ergänzen wenn er 2 findet
@@ -190,7 +190,7 @@ let horses ={
     "https://nl.howrse.com/elevage/chevaux/cheval?id=18230648": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=18230648",groom_nl,false,undefined,"metals","metal-rose-gold","minerals"), // nl rose gold
     "https://nl.howrse.com/elevage/chevaux/cheval?id=18173055": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=18173055",japanese_nl,false,0,"japonais","maneki-neko",undefined,0,false,undefined,undefined,undefined,true), // nl maneki-neko
     "https://nl.howrse.com/elevage/chevaux/cheval?id=18171053": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=18171053",jade_nl,true,0,"pierres","jade","pass"), // nl jade
-    "https://nl.howrse.com/elevage/chevaux/cheval?id=17912865": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=17912865",fairytale_nl,false,0,"fairyTales","little-poucet","Handlungselement"), // nl däumling
+    "https://nl.howrse.com/elevage/chevaux/cheval?id=17912865": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=17912865",fairytale_nl,false,0,"fairyTales","little-poucet","Handlungselement",0,false,undefined,undefined,undefined,true), // nl däumling
     "https://nl.howrse.com/elevage/chevaux/cheval?id=17871771": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=17871771",maori_nl,false,undefined,"maori","haumia-tiketike","Mana"), // nl haumia
     "https://nl.howrse.com/elevage/chevaux/cheval?id=17870985": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=17870985",celtic_nl,false,0,"celtic","cernunnos","ogham letter",0,false,undefined,undefined,undefined,true), // nl cernunnos
     "https://nl.howrse.com/elevage/chevaux/cheval?id=17818946": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=17818946",japanese_nl,false), // nl kigurumi
