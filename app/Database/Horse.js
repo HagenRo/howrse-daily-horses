@@ -144,7 +144,7 @@ class Horse{
                         })
                         chrome.runtime.sendMessage({ function: "updateDropHorseAge", popupHorseObject: this.popupHorseObject}, (response) => {
                             console.log("updated DropHorseAge",response);
-                        }) // TODO überprüfendes logging hier?
+                        }) 
                     }
 
                     console.log("response falls noch nix war",response);
@@ -156,6 +156,25 @@ class Horse{
         
         // */
     }
+
+    #hasDroppedToday(){
+        // about this horse
+        return new Promise((resolve, reject) => {
+            chrome.runtime.sendMessage({function: "getPopupHorse", horseURL: this.horseLoggingObject.horseURL}, (response) => {
+                if (chrome.runtime.lastError) {
+                    reject(new Error(chrome.runtime.lastError.message));
+                } else {
+                    resolve(response.result.dropHorseAge.toString());
+                }
+            });
+        });
+    }
+    /*
+        chrome.runtime.sendMessage({ function: "getPopupHorse", horseURL: this.horseLoggingObject.horseURL}, (response) => {
+            //
+            return (response.result.dropHorseAge.toString() == this.horseLoggingObject.dropHorseAge.toString());
+        });
+    } // */
 
     #updateSleepTimestamp(){
         chrome.runtime.sendMessage({ function: "updateSleepTimestamp", popupHorseObject: this.popupHorseObject}, (response) => { //param1 und param2 und beliebig viele weitere können frei benannt werden, müssen dann entsprechend in backroundscript benannt sein
@@ -239,6 +258,7 @@ class Horse{
 
                 this.horseLoggingObject.dropAmount = ergebnis[1];
                 console.log("onClick ergebnis",ergebnis);
+                
                 //hier muss manchmal noch der typ ermittelt werden.
                 //mal schauen, wie man das coden kann, dass man keine ausnamefälle betrachten muss.
                 if (ergebnis[1] >= 0) {
@@ -301,6 +321,11 @@ class Horse{
                 });
             });
             if (ergebnis.length > 0) {
+                /* // TODO hasDroppedToday()
+                if (!this.#hasDroppedToday()) { // ??
+                    this.#doApplicationLog(ergebnis,"match found");
+                };*/
+
                 // drop time stamp
                 let date = new Date();
                 this.horseLoggingObject.timeStamp = date.getTime();
@@ -316,6 +341,7 @@ class Horse{
                     this.horseLoggingObject.dropAmount = this.valueIfStringNotFound;
                 }
                 console.log("dropAmount: ",this.horseLoggingObject.dropAmount);
+                this.#doApplicationLog(this.horseLoggingObject.dropAmount,"drop amount found");
 
                 //console.log("ergebnis: ",ergebnis);
 
@@ -326,6 +352,7 @@ class Horse{
                         this.horseLoggingObject.dropType = this.dropMapping[currentLink.substring(0, currentLink.indexOf("2x-")+3)];
                         this.horseLoggingObject.dropSubType = currentLink.substring(currentLink.indexOf("2x-")+3);//ergebnis[2]; was am ende gecuttet wird
                         console.log("drop subtype: ",this.horseLoggingObject.dropSubType);
+                        this.#doApplicationLog(this.horseLoggingObject.dropSubType,"drop if sub type");
                     } else {
                         this.horseLoggingObject.dropType = this.dropMapping[$(timeLineWithLink).find("[href]").attr("href")];//ergebnis[2];
                         if (this.horseLoggingObject.dropType == undefined) {
@@ -337,6 +364,7 @@ class Horse{
                                     console.log("das ganze ohne length",$(timeLineWithLink).text().trim().match(typeSearchString)); // */
                                     if($(timeLineWithLink).text().trim().match(typeSearchString)) {
                                         this.horseLoggingObject.dropType = dropType.type;
+                                        this.#doApplicationLog(this.horseLoggingObject.dropType, "drop type if subtype exists");
                                     }
                                 });
                             });
@@ -461,6 +489,7 @@ class Horse{
             console.log("[test] dropAmount: ",this.horseLoggingObject.dropAmount);
 
             // TODO überprüfendes logging hier?
+            
             //console.log("ergebnis: ",ergebnis);
 
             // drop type
@@ -511,4 +540,13 @@ class Horse{
         }
     }
 
+    #doApplicationLog(entry,action){
+        let applicationLogObject = {
+            horseURL: this.url,
+            timeStamp: new Date().toISOString(),
+            action: action,
+            entry: entry, // object; any
+        };
+        chrome.runtime.sendMessage({ function: "writeApplicationLog", applicationLog: applicationLogObject});
+    }
 }

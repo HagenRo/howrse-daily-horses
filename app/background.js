@@ -104,6 +104,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 sendResponse({msg: e});
             });
             break;
+        case "writeApplicationLog":
+            dailyHorsesApplicationLog.addApplicationLog(message.applicationLog)
+            .then(({msg,result}) => {
+                sendResponse({msg: result});
+            })
+            .catch((e)=> {
+                sendResponse({msg: e});
+            })
+            break;
         // case "addRunToDB":
         //     dataAccessForDailyHorses.addRunToDB(message.olympRun)
         //     .then(({msg, result})=>{
