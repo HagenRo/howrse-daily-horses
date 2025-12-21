@@ -414,7 +414,8 @@ class Horse{
         
 
     }
-
+    
+    //führt die logik von onDrop aus beim laden der seite statt über den mutation record change
     #testOnDrop(){
         let historyItems = $('#history-body-content').find('.grid-row.dashed');
         console.log("[test] testOnDrop is here");
