@@ -52,7 +52,7 @@ class Horse{
 
     horseLoggingObject = {
         horseURL : null,
-        horseType : null,
+        horseType : null, // Familienname
         horseName : null, // intern vereinheitlichten
         dropAmount : null,
         dropType : null,
@@ -83,7 +83,7 @@ class Horse{
         this.amountRequiredClicks = amountRequiredClicks;
         this.defaultType = defaultType;
         this.defaultAmount = defaultAmount;
-        this.buttonIdentifier = buttonIdentifier;
+        this.buttonIdentifier = buttonIdentifier; // Butto der gedrückt wird, woraufhin ein drop passiert oder nicht
         this.isUnimportant = isUnimportant;
         //
 
@@ -229,9 +229,12 @@ class Horse{
             // default eintrag schreiben
         }
     }
-
+    /**
+     * Wird ausgeführt, bei Pferden, bei denen aus der Timeline nicht hervorgeht, wenn sie nicht geworfen haben.
+     */
     #onClick(){
         console.log(this.searchStrings);
+        // Todo: hier buttonidentifier verwenden statt document
         $(document).on('click', () => {
             //TODO: hier muss geprüft werden, ob an diesem tag schon ein eintrag geschrieben wurde
             //item = window.localStorage.getItem(this.url);
