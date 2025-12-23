@@ -49,7 +49,9 @@ class Horse{
         "/marche/voir?qName=tapis-western-2x-": "Satteldecke (western)"
     }
 
-
+    /**
+     * horse object to be initalized every time and saved to the database
+     */
     horseLoggingObject = {
         horseURL : null,
         horseType : null,
@@ -60,9 +62,12 @@ class Horse{
         timeStamp : null,
         timeStampHumanReadable : null,
         dropHorseAge: null,
-        amountClicks : null, // amount of clicks used to finish horse // together with drop amount for spice horses
+        amountClicks : 0, // amount of clicks used to finish horse // together with drop amount for spice horses
     }
 
+    /**
+     * information about the horse required to find out whether it has been worked already
+     */
     popupHorseObject = {
         horseName : null,
         horseURL : null,
@@ -292,6 +297,31 @@ class Horse{
 
     }
 
+    #clickCounter(){
+        $(document).on('click', this.buttonIdentifier, () => {
+            //TODO: hier muss geprüft werden, ob an diesem tag schon ein eintrag geschrieben wurde
+            //item = window.localStorage.getItem(this.url);
+            //damit dann die berechnung machen mithilfe des reset objekts
+
+            // hochzählen einer variable, wie oft auf den button geklickt wurde
+            // nachfolgenden code nur ausführen, wenn diese variable >= mein maximum ist
+            // ? wie ist das wenn ich beim letzten draufklicken was werfe? checken, ob meine onclick methoden in sinnvoller reihenfolge ausgeführt werden 
+            // auch die anzahl an klicks speichern
+            // wenn klicks erreicht wird der leere eintrag geschrieben
+
+            let date = new Date();
+            this.horseLoggingObject.timeStamp = date.getTime();
+            this.horseLoggingObject.timeStampHumanReadable = date.toISOString()
+
+            this.horseLoggingObject.dropAmount = 0; // TODO: nicht 0, sondern default
+            //hier muss manchmal noch der typ/subtyp ermittelt werden.
+            //mal schauen, wie man das coden kann, dass man keine ausnamefälle betrachten muss.
+            console.log("[onClick] hier wurde gespeichert wtf");
+            //this.#saveHorseDropToDB();
+        });
+
+    }
+
     #onDrop(){
         let historyParent = $('#history-body-content')[0];
         console.log("onDrop is here");
@@ -462,6 +492,7 @@ class Horse{
             this.searchStrings.forEach(searchString => {
                 if (ergebnis.length > 0) return;
                 ergebnis = timeLine.string.match(searchString)?timeLine.string.match(searchString):ergebnis; 
+                console.log("zu suchen: ",searchString," durchsuchter Eintrag: ",timeLine," ergebnis: ",ergebnis);
                 timeLineWithLink = timeLine.domElement;
                 /* 
                 console.log("searchString: ",searchString);
