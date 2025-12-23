@@ -563,7 +563,7 @@ class Horse{
 
     //wird vom script aus aufgerufen
     check(){
-        this.#testOnDrop(); // testing
+        //this.#testOnDrop(); // testing
         this.#onSleep();
         this.#onDrop();
         if (this.isReadyOnWakeup) {
