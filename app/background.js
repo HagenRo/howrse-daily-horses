@@ -85,7 +85,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             });
             break;
         case "getPopupHorse":
-            dataAccessForPopupHorses.getPopupHorse(message.horseURL)
+            dataAccessForPopupHorses.getPopupHorse(message.horseURL, message.horseAge)
             .then(({msg, result}) =>{
                 sendResponse({msg: result,result: result});
             })
