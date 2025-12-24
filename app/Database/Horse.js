@@ -7,7 +7,7 @@ class Horse{
     isUnimportant; // die kann ich hinzufügen, sodass sie geloggt (?) werden, wenn ich sie bespiele, aber sie tauchen nicht in der Liste der "TODO HEUTE DRINGEND" tiere auf
     isExemption; // exception // is pluto
     exemptionFunction; // in case you are an EXEMPTION
-    amountRequiredClicks; // maximum amount of required clicks to finish horse; usually 1? // on some button
+    countClicks; // bool whether clicks have to be counted here (spices)
     defaultType; // drop type if nothing found (Bonus for chinese) // TODO: add to constructor 
     defaultAmount; // drop amount if nothing found (1 Bonus for chinese) // TODO: add to constructor
     buttonIdentifier; // String, Klasse, ID, die den Button eindeutig identifiziert, nachdem ein Pferd keine Drop mehr durchführen kann an dem Tag. //TODO: in Konstruktorsignatur hinzufügen
@@ -77,7 +77,7 @@ class Horse{
         showInPopup : null
     }
 
-    constructor(url,searchStrings,isReadyOnWakeup,valueIfStringNotFound,horseType,horseName,defaultType,defaultAmount,isExemption,exemptionFunction,amountRequiredClicks,buttonIdentifier,isUnimportant){
+    constructor(url,searchStrings,isReadyOnWakeup,valueIfStringNotFound,horseType,horseName,defaultType,defaultAmount,isExemption,exemptionFunction,countClicks,buttonIdentifier,isUnimportant){
         this.url = url;
         this.searchStrings = searchStrings; // which regex expressions we're looking for
         //console.log(searchStrings);
@@ -85,7 +85,7 @@ class Horse{
         this.valueIfStringNotFound = valueIfStringNotFound;
         this.isExemption = isExemption; // like Onyx with the UFOs or Pluto, with a message that doesn't trigger at one specific point in time
         this.exemptionFunction = exemptionFunction; // how to work this exemption
-        this.amountRequiredClicks = amountRequiredClicks;
+        this.countClicks = countClicks;
         this.defaultType = defaultType;
         this.defaultAmount = defaultAmount;
         this.buttonIdentifier = buttonIdentifier; // Butto der gedrückt wird, woraufhin ein drop passiert oder nicht
@@ -97,7 +97,7 @@ class Horse{
         this.horseLoggingObject.horseName = horseName; // von howrse gesetzter internationaler name
         this.horseLoggingObject.dropAmount = this.defaultAmount;
         //this.horseLoggingObject.dropType = this.defaultType;
-        this.horseLoggingObject.amountClicks = this.amountRequiredClicks;
+        this.horseLoggingObject.amountClicks = 0;//this.countClicks;
 
         this.popupHorseObject.horseName = horseName;
         this.popupHorseObject.horseURL = url;
@@ -270,8 +270,11 @@ class Horse{
     }
 
     #clickCounter(){
-        $(document).on('click', this.buttonIdentifier, () => {
+        console.log("#clickCounter ist hier");
+        console.log("#clickCounter, buttonIdentifier",this.buttonIdentifier);
+        $(document).on('hover', this.buttonIdentifier, () => {
             horseLoggingObject.amountClicks++;
+            console.log("#clickCounter registrierte Klick Nummer ",this.horseLoggingObject.amountClicks);
         });
 
     }
@@ -547,13 +550,20 @@ class Horse{
     check(){
         //this.#testOnDrop(); // testing
         this.#onSleep();
-        this.#onDrop();
+        //this.#onDrop();
         if (this.isReadyOnWakeup) {
             //this.#onWakeup();
         }
-        else if ( this.buttonIdentifier ) {
-            this.#onClick();
+        else if ( this.buttonIdentifier && this.countClicks) {
+            console.log("Spicy?");
+            this.#onDrop();
             this.#clickCounter();
+        } else if ( this.buttonIdentifier ) {
+            console.log("Opal?");
+            this.#onClick();
+        } else {
+            console.log("weder spicy noch Opal");
+            this.#onDrop();
         }
     }
 
