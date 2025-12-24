@@ -66,7 +66,7 @@ class Horse{
     }
 
     /**
-     * information about the horse required to find out whether it has been worked already
+     * information about the horse required to find out whether it has been treated already
      */
     popupHorseObject = {
         horseName : null,
@@ -115,7 +115,6 @@ class Horse{
         this.horseLoggingObject.dropHorseAge = this.#getHorseAge();
         this.popupHorseObject.dropHorseAge = this.horseLoggingObject.dropHorseAge;
         //console.log("setter präsentiert stolz: das drop horse age: ",this.popupHorseObject.dropHorseAge);
-        // TODO: Muss noch in DB aktualisiert werden; vorzugsweise ohne die Promise Queue zu verwirren
     }
 
     #getHorseAge(){
@@ -129,10 +128,13 @@ class Horse{
         return [years, months];
     }
 
+    /**
+     * Speichert den Drop in der Datenbank, wenn es für das Alter des Pferdes noch keinen Eintrag gibt.
+     */
     #saveHorseDropToDB(){
         //console.log(this.horseLoggingObject);
         //*
-        chrome.runtime.sendMessage({ function: "getPopupHorse", horseURL: this.horseLoggingObject.horseURL}, (response) => {
+        chrome.runtime.sendMessage({ function: "getPopupHorse", horseURL: this.horseLoggingObject.horseURL, horseAge: this.horseLoggingObject.setHorseAge}, (response) => {
             console.log("response vor check ob heute schon was war",response);
             console.log("this dropAge:",this.horseLoggingObject.dropHorseAge);
             if (response.result.dropHorseAge.toString() != this.horseLoggingObject.dropHorseAge.toString()) {
@@ -235,94 +237,65 @@ class Horse{
         }
     }
     /**
-     * Wird ausgeführt, bei Pferden, bei denen aus der Timeline nicht hervorgeht, wenn sie nicht geworfen haben.
+     * Wird ausgeführt, bei Pferden, bei denen aus der Timeline nicht hervorgeht, wenn sie nichts geworfen haben.
+     * Es wird dabei angenommen, dass direkt nach dem Klicken in der Timeline der entsprechende Searchstring auftaucht.
+     * Wenn das nicht der fall ist, werden die deufault werte des drops verwendet für den eintrag.
      */
     #onClick(){
-        console.log(this.searchStrings);
-        // Todo: hier buttonidentifier verwenden statt document
-        $(document).on('click', () => {
-            //TODO: hier muss geprüft werden, ob an diesem tag schon ein eintrag geschrieben wurde
-            //item = window.localStorage.getItem(this.url);
-            //damit dann die berechnung machen mithilfe des reset objekts
-
-            let horseTimeLines = [];
-            $('#history-0 .grid-cell.last').each(function() {
-                // Füge den Textinhalt jedes gefundenen Elements dem Array hinzu
-                horseTimeLines.push($(this).text().trim());
-            });
-    
-            let ergebnis = [];
-            horseTimeLines.forEach(timeLine => {
-                this.searchStrings.forEach(searchString => {
-                    ergebnis = timeLine.match(searchString)?timeLine.match(searchString):ergebnis; 
-                });
-            });
-// kann ersetzt werden mithilfe der childlistoption von MutationObserver
-
-            if (ergebnis) {
-                let date = new Date();
-                this.horseLoggingObject.timeStamp = date.getTime();
-                this.horseLoggingObject.timeStampHumanReadable = date.toISOString()
-
-                this.horseLoggingObject.dropAmount = ergebnis[1];
-                console.log("onClick ergebnis",ergebnis);
-                
-                //hier muss manchmal noch der typ ermittelt werden.
-                //mal schauen, wie man das coden kann, dass man keine ausnamefälle betrachten muss.
-                if (ergebnis[1] >= 0) {
-                    console.log("onClick Ergebnis >0");
-                    this.#saveHorseDropToDB(); // das wird ständig aufgerufen, auch... vor dem Drop...? 
-                }
-            }
-        });
 
         $(document).on('click', this.buttonIdentifier, () => {
-            //TODO: hier muss geprüft werden, ob an diesem tag schon ein eintrag geschrieben wurde
-            //item = window.localStorage.getItem(this.url);
-            //damit dann die berechnung machen mithilfe des reset objekts
+            /*
+            *Dieser Code plant die Ausführung deines Handlers so, dass er nach allen aktuellen Aufrufen im Callstack ausgeführt wird. Das bedeutet, dass alle andere Klick-Handler und Aktionen davor zuerst abgeschlossen werden.
+            */
+            setTimeout(() => {
+                let regexResult = this.#searchSearchStringInTimeLine();
+                this.#setTimestamp();
+                this.#setDropAmount(regexResult[1]);
+                this.#setDropType(ergebnis[2]);
+                this.#saveHorseDropToDB();
 
-            // hochzählen einer variable, wie oft auf den button geklickt wurde
-            // nachfolgenden code nur ausführen, wenn diese variable >= mein maximum ist
-            // ? wie ist das wenn ich beim letzten draufklicken was werfe? checken, ob meine onclick methoden in sinnvoller reihenfolge ausgeführt werden 
-            // auch die anzahl an klicks speichern
-            // wenn klicks erreicht wird der leere eintrag geschrieben
 
-            let date = new Date();
-            this.horseLoggingObject.timeStamp = date.getTime();
-            this.horseLoggingObject.timeStampHumanReadable = date.toISOString()
-
-            this.horseLoggingObject.dropAmount = 0; // TODO: nicht 0, sondern default
-            //hier muss manchmal noch der typ/subtyp ermittelt werden.
-            //mal schauen, wie man das coden kann, dass man keine ausnamefälle betrachten muss.
-            console.log("[onClick] hier wurde gespeichert wtf");
-            //this.#saveHorseDropToDB();
+                showNotification(this.horseLoggingObject.dropAmount,this.horseLoggingObject.dropType,this.horseLoggingObject.dropSubType);
+                this.#doApplicationLog(this.horseLoggingObject, "#onClick")
+            }, 100);
         });
 
+    }
+    #setDropAmount(dropAmount){
+        this.horseLoggingObject.dropAmount = dropAmount?dropAmount:this.defaultAmount;
+    }
+    #setDropType(dropType){
+        this.horseLoggingObject.dropType = this.defaultType;
+        //TODO: hier schauen, wei man das mit dem dynamischen droptype und subdroptype sinvoll reinbekommt
     }
 
     #clickCounter(){
         $(document).on('click', this.buttonIdentifier, () => {
-            //TODO: hier muss geprüft werden, ob an diesem tag schon ein eintrag geschrieben wurde
-            //item = window.localStorage.getItem(this.url);
-            //damit dann die berechnung machen mithilfe des reset objekts
-
-            // hochzählen einer variable, wie oft auf den button geklickt wurde
-            // nachfolgenden code nur ausführen, wenn diese variable >= mein maximum ist
-            // ? wie ist das wenn ich beim letzten draufklicken was werfe? checken, ob meine onclick methoden in sinnvoller reihenfolge ausgeführt werden 
-            // auch die anzahl an klicks speichern
-            // wenn klicks erreicht wird der leere eintrag geschrieben
-
-            let date = new Date();
-            this.horseLoggingObject.timeStamp = date.getTime();
-            this.horseLoggingObject.timeStampHumanReadable = date.toISOString()
-
-            this.horseLoggingObject.dropAmount = 0; // TODO: nicht 0, sondern default
-            //hier muss manchmal noch der typ/subtyp ermittelt werden.
-            //mal schauen, wie man das coden kann, dass man keine ausnamefälle betrachten muss.
-            console.log("[onClick] hier wurde gespeichert wtf");
-            //this.#saveHorseDropToDB();
+            horseLoggingObject.amountClicks++;
         });
 
+    }
+
+    /**
+     * Durchsucht die Timline des Pferdes, indem es für jeden eintrag der Timeline prüft ob ein searchstring darauf zutrifft.
+     * Falls ja wird dessen ergebis zurückgegeben
+     * @returns regexResult
+     */
+    #searchSearchStringInTimeLine(){
+        let horseTimeLines = [];
+        $('#history-0 .grid-cell.last').each(function() {
+            // Füge den Textinhalt jedes gefundenen Elements dem Array hinzu
+            horseTimeLines.push($(this).text().trim());
+        });
+
+        let regexResult = [];
+        horseTimeLines.forEach(timeLine => {
+            this.searchStrings.forEach(searchString => {
+                if (regexResult.length > 0) return;
+                regexResult = timeLine.match(searchString)?timeLine.match(searchString):regexResult; 
+            });
+        });
+        return regexResult;
     }
 
     #onDrop(){
@@ -360,15 +333,13 @@ class Horse{
                 };*/
 
                 // drop time stamp
-                let date = new Date();
-                this.horseLoggingObject.timeStamp = date.getTime();
-                this.popupHorseObject.dropTimestamp = this.horseLoggingObject.timeStamp;
-                this.horseLoggingObject.timeStampHumanReadable = date.toISOString()
+                this.#setTimestamp();
 
                 console.log("link! ",$(timeLineWithLink).find("[href]").attr("href")); 
 
                 // drop amount
                 this.horseLoggingObject.dropAmount = ergebnis[1];
+                //Frage: Wann kann es denn vorkommen, dass der string gefunden wurde, allerdings kein dropAmount darin definiert wurde. und wäre dann nicht die variable defaultAmount nicht sinvoller haben wir da eine dopplung?
                 if (this.horseLoggingObject.dropAmount == undefined) {
                     console.log("value not found. setting amount to default");
                     this.horseLoggingObject.dropAmount = this.valueIfStringNotFound;
@@ -416,6 +387,13 @@ class Horse{
         let observer = new MutationObserver(callback);
         
         observer.observe(historyParent, {childList: true}); // subtree: true, // das im kommentar vermutlich unnötig
+    }
+
+    #setTimestamp() {
+        let date = new Date();
+        this.horseLoggingObject.timeStamp = date.getTime();
+        this.popupHorseObject.dropTimestamp = this.horseLoggingObject.timeStamp;
+        this.horseLoggingObject.timeStampHumanReadable = date.toISOString();
     }
 
     #onSleep(){
@@ -561,16 +539,21 @@ class Horse{
     
     }
 
-    //wird vom script aus aufgerufen
+    /**
+     * Einstieg in das Loggen des jeweiligen Pferdes.
+     * Wird von horseLogging aus aufgerufen.
+     * Hier wird entschieden, wie und was geloggt wird.
+     */
     check(){
-        this.#testOnDrop(); // testing
+        //this.#testOnDrop(); // testing
         this.#onSleep();
         this.#onDrop();
         if (this.isReadyOnWakeup) {
             //this.#onWakeup();
         }
-        else{
+        else if ( this.buttonIdentifier ) {
             this.#onClick();
+            this.#clickCounter();
         }
     }
 
