@@ -73,7 +73,7 @@ class Horse{
         horseURL : null,
         sleepTimestamp : null,
         dropTimestamp : null,
-        dropHorseAge: null,
+        dropHorseAge: ['0','0'],
         showInPopup : null
     }
 
@@ -135,6 +135,10 @@ class Horse{
         //console.log(this.horseLoggingObject);
         //*
         chrome.runtime.sendMessage({ function: "getPopupHorse", horseURL: this.horseLoggingObject.horseURL, horseAge: this.horseLoggingObject.setHorseAge}, (response) => {
+            if (!response.result.dropHorseAge) { // fix für fehlende DropHorseAge
+                chrome.runtime.sendMessage({ function: "updateDropHorseAge", popupHorseObject: this.popupHorseObject}, (response) => {
+                console.log("updated DropHorseAge",response);
+            })};
             console.log("response vor check ob heute schon was war",response);
             console.log("this dropAge:",this.horseLoggingObject.dropHorseAge);
             if (response.result.dropHorseAge.toString() != this.horseLoggingObject.dropHorseAge.toString()) {
@@ -242,16 +246,37 @@ class Horse{
     #clickCounter(){
         console.log("#clickCounter ist hier");
         console.log("#clickCounter, buttonIdentifier: ",this.buttonIdentifier);
-        $(document).on('click', this.buttonIdentifier, () => {
-            this.horseLoggingObject.amountClicks++;
-            console.log("#clickCounter registrierte Klick Nummer ",this.horseLoggingObject.amountClicks);
-        });
-        $(document).ready( () => {
-            $(this.buttonIdentifier).on('click', this.buttonIdentifier, () => {
-                this.horseLoggingObject.amountClicks++;
-                console.log("#clickCounter probiert es diesmal mit .ready, amountClicks steht bei: ",this.horseLoggingObject.amountClicks);
-            });
-        });
+
+        $("body")[0].addEventListener('click', (event) => {
+            console.log("Eventtarget: ",event.target);
+            let closestButton = $(event.target).closest("button.button.button-style-0")[0];
+            let hasCorrectParent = $(closestButton).parent(".grid-cell.odd.last")[0];
+            console.log("closestButton: ",closestButton);
+            console.log("parent: ",hasCorrectParent);
+            if (closestButton && hasCorrectParent) {
+                console.log("horse logging object",this.horseLoggingObject);
+                this.horseLoggingObject.amountClicks+=1;
+                console.log("#clickCounter registrierte Klick Nummer ",this.horseLoggingObject.amountClicks);
+            }
+        }, true);
+
+        // $(document).on('click', (event) => { // this.buttonIdentifier,
+        //     console.log("Eventtarget: ",event.target);
+        //     let isButton = $(event.target).is("button.button.button-style-0");
+        //     let hasCorrectParent = $(event.target).parent(".grid-cell.odd.last")[0];
+        //     console.log("isButton: ",isButton);
+        //     console.log("parent: ",hasCorrectParent);
+        //     if (isButton && hasCorrectParent) {
+        //         this.horseLoggingObject.amountClicks++;
+        //         console.log("#clickCounter registrierte Klick Nummer ",this.horseLoggingObject.amountClicks);
+        //     }
+        // });
+        // $(document).ready( () => { 
+        //     $(this.buttonIdentifier).on('click', this.buttonIdentifier, () => {
+        //         this.horseLoggingObject.amountClicks++;
+        //         console.log("#clickCounter probiert es diesmal mit .ready, amountClicks steht bei: ",this.horseLoggingObject.amountClicks);
+        //     });
+        // });
 
     }
 
