@@ -194,52 +194,22 @@ class Horse{
     #onWakeup(){
         //TODO: onLoad prüfen ob reitzentrum heute ausläuft -> wenn ja dann speichern, das sleep bu
         //TODO: hier muss geprüft werden, ob an diesem tag schon ein eintrag geschrieben wurde 
-        let timeStamp = window.localStorage.getItem(this.url);
-        //damit dann die berechnung machen mithilfe des reset objekts
-        let yesterdayyyyyy = new Date().setDate(new Date().getDate() - 1);
-        // letzter timestamp
-        // letztes howrse reset = resetzeit + url
-        // jetzt
-        // timestamp - howsrereset < 0
-        // falls (gestern und (jetzt < resetzeit)) oder ((heute und vor resetzeit) und (jetzt > resetzeit))
-        // oder man kopiert einfach deine magie aus popup.js
-        if (timeStamp && new Date(timeStamp) - new Date()) {
-
-        }
-
-        let horseTimeLines = [];
-        $('#history-0 .grid-cell.last').each(function() {
-            // Füge den Textinhalt jedes gefundenen Elements dem Array hinzu
-            horseTimeLines.push($(this).text().trim());
-        });
-
-        let ergebnis = [];
-        horseTimeLines.forEach(timeLine => {
-            this.searchStrings.forEach(searchString => {
-                ergebnis = timeLine.match(searchString)?timeLine.match(searchString):ergebnis; 
-            });
-        });
-// kann eventuell ersetzt werden mithilfe der childlistoption von MutationObserver
-
-        if (ergebnis) {
-            let date = new Date();
-            this.horseLoggingObject.timeStamp = date.getTime();
-            this.horseLoggingObject.timeStampHumanReadable = date.toISOString()
-
-            console.log("onWakeup sollte nicht aufgerufen werden gerade",ergebnis);
-
-            //this.horseLoggingObject.dropAmount = ergebnis[1];
-            //hier muss manchmal noch der typ ermittelt werden.
-            //mal schauen, wie man das coden kann, dass man keine ausnamefälle betrachten muss.
+        $(document).ready( () => {
+            let regexResult = this.#searchSearchStringInTimeLine();
+            this.#setTimestamp();
+            this.#setDropAmount(regexResult[1]);
+            this.#setDropType(regexResult[2]);
             this.#saveHorseDropToDB();
-        } else {
-            // default eintrag schreiben
-        }
+
+            showNotification(this.horseLoggingObject.dropAmount,this.horseLoggingObject.dropType,this.horseLoggingObject.dropSubType);
+            this.#doApplicationLog(this.horseLoggingObject, "#onClick")
+        });
     }
+
     /**
      * Wird ausgeführt, bei Pferden, bei denen aus der Timeline nicht hervorgeht, wenn sie nichts geworfen haben.
      * Es wird dabei angenommen, dass direkt nach dem Klicken in der Timeline der entsprechende Searchstring auftaucht.
-     * Wenn das nicht der fall ist, werden die deufault werte des drops verwendet für den eintrag.
+     * Wenn das nicht der Fall ist, werden die default Werte des Drops verwendet für den Eintrag.
      */
     #onClick(){
 
@@ -251,7 +221,7 @@ class Horse{
                 let regexResult = this.#searchSearchStringInTimeLine();
                 this.#setTimestamp();
                 this.#setDropAmount(regexResult[1]);
-                this.#setDropType(ergebnis[2]);
+                this.#setDropType(regexResult[2]);
                 this.#saveHorseDropToDB();
 
 
@@ -265,16 +235,22 @@ class Horse{
         this.horseLoggingObject.dropAmount = dropAmount?dropAmount:this.defaultAmount;
     }
     #setDropType(dropType){
-        this.horseLoggingObject.dropType = this.defaultType;
+        this.horseLoggingObject.dropType = dropType?dropType:this.defaultType;
         //TODO: hier schauen, wei man das mit dem dynamischen droptype und subdroptype sinvoll reinbekommt
     }
 
     #clickCounter(){
         console.log("#clickCounter ist hier");
-        console.log("#clickCounter, buttonIdentifier",this.buttonIdentifier);
-        $(document).on('hover', this.buttonIdentifier, () => {
-            horseLoggingObject.amountClicks++;
+        console.log("#clickCounter, buttonIdentifier: ",this.buttonIdentifier);
+        $(document).on('click', this.buttonIdentifier, () => {
+            this.horseLoggingObject.amountClicks++;
             console.log("#clickCounter registrierte Klick Nummer ",this.horseLoggingObject.amountClicks);
+        });
+        $(document).ready( () => {
+            $(this.buttonIdentifier).on('click', this.buttonIdentifier, () => {
+                this.horseLoggingObject.amountClicks++;
+                console.log("#clickCounter probiert es diesmal mit .ready, amountClicks steht bei: ",this.horseLoggingObject.amountClicks);
+            });
         });
 
     }
@@ -552,12 +528,12 @@ class Horse{
         this.#onSleep();
         //this.#onDrop();
         if (this.isReadyOnWakeup) {
-            //this.#onWakeup();
+            this.#onWakeup();
         }
         else if ( this.buttonIdentifier && this.countClicks) {
             console.log("Spicy?");
-            this.#onDrop();
             this.#clickCounter();
+            this.#onDrop();
         } else if ( this.buttonIdentifier ) {
             console.log("Opal?");
             this.#onClick();
