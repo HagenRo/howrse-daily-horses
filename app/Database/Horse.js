@@ -556,16 +556,16 @@ class Horse{
         this.#onSleep();
         //this.#onDrop();
         if (this.isReadyOnWakeup) {
+            console.log("früher Vogel");
             this.#onWakeup();
-        }
-        else if ( this.buttonIdentifier && this.countClicks) {
+        } else if ( this.buttonIdentifier && this.countClicks) {
             console.log("Spicy?");
             this.#clickCounter();
             this.#onDrop();
         } else if ( this.buttonIdentifier ) {
             console.log("Opal?");
             this.#onClick();
-        } else {
+        } else if (this.searchStrings.length > 0) {
             console.log("weder spicy noch Opal");
             this.#onDrop();
         }
