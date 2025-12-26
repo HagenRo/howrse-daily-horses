@@ -36,6 +36,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             });
             //sendResponse({msg: "[background.js saveHorseToDB] not doing anything yet - but called, yay"});
             break;
+        case "getAllDropData":
+            dataAccessForDailyHorses.getAllDropData()
+            .then(({msg, result})=>{
+                sendResponse({msg: msg, result: result});
+            })
+            .catch((e)=>{
+                sendResponse({msg: e});
+            });
+            break;
         case "updateDropHorseAge":
             dataAccessForPopupHorses.updateDropHorseAge(message.popupHorseObject.horseURL,message.popupHorseObject.dropHorseAge)
             .then(({msg, result})=>{
