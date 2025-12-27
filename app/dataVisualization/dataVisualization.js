@@ -1,9 +1,12 @@
 chrome.runtime.sendMessage({ function: "getAllDropData"}, (response) => {
             console.log("Response", response.result);
+});
+
+chrome.runtime.sendMessage({ function: "getDropInRange", indexName: 'timeStamp', lowerBound: 1766595463}, (response) => {
+    console.log("getDropInRange:", response.result);
 
 
-        });
-
+});
 /**
  * Hier werden die daten, die im horseLoggingobject gespeichert sind in Menschlesbare Informationen umgewandelt.
  */
