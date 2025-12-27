@@ -45,6 +45,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 sendResponse({msg: e});
             });
             break;
+        case "getDropInRange":
+            dataAccessForDailyHorses.getDropInRange(message.indexName, message.lowerBound, message.upperBound)
+            .then(({msg, result})=>{
+                sendResponse({msg: msg, result: result});
+            })
+            .catch((e)=>{
+                sendResponse({msg: e});
+            });
+            break;
         case "updateDropHorseAge":
             dataAccessForPopupHorses.updateDropHorseAge(message.popupHorseObject.horseURL,message.popupHorseObject.dropHorseAge)
             .then(({msg, result})=>{

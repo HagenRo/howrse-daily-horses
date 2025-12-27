@@ -35,13 +35,10 @@ class DatabaseConnection {
             };
 
             request.onerror = (event) => {
-                console.log('request.onerror')
                 reject('Datenbankfehler: ' + event.target.errorCode);
             };
 
             request.onsuccess = (event) => {
-                console.log('request.onsuccess')
-
                 this.db = event.target.result;
                 resolve(this.db);
             };
@@ -190,30 +187,44 @@ class DatabaseConnection {
         });
 
     }
-    /**
-     * Retrieves all items from the object store.
-     * @param {} minKey - The min key of the runs to fetch.
-     * @param {} maxKey - The max key of the runs to fetch.
-     * @returns {Promise<Object>} - A promise that resolves with an array of items or an error message.
-     */
-    async getItemsInRange(minKey, maxKey) {
-        return new Promise((resolve, reject) => {
-            const transaction = this.db.transaction(this.storeName, 'readonly');
-            const store = transaction.objectStore(this.storeName);
-            const keyRange = IDBKeyRange.bound(minKey, maxKey);
+/**
+ * Retrieves items from the object store based on a dynamic index and a specified range.
+ * @param {string} indexName - The name of the index to use.
+ * @param {number} lowerBound - The lower bound of the range.
+ * @param {number} [upperBound] - The optional upper bound of the range.
+ * @returns {Promise<Object>} - A promise that resolves with the found items or an error message.
+ */
+async getItemsInRange(indexName, lowerBound, upperBound) {
+    console.log("[Datamanagement, getItemsInRange] called");
+    return new Promise((resolve, reject) => {
+        const transaction = this.db.transaction(this.storeName, 'readonly');
+        const store = transaction.objectStore(this.storeName);
+        const index = store.index(indexName);
+        
+        // Construct the key range
+        const range = upperBound 
+            ? IDBKeyRange.bound(lowerBound, upperBound) 
+            : IDBKeyRange.lowerBound(lowerBound);
+        
+        const request = index.openCursor(range);
 
-            const request = store.getAll(keyRange);
+        const results = [];
+        request.onsuccess = (event) => {
+            const cursor = event.target.result;
+            if (cursor) {
+                results.push(cursor.value);
+                cursor.continue(); // Move to the next item
+            } else {
+                resolve({ msg: 'success', result: results });
+            }
+        };
 
-            request.onsuccess = (event) => {
-                resolve({ msg: 'success', result: event.target.result });
-            };
-
-            request.onerror = (event) => {
-                console.log(event);
-                reject({ msg: event.target.errorCode });
-            };
-        });
-    }
+        request.onerror = (event) => {
+            console.log(event);
+            reject({ msg: event.target.errorCode });
+        };
+    });
+}
     // async getItemsInKeyRange(keyRange) {
     //     return new Promise((resolve, reject) => {
     //         const transaction = this.db.transaction(this.storeName, 'readonly');
@@ -377,19 +388,19 @@ class DataAccessForDailyHorses {
         });
 
     }
-    /**
-     * Fetches all runs from the database.
-     * @param {Int} dateTimeMin - The min timestamp of the runs to fetch.
-     * @param {Int} dateTimeMax - The max timestamp of the runs to fetch.
-     * @returns {Promise} A Promise that resolves with an array of all runs.
-     */
-    /*
-    getRunsInRange(dateTimeMin, dateTimeMax) {//TODO: damit das funktionieren kann datenbank key umbauen
-        return this.promiseQueue.enqueue(() => {
-            return this.databaseConnection.getItemsInRange(dateTimeMin, dateTimeMax);
-        });
 
-    } // */
+    /**
+     * Retrieves Drops from the object store based on a dynamic index and a specified range.
+     * @param {string} indexName - The name of the index to use.
+     * @param {number} lowerBound - The lower bound of the range.
+     * @param {number} [upperBound] - The optional upper bound of the range.
+     * @returns {Promise<Object>} - A promise that resolves with the found items or an error message.
+     */
+    getDropInRange(indexName, lowerBound, upperBound){
+        return this.promiseQueue.enqueue(() => {
+            return this.databaseConnection.getItemsInRange(indexName, lowerBound, upperBound);
+        });
+    }
     /**
      * Fetches a specific run from the database based on the timestamp.
      * @param {string} dateRunStarted - The timestamp of the run to fetch.
