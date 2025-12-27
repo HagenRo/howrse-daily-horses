@@ -294,7 +294,7 @@ class Horse{
             // Füge den Textinhalt jedes gefundenen Elements dem Array hinzu
             horseTimeLines.push($(this).text().trim());
         });
-
+        console.log("horseTimeLines: ",horseTimeLines);
         let regexResult = [];
         horseTimeLines.forEach(timeLine => {
             this.searchStrings.forEach(searchString => {

@@ -24,7 +24,7 @@ let groom_de = [/Du hast durch Striegeln von .+ (\d+) .+ gefunden./]; // 1. Punk
 let stellar_de = [/Du hast (\d+) x Sternstaub gefunden, indem Du den Stern der Odyssee im Weltraum enthüllst./];
 let spice_de = [/Du hast (\d+) Gewürze für Deine Fortschrittsanzeige erhalten./]; // auch exemptions?
 let jade_de = [/Du hast (\d+)  gewonnen\!/,/Jade ist gerade aufgewacht\./]; //%
-let opal_de = [/Du hast (\d+)  gewonnen\!/,/Opal hat eine Karotte gefressen \(Energie: \+\d+\)/,/Opal hat eine Karotte gefressen \(Energie: \+\d+, Moral: \+\d+\)/]; //%
+let opal_de = [/Du hast (\d+)  gewonnen\!/];//,/Opal hat eine Karotte gefressen \(Energie: \+\d+\)/,/Opal hat eine Karotte gefressen \(Energie: \+\d+, Moral: \+\d+\)/]; //%
 let agate_de = [pass_de];
 let amber_de = [/Du hast (\d+)  gewonnen\!/,/Bernstein hat gestern \d+ kg Pferdeäpfel produziert/];
 let pluto_de = [/Du hast (\d+)  gewonnen\!/,/Ausflug in der Andromeda-Galaxie mit Pluto .+/]; //%
@@ -48,7 +48,7 @@ let agate_en = [pass_en];
 let jade_en = [/You won (\d+) \!/,/Jade has just woken up/]; // there's a passes icon in there, but should just be 1 space in text
 // amber drops either droppings or passes - today it was droppings, passes will be tomorrow.
 let amber_en = [/You won (\d+) !/,/Amber produced \d+ pound.* of droppings yesterday/,/Amber produced \d+ kg of droppings yesterday/]; // uk and au would say "kg" instead of pounds; but this is another EXEMPTION
-let opal_en = [/You won (\d+) !/,/Opal ate a carrot \(energy: \+\d+\)/,/Opal ate a carrot \(energy: \+\d+, morale: \+\d+\)/];
+let opal_en = [/You won (\d+) !/];//,/Opal ate a carrot \(energy: \+\d+\)/,/Opal ate a carrot \(energy: \+\d+, morale: \+\d+\)/];
 let skinfaxi_au = [/Skínfaxi gave \+(\d+) rays of light/]; // if that's okay
 let fairytale_en = [/.+ has read a story and discovered (\d+) plot element/,/.+ has read a story/]; // TODO ergänzen wenn er 2 handlungselemente findet
 let celtic_en = [/.+ used their powers of divination but found no letter from the prediction/,/.+ used their powers of divination and found (\d+) new letter from the prediction/]; // TODO ergänzen wenn er 2 findet
@@ -84,7 +84,7 @@ let pass_se = /Du vann (\d+) \!/;
 let stellar_se = [/Du hittade (\d+) x Stjärnstoft genom att upptäcka rymdodysséstjärnan./,/Du hittade (\d+) x Stjärnstoft genom att upptäcka rymdodysséstjärnan./];
 let spice_se = [/Du har fått tag på (\d+) kryddor till din mätare./];
 let jade_se = [/Du vann (\d+) \!/,/Jade har precis vaknat/];
-let opal_se = [/Du vann (\d+) \!/,/Opal åt en morot .+/];
+let opal_se = [/Du vann (\d+) \!/];//,/Opal åt en morot .+/];
 let maori_se = [/.+ hittade \d+ x sköldpaddsunge. Deras tiki fick (\d+) x mana./];
 let fairytale_se = [/.+ har läst en saga och upptäckt (\d+) berättelseelement/,/.+ har läst en saga/]; // /.+ ger dig (\d+) x (.+)/
 
@@ -194,7 +194,7 @@ let horses ={
     "https://nl.howrse.com/elevage/chevaux/cheval?id=18959265": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=18959265",fairytale_nl,false,0,"fairyTales","snow-queen","Handlungselement",0,false,undefined,false,undefined,false),
     "https://nl.howrse.com/elevage/chevaux/cheval?id=18959264": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=18959264",spice_nl,false,0,"spices","cinnamon","Spices",0,false,undefined,true,spicesButtonIdentifier,false),
     "https://nl.howrse.com/elevage/chevaux/cheval?id=18936183": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=18936183",fairytale_nl,false,0,"fairyTales","sleeping-beauty","Handlungselement",0,false,undefined,false,undefined,true), // doornroosje // darunter feuerwerk eigentlich
-    "https://nl.howrse.com/elevage/chevaux/cheval?id=18808729": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=18808729",[pass_nl],true,0,"pierres","rubis","pass"), // darunter hippocamp eigentlich
+    "https://nl.howrse.com/elevage/chevaux/cheval?id=18808729": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=18808729",[pass_nl],true,0,"pierres","rubis","pass",0), // darunter hippocamp eigentlich
     "https://nl.howrse.com/elevage/chevaux/cheval?id=18796282": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=18796282",stellar_nl,false,0,"stellar","blue-hypergiant","star dust",0,false,undefined,false,undefined,true),
     "https://nl.howrse.com/elevage/chevaux/cheval?id=18740548": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=18740548",[pass_nl],true,0,"pierres","gypse","pass",0,false,undefined,0,undefined,true), // nl gypse
     "https://nl.howrse.com/elevage/chevaux/cheval?id=18715166": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=18715166",fairytale_nl,false,0,"fairyTales","snow-white","Handlungselement",0,false,undefined,undefined,undefined,true), // nl snow white
