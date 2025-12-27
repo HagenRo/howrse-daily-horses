@@ -244,16 +244,19 @@ class Horse{
     }
 
     #clickCounter(){
+        // TODO: Count-Wert behalten, selbst wenn die Seite neu geladen wird, bis der Drop kommt. window.localstorage.setItem
         console.log("#clickCounter ist hier");
         console.log("#clickCounter, buttonIdentifier: ",this.buttonIdentifier);
 
         $("body")[0].addEventListener('click', (event) => {
             console.log("Eventtarget: ",event.target);
-            let closestButton = $(event.target).closest("button.button.button-style-0")[0];
-            let hasCorrectParent = $(closestButton).parent(".grid-cell.odd.last")[0];
-            console.log("closestButton: ",closestButton);
-            console.log("parent: ",hasCorrectParent);
-            if (closestButton && hasCorrectParent) {
+            //let closestButton = $(event.target).closest("button.button.button-style-0")[0];
+            let isButton = $(event.target).closest(this.buttonIdentifier)[0];
+            //let hasCorrectParent = $(closestButton).parent(".grid-cell.odd.last")[0];
+            //console.log("closestButton: ",closestButton);
+            //console.log("parent: ",hasCorrectParent);
+            console.log("test: ",isButton);
+            if (isButton) {
                 console.log("horse logging object",this.horseLoggingObject);
                 this.horseLoggingObject.amountClicks+=1;
                 console.log("#clickCounter registrierte Klick Nummer ",this.horseLoggingObject.amountClicks);
@@ -553,16 +556,16 @@ class Horse{
         this.#onSleep();
         //this.#onDrop();
         if (this.isReadyOnWakeup) {
+            console.log("früher Vogel");
             this.#onWakeup();
-        }
-        else if ( this.buttonIdentifier && this.countClicks) {
+        } else if ( this.buttonIdentifier && this.countClicks) {
             console.log("Spicy?");
             this.#clickCounter();
             this.#onDrop();
         } else if ( this.buttonIdentifier ) {
             console.log("Opal?");
             this.#onClick();
-        } else {
+        } else if (this.searchStrings.length > 0) {
             console.log("weder spicy noch Opal");
             this.#onDrop();
         }
