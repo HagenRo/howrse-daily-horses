@@ -7,12 +7,14 @@ class DatabaseConnection {
      * @param {string} dbName - The name of the database.
      * @param {string} storeName - The name of the object store within the database.
      * @param {string} keyPathd - The key path for the object store.
+     * @param {string} index - The name for the index.
      */
-    constructor(dbName, storeName, keyPathd) {
+    constructor(dbName, storeName, keyPathd, index) {
 
         this.dbName = dbName;
         this.storeName = storeName;
         this.keyPathd = keyPathd;
+        this.index = index;
         this.db = null;
     }
     /**
@@ -24,14 +26,20 @@ class DatabaseConnection {
 
             console.log('indexedDB.open(this.dbName, 1);', this.dbName)
 
-            const request = indexedDB.open(this.dbName, 3);
+            const request = indexedDB.open(this.dbName, 6);
 
             request.onupgradeneeded = (event) => {
                 const db = event.target.result;
                 if (!db.objectStoreNames.contains(this.storeName)) {
                     console.log('this.storeName')
-                    db.createObjectStore(this.storeName, { keyPath: this.keyPathd });
+                    let objectStore = db.createObjectStore(this.storeName, { keyPath: this.keyPathd });
+                    // Create an index on the "name" property
+                    if (this.index) {
+                        objectStore.createIndex(this.index, this.index, { unique: false });
+                    }
+                    
                 }
+                
             };
 
             request.onerror = (event) => {
@@ -199,8 +207,9 @@ async getItemsInRange(indexName, lowerBound, upperBound) {
     return new Promise((resolve, reject) => {
         const transaction = this.db.transaction(this.storeName, 'readonly');
         const store = transaction.objectStore(this.storeName);
+        console.log("[Datamanagement, getItemsInRange] before index");
         const index = store.index(indexName);
-        
+        console.log("[Datamanagement, getItemsInRange] after index");
         // Construct the key range
         const range = upperBound 
             ? IDBKeyRange.bound(lowerBound, upperBound) 
@@ -211,6 +220,7 @@ async getItemsInRange(indexName, lowerBound, upperBound) {
         const results = [];
         request.onsuccess = (event) => {
             const cursor = event.target.result;
+            console.log("Cursor", cursor);
             if (cursor) {
                 results.push(cursor.value);
                 cursor.continue(); // Move to the next item
@@ -220,7 +230,7 @@ async getItemsInRange(indexName, lowerBound, upperBound) {
         };
 
         request.onerror = (event) => {
-            console.log(event);
+            console.log("onerror",event);
             reject({ msg: event.target.errorCode });
         };
     });
@@ -349,7 +359,7 @@ class Queue {
  */
 class DataAccessForDailyHorses {
     constructor() {
-        this.databaseConnection = new DatabaseConnection('DailyHorses', 'Horses', ['horseURL','timeStamp']);
+        this.databaseConnection = new DatabaseConnection('DailyHorses', 'Horses', ['horseURL','timeStamp'],'timeStamp');
         this.promiseQueue = Queue;
         this.initDataAccessForDailyHorses();
     }

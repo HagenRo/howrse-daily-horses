@@ -2,7 +2,7 @@ chrome.runtime.sendMessage({ function: "getAllDropData"}, (response) => {
             console.log("Response", response.result);
 });
 
-chrome.runtime.sendMessage({ function: "getDropInRange", indexName: 'timeStamp', lowerBound: 1766595463}, (response) => {
+chrome.runtime.sendMessage({ function: "getDropInRange", indexName: 'timeStamp', lowerBound: 1766982467068}, (response) => {
     console.log("getDropInRange:", response.result);
 
 
