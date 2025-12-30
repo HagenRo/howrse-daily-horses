@@ -26,7 +26,7 @@ class DatabaseConnection {
 
             console.log('indexedDB.open(this.dbName, 1);', this.dbName)
 
-            const request = indexedDB.open(this.dbName, 7);
+            const request = indexedDB.open(this.dbName, 8);
 
             request.onupgradeneeded = (event) => {
                 const db = event.target.result;
@@ -619,7 +619,7 @@ class DataAccessForPopupHorses {
 
 class DailyHorsesApplicationLog {
     constructor() {
-        this.databaseConnection = new DatabaseConnection('DailyHorsesApplicationLog', 'Log', ['horseURL','timeStamp']);
+        this.databaseConnection = new DatabaseConnection('DailyHorsesApplicationLog', 'Log', ['horseURL','timeStamp'],['timeStamp']);
         this.promiseQueue = Queue;
         this.initDailyHorsesApplicationLog();
     }
