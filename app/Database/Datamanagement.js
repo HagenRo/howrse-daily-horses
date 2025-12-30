@@ -7,14 +7,14 @@ class DatabaseConnection {
      * @param {string} dbName - The name of the database.
      * @param {string} storeName - The name of the object store within the database.
      * @param {string} keyPathd - The key path for the object store.
-     * @param {string} index - The name for the index.
+     * @param {string} indexes - array of index strings.
      */
-    constructor(dbName, storeName, keyPathd, index) {
+    constructor(dbName, storeName, keyPathd, indexes) {
 
         this.dbName = dbName;
         this.storeName = storeName;
         this.keyPathd = keyPathd;
-        this.index = index;
+        this.indexes = indexes;
         this.db = null;
     }
     /**
@@ -26,7 +26,7 @@ class DatabaseConnection {
 
             console.log('indexedDB.open(this.dbName, 1);', this.dbName)
 
-            const request = indexedDB.open(this.dbName, 6);
+            const request = indexedDB.open(this.dbName, 7);
 
             request.onupgradeneeded = (event) => {
                 const db = event.target.result;
@@ -44,8 +44,13 @@ class DatabaseConnection {
                     const objectStore = event.target.transaction.objectStore(this.storeName);
                     
                     // Füge den neuen Index hinzu
-                    if (this.index) {
-                        objectStore.createIndex(this.index, this.index, { unique: false });
+                    if (this.indexes) {
+                        this.indexes.forEach(index => {
+                            if (!objectStore.indexNames.contains(index)) {
+                                objectStore.createIndex(index, index, { unique: false });
+                            }
+                        });
+                        
                     }
                 }
                 
@@ -368,7 +373,7 @@ class Queue {
  */
 class DataAccessForDailyHorses {
     constructor() {
-        this.databaseConnection = new DatabaseConnection('DailyHorses', 'Horses', ['horseURL','timeStamp'],'timeStamp');
+        this.databaseConnection = new DatabaseConnection('DailyHorses', 'Horses', ['horseURL','timeStamp'], ['timeStamp']);
         this.promiseQueue = Queue;
         this.initDataAccessForDailyHorses();
     }
