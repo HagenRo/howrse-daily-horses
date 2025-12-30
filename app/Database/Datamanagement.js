@@ -39,6 +39,15 @@ class DatabaseConnection {
                     }
                     
                 }
+                // Prüfe, ob der Object Store existiert
+                if (db.objectStoreNames.contains(this.storeName)) {
+                    const objectStore = event.target.transaction.objectStore(this.storeName);
+                    
+                    // Füge den neuen Index hinzu
+                    if (this.index) {
+                        objectStore.createIndex(this.index, this.index, { unique: false });
+                    }
+                }
                 
             };
 
