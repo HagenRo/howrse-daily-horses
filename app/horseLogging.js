@@ -4,8 +4,8 @@
  * For divine families, where the drop may have another type, they return two values: the amount and the type. These families are japanese, egypts (sherlock holmes) so far.
  */
 
-let spicesButtonIdentifier = ".grid-cell.odd.last button.button.button-style-0"; // " .button:eq(1)" bzw. " .button:last"
-let carrotButtonIdentifier = "#boutonCarotte";
+const spicesButtonIdentifier = ".grid-cell.odd.last button.button.button-style-0"; // " .button:eq(1)" bzw. " .button:last"
+const carrotButtonIdentifier = "#boutonCarotte";
 
 // de
 let equus_de = /.+ bringt Dir  (\d+) x  Equus\./; // hilfsregex
