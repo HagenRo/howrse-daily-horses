@@ -246,6 +246,7 @@ class Horse {
 
             });
 
+            let historyParent = $('#history-body-content')[0];
             observer.observe(historyParent, { childList: true }); // subtree: true, // das im kommentar vermutlich unnötig
 
             ///-----------------------------------------

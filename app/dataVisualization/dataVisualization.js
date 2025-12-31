@@ -66,12 +66,16 @@ class DataParser{
 
             horseStatistic = accumulatedStatistic[horseID];
             //TODO: übergreifende horse eigenschaften befüllen
+            // erst mal davon ausgehen, dass man es neu anlegt - logik für modifizieren und zusammenführen machen wir später
+            // alle Sachen zu dem generellen Pferd: horse-URL zerlegen in domain und ID, Familienname, Pferdename, zeitpunkt letzter drop, 
+            // alles was bei horseID steht oben, wird hier befüllt
 
             displayDropTypes.forEach(displayDropType => {
 
                 dropStatistic = horseStatistic.displayDrops[displayDropType];
 
                 //TODO: hier müssen jetzt die berechnungen rein die die statistic updaten.
+                // alles was bei <dropType> steht, soll hier gebastelt werden
             });
             
             
