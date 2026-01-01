@@ -3,7 +3,7 @@ class Horse {
     url; // version für reset timer inklusive
     searchStrings = []; // gonna be some regex stuff
     isReadyOnWakeup;
-    valueIfStringNotFound; // value // bonus, 0 // on wakeup except pluto
+    searchEndStrings; // searchString, for which the search is ended for the drop because now the drop should have been found if it will ever be found.
     isUnimportant; // die kann ich hinzufügen, sodass sie geloggt (?) werden, wenn ich sie bespiele, aber sie tauchen nicht in der Liste der "TODO HEUTE DRINGEND" tiere auf
     isExemption; // exception // is pluto
     exemptionFunction; // in case you are an EXEMPTION
@@ -77,12 +77,12 @@ class Horse {
         showInPopup: null
     }
 
-    constructor(url, searchStrings, isReadyOnWakeup, valueIfStringNotFound, horseType, horseName, defaultType, defaultAmount, isExemption, exemptionFunction, countClicks, buttonIdentifier, isUnimportant) {
+    constructor(url, searchStrings, isReadyOnWakeup, horseType, horseName, defaultType, defaultAmount, isExemption, exemptionFunction, countClicks, buttonIdentifier, isUnimportant, searchEndStrings) {
         this.url = url;
         this.searchStrings = searchStrings; // which regex expressions we're looking for
         //console.log(searchStrings);
         this.isReadyOnWakeup = isReadyOnWakeup; // whether the message will be there when the horse wakes up
-        this.valueIfStringNotFound = valueIfStringNotFound;
+        this.searchEndStrings = searchEndStrings;
         this.isExemption = isExemption; // like Onyx with the UFOs or Pluto, with a message that doesn't trigger at one specific point in time
         this.exemptionFunction = exemptionFunction; // how to work this exemption
         this.countClicks = countClicks;
@@ -216,33 +216,37 @@ class Horse {
      * Es wird dabei angenommen, dass direkt nach dem Klicken in der Timeline der entsprechende Searchstring auftaucht.
      * Wenn das nicht der Fall ist, werden die default Werte des Drops verwendet für den Eintrag.
      */
-    #onClick() {
-        $(document).on('click', this.buttonIdentifier, () => {
+    #onDifferentDrop() {
             let observer = new MutationObserver((mutationRecords) => {
-                let horseTimeLines = [];
-                let historyoderso = mutationRecords[0].addedNodes[0].firstChild;
-                $(historyoderso).find("li").each(function () {
-                    horseTimeLines.push($(this).text().trim());
-                });
 
-                let regexResult = this.#searchSearchStringInTimeLine(horseTimeLines);
-                this.#setTimestamp();
-                this.#setDropAmount(regexResult[1]);
-                this.#setDropType(regexResult[2]);
-                this.#saveHorseDropToDB();
+                let dropShoudBeThereOrWontComeToday = this.#couldBeDrop(horseTimeLines);
+                if (dropShoudBeThereOrWontComeToday) {
+                    let horseTimeLines = [];
+                    let historyoderso = mutationRecords[0].addedNodes[0].firstChild;
+                    $(historyoderso).find("li").each(function () {
+                        horseTimeLines.push($(this).text().trim());
+                    });
+
+                    let regexResult = this.#searchSearchStringInTimeLine(horseTimeLines);
+                    
+                    this.#setTimestamp();
+                    this.#setDropAmount(regexResult[1]);
+                    this.#setDropType(regexResult[2]);
+                    this.#saveHorseDropToDB();
 
 
-                showNotification(this.horseLoggingObject.dropAmount, this.horseLoggingObject.dropType, this.horseLoggingObject.dropSubType);
-                this.#doApplicationLog(this.horseLoggingObject, "#onClick");
-                console.log('observer: ', observer);
-                observer.disconnect();
+                    showNotification(this.horseLoggingObject.dropAmount, this.horseLoggingObject.dropType, this.horseLoggingObject.dropSubType);
+                    this.#doApplicationLog(this.horseLoggingObject, "#onDifferentDrop");
+                    console.log('observer: ', observer);
+                    observer.disconnect();
+                }
+                
 
             });
 
             let historyParent = $('#history-body-content')[0];
             observer.observe(historyParent, { childList: true }); // subtree: true, // das im kommentar vermutlich unnötig
 
-        });
 
     }
     #setDropAmount(dropAmount) {
@@ -275,8 +279,8 @@ class Horse {
 
     }
 
-    /**
-     * Durchsucht die Timline des Pferdes, indem es für jeden eintrag der Timeline prüft ob ein searchstring darauf zutrifft.
+/**
+     * Durchsucht die Timline des Pferdes, indem es für jeden eintrag der Timeline prüft ob ein search end string darauf zutrifft.
      * Falls ja wird dessen ergebis zurückgegeben
      * @returns regexResult
      */
@@ -298,6 +302,30 @@ class Horse {
             });
         });
         return regexResult;
+    }
+    /**
+     * Durchsucht die Timline des Pferdes, indem es für jeden eintrag der Timeline prüft ob ein search end string darauf zutrifft.
+     * Falls ja wird true zurückgegeben.
+     * @returns bool
+     */
+    #couldBeDrop(horseTimeLines) {
+        if (!horseTimeLines) {
+            horseTimeLines = [];
+            $('#history-0 .grid-cell.last').each(function () {
+                // Füge den Textinhalt jedes gefundenen Elements dem Array hinzu
+                horseTimeLines.push($(this).text().trim());
+            });
+        }
+
+        console.log("horseTimeLines: ", horseTimeLines);
+        let regexResult = [];
+        horseTimeLines.forEach(timeLine => {
+            this.searchEndStrings.forEach(searchEndString => {
+                if (regexResult.length > 0) return;
+                regexResult = timeLine.match(searchEndString) ? timeLine.match(searchEndString) : regexResult;
+            });
+        });
+        return regexResult.length > 0;
     }
 
     #onDrop() {
@@ -557,9 +585,9 @@ class Horse {
             console.log("Spicy?");
             this.#clickCounter();
             this.#onDrop();
-        } else if (this.buttonIdentifier) {
+        } else if (this.searchEndStrings) {
             console.log("Opal?");
-            this.#onClick();
+            this.#onDifferentDrop();
         } else if (this.searchStrings.length > 0) {
             console.log("weder spicy noch Opal");
             this.#onDrop();
