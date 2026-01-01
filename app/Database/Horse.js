@@ -24,8 +24,10 @@ class Horse {
     dropMapping = {
         // main prize
         "/marche/voir?qName=defi-titans": "Herausforderung der Titanen | Titans Challenge",
+        "/marche/voir?qName=toison-or": "Goldenes Vlies | Golden Fleece",
         "/marche/voir?qName=don-hestia": "Hestias Gabe",
         "/marche/voir?qName=pack-poseidon": "Poseidon-Paket",
+        "/marche/voir?qName=talon-achille": "Achillesferse",
         "/marche/voir?qName=pack-bonus": "Bonuspaket",
         "/marche/voir?qName=monster-egg": "Monster-Ei",
         "/marche/voir?qName=arthur-conan-doyle-inkwell": "Tintenfass von Arthur Conan Doyle",
