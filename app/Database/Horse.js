@@ -219,17 +219,10 @@ class Horse {
      * Wenn das nicht der Fall ist, werden die default Werte des Drops verwendet für den Eintrag.
      */
     #onClick() {
-
-
-
         $(document).on('click', this.buttonIdentifier, () => {
-            ///----------------------------------------------------------------------------------------
             let observer = new MutationObserver((mutationRecords) => {
-                console.log("onClick mutationRecords", mutationRecords);
                 let horseTimeLines = [];
-                console.log("added nodes", mutationRecords[0].addedNodes);
                 let historyoderso = mutationRecords[0].addedNodes[0].firstChild;
-                console.log("history die durchsucht wird", historyoderso);
                 $(historyoderso).find("li").each(function () {
                     horseTimeLines.push($(this).text().trim());
                 });
@@ -251,7 +244,6 @@ class Horse {
             let historyParent = $('#history-body-content')[0];
             observer.observe(historyParent, { childList: true }); // subtree: true, // das im kommentar vermutlich unnötig
 
-            ///-----------------------------------------
         });
 
     }
