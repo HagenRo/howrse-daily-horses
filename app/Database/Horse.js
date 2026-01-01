@@ -374,7 +374,7 @@ class Horse {
                 //Frage: Wann kann es denn vorkommen, dass der string gefunden wurde, allerdings kein dropAmount darin definiert wurde. und wäre dann nicht die variable defaultAmount nicht sinvoller haben wir da eine dopplung?
                 if (this.horseLoggingObject.dropAmount == undefined) {
                     console.log("value not found. setting amount to default");
-                    this.horseLoggingObject.dropAmount = this.valueIfStringNotFound;
+                    this.horseLoggingObject.dropAmount = this.defaultAmount;
                 }
                 console.log("dropAmount: ", this.horseLoggingObject.dropAmount);
                 this.#doApplicationLog(this.horseLoggingObject.dropAmount, "drop amount found");
@@ -528,7 +528,7 @@ class Horse {
             this.horseLoggingObject.dropAmount = ergebnis[1];
             if (this.horseLoggingObject.dropAmount == undefined) {
                 console.log("[test] value not found. setting amount to default");
-                this.horseLoggingObject.dropAmount = this.valueIfStringNotFound;
+                this.horseLoggingObject.dropAmount = this.defaultAmount;
             }
             console.log("[test] dropAmount: ", this.horseLoggingObject.dropAmount);
 
