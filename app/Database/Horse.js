@@ -586,7 +586,7 @@ class Horse {
             this.#clickCounter();
             this.#onDrop();
         } else if (this.searchEndStrings) {
-            console.log("Opal?Pluto?");
+            console.log("Opal? Pluto?");
             this.#onDifferentDrop();
         } else if (this.searchStrings.length > 0) {
             console.log("weder spicy noch Opal");
