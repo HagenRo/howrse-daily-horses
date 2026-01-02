@@ -220,15 +220,13 @@ class Horse {
      */
     #onDifferentDrop() {
             let observer = new MutationObserver((mutationRecords) => {
-
+                let horseTimeLines = [];
+                let historyoderso = mutationRecords[0].addedNodes[0].firstChild;
+                $(historyoderso).find("li").each(function () {
+                    horseTimeLines.push($(this).text().trim());
+                });
                 let dropShoudBeThereOrWontComeToday = this.#couldBeDrop(horseTimeLines);
                 if (dropShoudBeThereOrWontComeToday) {
-                    let horseTimeLines = [];
-                    let historyoderso = mutationRecords[0].addedNodes[0].firstChild;
-                    $(historyoderso).find("li").each(function () {
-                        horseTimeLines.push($(this).text().trim());
-                    });
-
                     let regexResult = this.#searchSearchStringInTimeLine(horseTimeLines);
                     
                     this.#setTimestamp();

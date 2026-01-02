@@ -9,6 +9,7 @@ const carrotButtonIdentifier = "#boutonCarotte";
 const opalEndStrings_de = [/Opal hat eine Karotte gefressen \(Energie: \+\d+\)/,/Opal hat eine Karotte gefressen \(Energie: \+\d+, Moral: \+\d+\)/];
 const opalEndStrings_en = [/Opal ate a carrot \(energy: \+\d+\)/,/Opal ate a carrot \(energy: \+\d+, morale: \+\d+\)/];
 const opalEndStrings_se = [/Opal åt en morot .+/];
+const plutoEndStrings_de = [/Ausflug in der Andromeda-Galaxie mit Pluto .+/];
 
 // de
 let equus_de = /.+ bringt Dir  (\d+) x  Equus\./; // hilfsregex
@@ -30,7 +31,7 @@ let jade_de = [/Du hast (\d+)  gewonnen\!/,/Jade ist gerade aufgewacht\./]; //%
 let opal_de = [/Du hast (\d+)  gewonnen\!/];//,/Opal hat eine Karotte gefressen \(Energie: \+\d+\)/,/Opal hat eine Karotte gefressen \(Energie: \+\d+, Moral: \+\d+\)/]; //%
 let agate_de = [pass_de];
 let amber_de = [/Du hast (\d+)  gewonnen\!/,/Bernstein hat gestern \d+ kg Pferdeäpfel produziert/];
-let pluto_de = [/Du hast (\d+)  gewonnen\!/,/Ausflug in der Andromeda-Galaxie mit Pluto .+/]; //%
+let pluto_de = [/Du hast (\d+)  gewonnen\!/];//,/Ausflug in der Andromeda-Galaxie mit Pluto .+/]; //%
 let fairytale_de = [/.+ hat eine Geschichte gelesen und (\d+) Handlungselemente entdeckt/,/.+ hat eine Geschichte gelesen/]; //% // handlungselemente entdeckt?
 
 // english
@@ -188,7 +189,7 @@ let horses ={
     "https://www.howrse.de/elevage/chevaux/cheval?id=98938751": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=98938751",japanese_de,false), // kigu de
     "https://www.howrse.de/elevage/chevaux/cheval?id=97064563": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=97064563",egypt_de,false), // nubinubi de
     "https://www.howrse.de/elevage/chevaux/cheval?id=96124097": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=96124097",groom_de,false,"mythologique","hippogriffe","feather-hippogriff",0), // hippogreif
-    "https://www.howrse.de/elevage/chevaux/cheval?id=96118362": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=96118362",pluto_de,false,"planetes","pluton","pass",0,false,undefined,false,"#walk-voieLactee-submit",false), // TODO Pluto
+    "https://www.howrse.de/elevage/chevaux/cheval?id=96118362": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=96118362",pluto_de,false,"planetes","pluton","pass",0,false,undefined,false,"#walk-voieLactee-submit",false,plutoEndStrings_de), // TODO Pluto
     "https://www.howrse.de/elevage/chevaux/cheval?id=93504195": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=93504195",chinese_de,true,"chinois","tianma","Bonus",0,false,undefined,undefined,undefined,true), // de tianma
     "https://www.howrse.de/elevage/chevaux/cheval?id=93504128": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=93504128",fairytale_de,false,"fairyTales","jack-and-the-beanstalk","Handlungselement",0), // de jack 1
     "https://www.howrse.de/elevage/chevaux/cheval?id=42987125": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=42987125",[],false), // de mond
@@ -293,7 +294,7 @@ let horses ={
     "https://www.howrse.com/elevage/chevaux/cheval?id=86523091": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=86523091",agate_en,false,"pierres","agate","pass",0), // int achat
     "https://www.howrse.com/elevage/chevaux/cheval?id=85973517": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=85973517",opal_en,false,"pierres","opale","pass",0,false,undefined,undefined,"#boutonCarotte",false,opalEndStrings_en), // int opal (?)
     "https://www.howrse.com/elevage/chevaux/cheval?id=85961694": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=85961694",amber_en,true,"pierres","ambre","pass",0), // int amber 2
-    "https://www.howrse.com/elevage/chevaux/cheval?id=85550189": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=85550189",fairytale_en,false,"fairyTales","jack-and-the-beanstalk","Handlungselement"), // jack
+    "https://www.howrse.com/elevage/chevaux/cheval?id=85550189": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=85550189",fairytale_en,false,"fairyTales","jack-and-the-beanstalk","Handlungselement",0), // jack
     "https://www.howrse.com/elevage/chevaux/cheval?id=85530746": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=85530746",egypt_en,false,"egyptien","ptah",undefined,0,false,undefined,undefined,undefined,true), // int ptah
     "https://www.howrse.com/elevage/chevaux/cheval?id=84834452": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=84834452",stellar_en,false,"stellar","red-giant","star dust",0,false,undefined,undefined,undefined,true), // int r. riese
     "https://www.howrse.com/elevage/chevaux/cheval?id=84802141": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=84802141",spice_en,false,"spices","vanilla","Spices",0,false,undefined,true,spicesButtonIdentifier,false), // int vanilla

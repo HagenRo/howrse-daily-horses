@@ -32,14 +32,14 @@ class DataParser{
             displayDrops : {
                 "<dropType>": {
                     dropType : null, // inklusive subtype! // kann der gesamtdroptype sein, kann aber auch aufgesplittet nach dropmenge sein // wird (genau) bei den spices erweitert durch amountClicks
-                    dropAmountSum : null,
-                    dropTypeAmountAverage : null, // average über nur die Male, wo dieser Type (unabhängig der Menge) gedropt wurde
-                    dropAmountAverage : null, // average über alle Drops, die Menge für diesen Type
+                    dropAmountSum : null, // 
+                    dropTypeAmountAverage : null, // average über nur die Male, wo dieser Type (unabhängig der Menge) gedropt wurde (bsp: 79 von 380 Drops waren irgendwelche Mengen an Apfelsamen)
+                    dropAmountAverage : null, // average über alle Drops, die Menge für diesen Type (bsp: insgesamt gab es etwa 1 AP pro Tag, obwohl auch andere dinge gedropt werden)
                     lastDropAmount : null,
                     lastDropType : null,
                     countDropType : null, // anzahl, wie oft dieser Droptype gedropt wurde - zählt für den Type, und auch zusätzlich abhängig von den möglichen Mengen // bei spices auch für amountClicks
                     countDrops : null, // anzahl der verrechneten Drops für diesen dropType zur berechnung des Averages
-                    averageDropRateByHorseAge : null, //wird berechnet this.dropHorseAge - HorseAgeAtFirstDrop / countDrops //verrechnung von aler ist abhängig von wasser der jugend Alter HorseAgeAtWOY
+                    averageDropRateByHorseAge : null, //wird berechnet this.dropHorseAge - HorseAgeAtFirstDrop / countDrops //verrechnung von alter ist abhängig von wasser der jugend Alter HorseAgeAtWOY
 
                 }
             }
@@ -69,6 +69,20 @@ class DataParser{
             // erst mal davon ausgehen, dass man es neu anlegt - logik für modifizieren und zusammenführen machen wir später
             // alle Sachen zu dem generellen Pferd: horse-URL zerlegen in domain und ID, Familienname, Pferdename, zeitpunkt letzter drop, 
             // alles was bei horseID steht oben, wird hier befüllt
+            // horseStatistic.horseURL; 
+            horseStatistic.horseType = drop.horseType;
+            horseStatistic.horseName = drop.horseName;
+            horseStatistic.timeStampHumanReadable = drop.timeStampHumanReadable;
+            horseStatistic.dropHorseAge = drop.dropHorseAge;
+            horseStatistic.HorseAgeAtFirstDrop = horseStatistic.HorseAgeAtFirstDrop ? horseStatistic.HorseAgeAtFirstDrop : drop.dropHorseAge;
+            // horseStatistic.HorseAgeAtWOY = ; // auslagern schätze ich // falls 
+            if (horseStatistic.HorseAgeAtFirstDrop[1]%2 == 1) {
+                horseStatistic.HorseAgeAtWOY = horseStatistic.HorseAgeAtFirstDrop;
+            } else if (horseStatistic.dropHorseAge[1]%2 == 1) {
+                horseStatistic.HorseAgeAtWOY = horseStatistic.dropHorseAge;
+                horseStatistic.HorseAgeAtWOY[1] = horseStatistic.HorseAgeAtWOY[1]-1;
+            } // or just no WOY, idk how we want to stoe this information
+
 
             displayDropTypes.forEach(displayDropType => {
 
@@ -76,6 +90,21 @@ class DataParser{
 
                 //TODO: hier müssen jetzt die berechnungen rein die die statistic updaten.
                 // alles was bei <dropType> steht, soll hier gebastelt werden
+
+                dropStatistic.dropType = drop.dropAmount + drop.dropType; // überlegen, wie wir die trennen wollen
+                if (drop.dropSubType) {
+                    dropStatistic.dropType = dropStatistic.dropType + " " + drop.dropSubType;
+                }
+                // was wenn drop.dropAmount kein int ist weil wir was übersehen haben. abfangen?
+                dropStatistic.dropAmountSum = dropStatistic.dropAmountSum ? dropStatistic.dropAmountsum + drop.dropAmount : drop.dropAmount;
+                //dropStatistic.lastDropAmount = drop.dropAmount; //?
+                //dropStatistic.lastDropType = drop.dropSubType? drop.dropType + drop.dropSubType : drop.dropType; // ?
+                dropStatistic.countDropType = dropStatistic.countDropType? dropStatistic.countDropType + 1 : 1;
+                dropStatistic.countDrops = dropStatistic.countDrops? dropStatistic.countDrops + 1 : 1;
+                //dropStatistic.dropAmountAverage = dropStatistic.; // ich hab keine ahnung wo wir die nötigen Daten haben
+                // ^ dropAmountAverage klingt nach (Menge gedropter Äpfel) / (Anzahl wie oft dieser obertyp ("n Äpfel") gedropt wurde) oder evtl. durch Anzahl drops insgesamt
+                //dropStatistic.dropTypeAmountAverage = dropStatistic.countDropType / dropStatistic.countDrops ;
+                dropStatistic.averageDropRateByHorseAge = (horseStatistic.dropHorseAge - horseStatistic.HorseAgeAtFirstDrop) / countDrops
             });
             
             
@@ -83,6 +112,7 @@ class DataParser{
     }
     #getHorseID(url){
         //TODO
+        horseID = url.match(/.+\?id=(\d+)/);
         return horseID;
     }
     /**
@@ -118,7 +148,19 @@ class DataParser{
         return newDropTypes;
     }
 
-
+    /**
+     * Will calculate the second age minus the first age in howrse terms
+     * @param {*} firstAge - when the horse was younger
+     * @param {*} secondAge - when it grew older 
+     * @param {*} ageAtWOY - optional, in case the horse received Water Of Youth at some point
+     */
+    #getHorseAgeDiff(firstAge,secondAge,ageAtWOY) {
+        //
+        let ageings = 0; 
+        if (!ageAtWOY) {
+            ageings = (secondAge[0]-firstAge[0])*6 + (secondAge[1]-firstAge[1])/2; 
+        }
+    }
 
 
 }
