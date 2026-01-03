@@ -234,7 +234,7 @@ async getItemsInRange(indexName, lowerBound, upperBound) {
         const results = [];
         request.onsuccess = (event) => {
             const cursor = event.target.result;
-            console.log("Cursor", cursor);
+            //console.log("Cursor", cursor);
             if (cursor) {
                 results.push(cursor.value);
                 cursor.continue(); // Move to the next item
