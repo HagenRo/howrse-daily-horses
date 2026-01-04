@@ -14,7 +14,7 @@ class DataParser {
 
     //TODO: hier die member anpassen, anhand der Spalten und den anzeigetabellen.
     accumulatedStatisticExample = {
-        dropDeltaTimestamp: null,//Zeitpunkt des zuletzt aufgenommenen drops.
+        dropDeltaTimestamp: null,//Zeitpunkt des zuletzt aufgenommenen drops. //TODO: muss noch in acumulated drops jedesmal gesetzt werden, sodass hier am ende der timestamp des äletesten drops drin steht.
         horses: {
             "<horseURL>": {
                 horseDomain: null, // aus der URL ausgelesen
@@ -54,7 +54,9 @@ class DataParser {
     //hier vermulich auch gleich filtern was in welchem tab angezeigt werden soll in unterschiedliche arrays
     constructor(horseLoggingObjects, accumulatedStatistic) {
         this.drops = horseLoggingObjects;
-        this.accumulatedStatistic = accumulatedStatistic ? accumulatedStatistic : {};
+        this.accumulatedStatistic = accumulatedStatistic ? accumulatedStatistic : {
+            horses: {}
+        };
         this.#accumulateDrops();
         console.log("acc.Statistic: ", this.accumulatedStatistic);
     }
@@ -71,7 +73,7 @@ class DataParser {
             let horseURL = drop.horseURL;
             let displayDropTypes = this.#getDisplayDropTypes(drop.dropType, drop.dropSubType, drop.dropAmount, drop.amountClicks)
 
-            let horseStatistic = this.accumulatedStatistic[horseURL];
+            let horseStatistic = this.accumulatedStatistic.horses[horseURL];
             let thisIsANewEntry = false;
             // falls sie nicht existiert: anlegen
             if (!horseStatistic) {
