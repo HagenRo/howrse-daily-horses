@@ -2,7 +2,7 @@ chrome.runtime.sendMessage({ function: "getAllDropData"}, (response) => {
             console.log("Response", response.result);
 });
 //TODO: neue datenbank anlegen, in der die kummulierte Statistik abgelegt ist, erzeugt im dataparser 
-chrome.runtime.sendMessage({ function: "getDropInRange", indexName: 'timeStamp', lowerBound: 1767222000068}, (response) => {
+chrome.runtime.sendMessage({ function: "getDropInRange", indexName: 'timeStamp', lowerBound: 1767222000000}, (response) => {
     console.log("getDropInRange:", response.result);
     let dataParser = new DataParser(response.result);
 });
@@ -32,12 +32,14 @@ class DataParser{
             lastDropAmount : null,
             lastDropType : null,
             countDrops : null, // anzahl der verrechneten Drops für diesen dropType zur berechnung des Averages
-            dropAmountAverage : null, // average über alle Drops, die Menge für diesen Type (bsp: insgesamt gab es etwa 1 AP pro Tag, obwohl auch andere dinge gedropt werden)
+            amountLoggedHorseDays: null,
+            
 
             displayDrops : {
                 "<dropType>": {
                     dropType : null, // inklusive subtype! // kann der gesamtdroptype sein, kann aber auch aufgesplittet nach dropmenge sein // wird (genau) bei den spices erweitert durch amountClicks
                     dropAmountSum : null, // 
+                    dropAmountAverage : null, // average über alle Drops, die Menge für diesen Type (bsp: insgesamt gab es etwa 1 AP pro Tag, obwohl auch andere dinge gedropt werden)
                     dropTypeAmountAverage : null, // average über nur die Male, wo dieser Type (unabhängig der Menge) gedropt wurde (bsp: 79 von 380 Drops waren irgendwelche Mengen an Apfelsamen)
                     countDropType : null, // anzahl, wie oft dieser Droptype gedropt wurde - zählt für den Type, und auch zusätzlich abhängig von den möglichen Mengen // bei spices auch für amountClicks
                     averageDaysUntilDrop : null, // countDrops / wird berechnet lastDropHorseAge - HorseAgeAtFirstDrop //verrechnung von alter ist abhängig von wasser der jugend Alter HorseAgeAtWOY
@@ -82,10 +84,10 @@ class DataParser{
                 horseStatistic.horseName = drop.horseName;
             }
             // falls existent bzw. ansonsten danach: updaten
-            if (horseStatistic.horseType == undefined) {
+            if (!horseStatistic.horseType) {
                 horseStatistic.horseType = drop.horseType;
             }
-            if (horseStatistic.horseName == undefined) {
+            if (!horseStatistic.horseName) {
                 horseStatistic.horseName = drop.horseName;
             }
 
@@ -95,14 +97,14 @@ class DataParser{
             // alles was bei horseID steht oben, wird hier befüllt
             // horseStatistic.horseDomain = ;
 
-            horseStatistic.firstDropTimeStamp = (horseStatistic.firstDropTimeStamp < drop.timeStampHumanReadable) ? horseStatistic.firstDropTimeStamp : drop.timeStampHumanReadable; // so?
+            horseStatistic.firstDropTimeStamp = this.#getFirstDropTimeStamp(horseStatistic.timeStamp, drop.timeStamp); // so!
             // beim updaten - vermutlich, wenn ich nix übersehen habe
             if (this.#horseAgeIsLessThan(horseStatistic.lastDropHorseAge,drop.dropHorseAge)) { // falls neuer, späterer Drop
                 horseStatistic.lastDropTimeStamp = drop.timeStampHumanReadable;
                 horseStatistic.lastDropHorseAge = drop.dropHorseAge; // falls größer, falls Drop überhaupt neu
                 horseStatistic.HorseAgeAtFirstDrop = horseStatistic.HorseAgeAtFirstDrop ? horseStatistic.HorseAgeAtFirstDrop : drop.dropHorseAge;
                 horseStatistic.lastDropAmount = drop.dropAmount; 
-                horseStatistic.lastDropType = this.#getDisplayDropTypes(drop.dropType, drop.dropSubType, drop.dropAmount, drop.amountClicks);
+                horseStatistic.lastDropType = this.#getDisplayDropTypes(drop.dropType, drop.dropSubType, drop.dropAmount, drop.amountClicks).pop();
             }
             // falls drophorseage niedriger ist als letzter drop, müssen wir evtl. horseageatfirstdrop anpassen
             horseStatistic.HorseAgeAtFirstDrop = this.#horseAgeIsLessThan(horseStatistic.HorseAgeAtFirstDrop,drop.dropHorseAge) ? horseStatistic.HorseAgeAtFirstDrop : drop.dropHorseAge;
@@ -116,6 +118,13 @@ class DataParser{
             Object.defineProperty(horseStatistic, 'amountLoggedHorseDays', {
                 get: () => {
                     return parseInt(parseInt(this.subtractHorseAges(horseStatistic.lastDropHorseAge,horseStatistic.HorseAgeAtFirstDrop,horseStatistic.HorseAgeAtWOY)+1));  // Berechnung des erfragten Durchschnitts
+                },
+                enumerable: true, // Das Member wird in Schleifen sichtbar
+                configurable: true // Das Member kann später modifiziert werden
+            });
+            Object.defineProperty(horseStatistic, 'firstDropTimeStampHumanReadable', {
+                get: () => {
+                    return new Date(horseStatistic.firstDropTimeStamp).toLocaleString();  // Berechnung des erfragten Durchschnitts
                 },
                 enumerable: true, // Das Member wird in Schleifen sichtbar
                 configurable: true // Das Member kann später modifiziert werden
@@ -186,6 +195,13 @@ class DataParser{
         });
     }
 
+    #getFirstDropTimeStamp(horseStatisticTimeStamp, dropTimeStamp) {
+        if (horseStatisticTimeStamp) {
+            return (horseStatisticTimeStamp < dropTimeStamp) ? horseStatisticTimeStamp : dropTimeStamp;
+        }
+        return dropTimeStamp;
+    }
+
     #getHorseDomain(url){
         //
         let horseDomain = url.match(/https:\/\/(.+)\/elevage.+/)[1];
@@ -212,20 +228,20 @@ class DataParser{
         let newDropTypes = [];
 
         newDropTypes.push(""+dropType);
-        newDropTypes.push(""+dropType+" | "+dropAmount);
+        newDropTypes.push(""+dropType+" | Amount: "+dropAmount);
         if (dropSubType) {
             newDropTypes.push(""+dropType+" | "+dropSubType);
-            newDropTypes.push(""+dropType+" | "+dropSubType+" | "+dropAmount);
+            newDropTypes.push(""+dropType+" | "+dropSubType+" | Amount: "+dropAmount);
 
             if (amountClicks>0) {
-                newDropTypes.push(""+dropType+" | "+dropSubType+" | "+amountClicks);
-                newDropTypes.push(""+dropType+" | "+dropSubType+" | "+amountClicks+" | "+dropAmount);
+                newDropTypes.push(""+dropType+" | "+dropSubType+" | Clicks: "+amountClicks);
+                newDropTypes.push(""+dropType+" | "+dropSubType+" | Clicks: "+amountClicks+" | Amount: "+dropAmount);
             }
 
         }else{
             if (amountClicks>0) { 
-                newDropTypes.push(""+dropType+" | "+amountClicks); // ist das überhaupt sinnvoll? 
-                newDropTypes.push(""+dropType+" | "+amountClicks+" | "+dropAmount); // order tauschen?
+                newDropTypes.push(""+dropType+" | Clicks: "+amountClicks); // ist das überhaupt sinnvoll? 
+                newDropTypes.push(""+dropType+" | Clicks: "+amountClicks+" | Amount: "+dropAmount); // order tauschen?
             }
         }
 
