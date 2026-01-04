@@ -71,8 +71,8 @@ class DataParser {
         this.drops.forEach(drop => {
             // horse domain
             let horseURL = drop.horseURL;
-            let displayDropTypes = this.#getDisplayDropTypes(drop.dropType, drop.dropSubType, drop.dropAmount, drop.amountClicks)
-
+            let displayDropTypes = this.#getDisplayDropTypes(drop.dropType, drop.dropSubType, drop.dropAmount, drop.amountClicks);
+            accumulatedStatistic.dropDeltaTimestamp = this.#getLastDropTimeStamp(accumulatedStatistic.dropDeltaTimestamp, drop.timeStamp);
             let horseStatistic = this.accumulatedStatistic.horses[horseURL];
             let thisIsANewEntry = false;
             // falls sie nicht existiert: anlegen
@@ -202,6 +202,12 @@ class DataParser {
     #getFirstDropTimeStamp(horseStatisticTimeStamp, dropTimeStamp) {
         if (horseStatisticTimeStamp) {
             return (horseStatisticTimeStamp < dropTimeStamp) ? horseStatisticTimeStamp : dropTimeStamp;
+        }
+        return dropTimeStamp;
+    }
+    #getLastDropTimeStamp(horseStatisticTimeStamp, dropTimeStamp) {
+        if (horseStatisticTimeStamp) {
+            return (horseStatisticTimeStamp > dropTimeStamp) ? horseStatisticTimeStamp : dropTimeStamp;
         }
         return dropTimeStamp;
     }
