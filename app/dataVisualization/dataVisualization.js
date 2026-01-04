@@ -1,12 +1,10 @@
 chrome.runtime.sendMessage({ function: "getAllDropData"}, (response) => {
             console.log("Response", response.result);
-            let dataParser = new DataParser(response.result);
 });
 //TODO: neue datenbank anlegen, in der die kummulierte Statistik abgelegt ist, erzeugt im dataparser 
-chrome.runtime.sendMessage({ function: "getDropInRange", indexName: 'timeStamp', lowerBound: 1766982467068}, (response) => {
+chrome.runtime.sendMessage({ function: "getDropInRange", indexName: 'timeStamp', lowerBound: 1767222000068}, (response) => {
     console.log("getDropInRange:", response.result);
-
-
+    let dataParser = new DataParser(response.result);
 });
 /**
  * Hier werden die daten, die im horseLoggingobject gespeichert sind in Menschlesbare Informationen umgewandelt.
@@ -26,8 +24,9 @@ class DataParser{
             //dropSubType : null, // japonais & sherlockAdventure: coloured tack
             //timeStamp : null,
             lastDropTimeStamp : null, // wird zu "letzter Drop Timestamp"
-            lastDropHorseAge: null, // last drop horse age
-            HorseAgeAtFirstDrop: null, //alter des pferdes, beim ersten verzeichnenten Drop
+            lastDropHorseAge : null, // last drop horse age
+            firstDropTimeStamp : null, // to get the date when we started recording the drops of this horse
+            HorseAgeAtFirstDrop : null, //alter des pferdes, beim ersten verzeichnenten Drop
             HorseAgeAtWOY : null, // Water of Youth, alter als Wasser der Jugend auf das Pferd gekommen ist. Erstes Pferdealter mit ungeradem Monat minus 1.
             //amountClicks : 0, // amount of clicks used to finish horse // together with drop amount for spice horses
             lastDropAmount : null,
@@ -41,7 +40,8 @@ class DataParser{
                     dropAmountSum : null, // 
                     dropTypeAmountAverage : null, // average über nur die Male, wo dieser Type (unabhängig der Menge) gedropt wurde (bsp: 79 von 380 Drops waren irgendwelche Mengen an Apfelsamen)
                     countDropType : null, // anzahl, wie oft dieser Droptype gedropt wurde - zählt für den Type, und auch zusätzlich abhängig von den möglichen Mengen // bei spices auch für amountClicks
-                    averageDropRateByHorseAge : null, // countDrops / wird berechnet lastDropHorseAge - HorseAgeAtFirstDrop //verrechnung von alter ist abhängig von wasser der jugend Alter HorseAgeAtWOY
+                    averageDaysUntilDrop : null, // countDrops / wird berechnet lastDropHorseAge - HorseAgeAtFirstDrop //verrechnung von alter ist abhängig von wasser der jugend Alter HorseAgeAtWOY
+                    averageDropAmountPerHorseAge : null, 
                 }
             }
         }
@@ -82,6 +82,12 @@ class DataParser{
                 horseStatistic.horseName = drop.horseName;
             }
             // falls existent bzw. ansonsten danach: updaten
+            if (horseStatistic.horseType == undefined) {
+                horseStatistic.horseType = drop.horseType;
+            }
+            if (horseStatistic.horseName == undefined) {
+                horseStatistic.horseName = drop.horseName;
+            }
 
             //TODO: übergreifende horse eigenschaften befüllen
             // erst mal davon ausgehen, dass man es neu anlegt - logik für modifizieren und zusammenführen machen wir später
@@ -89,9 +95,9 @@ class DataParser{
             // alles was bei horseID steht oben, wird hier befüllt
             // horseStatistic.horseDomain = ;
 
-
+            horseStatistic.firstDropTimeStamp = (horseStatistic.firstDropTimeStamp < drop.timeStampHumanReadable) ? horseStatistic.firstDropTimeStamp : drop.timeStampHumanReadable; // so?
             // beim updaten - vermutlich, wenn ich nix übersehen habe
-            if (this.#horseAgeIsLessThan(horseStatistic.lastDropHorseAge,drop.dropHorseAge)) {
+            if (this.#horseAgeIsLessThan(horseStatistic.lastDropHorseAge,drop.dropHorseAge)) { // falls neuer, späterer Drop
                 horseStatistic.lastDropTimeStamp = drop.timeStampHumanReadable;
                 horseStatistic.lastDropHorseAge = drop.dropHorseAge; // falls größer, falls Drop überhaupt neu
                 horseStatistic.HorseAgeAtFirstDrop = horseStatistic.HorseAgeAtFirstDrop ? horseStatistic.HorseAgeAtFirstDrop : drop.dropHorseAge;
@@ -102,12 +108,18 @@ class DataParser{
             horseStatistic.HorseAgeAtFirstDrop = this.#horseAgeIsLessThan(horseStatistic.HorseAgeAtFirstDrop,drop.dropHorseAge) ? horseStatistic.HorseAgeAtFirstDrop : drop.dropHorseAge;
 
             // handle water of youth
-            if (drop.dropHorseAge[1]%2 == 1) {
-                horseStatistic.HorseAgeAtWOY = this.#horseAgeIsLessThan(horseStatistic.HorseAgeAtWOY,drop.dropHorseAge) ? horseStatistic.HorseAgeAtWOY : [drop.dropHorseAge[0],drop.dropHorseAge[1]-1];
+            if (parseInt(parseInt(drop.dropHorseAge[1])%2) == 1) {
+                horseStatistic.HorseAgeAtWOY = (horseStatistic.HorseAgeAtWOY && this.#horseAgeIsLessThan(horseStatistic.HorseAgeAtWOY,drop.dropHorseAge)) ? horseStatistic.HorseAgeAtWOY : [drop.dropHorseAge[0],parseInt(drop.dropHorseAge[1])-1];
             }
 
             horseStatistic.countDrops = horseStatistic.countDrops? parseInt(horseStatistic.countDrops) + 1 : 1;
-            horseStatistic.dropAmountAverage = horseStatistic.dropAmountAverage? parseFloat(horseStatistic.dropAmountAverage) + 1 : 1; 
+            Object.defineProperty(horseStatistic, 'amountLoggedHorseDays', {
+                get: () => {
+                    return parseInt(parseInt(this.subtractHorseAges(horseStatistic.lastDropHorseAge,horseStatistic.HorseAgeAtFirstDrop,horseStatistic.HorseAgeAtWOY)+1));  // Berechnung des erfragten Durchschnitts
+                },
+                enumerable: true, // Das Member wird in Schleifen sichtbar
+                configurable: true // Das Member kann später modifiziert werden
+            });
 
             //console.log("displayDropTypes", displayDropTypes);
 
@@ -120,17 +132,48 @@ class DataParser{
                     dropStatistic = {};
                     thisIsANewDropStat = true;
                     dropStatistic.dropType = displayDropType; 
+                    // Dynamisches Hinzufügen eines Members mit einer Getter-Funktion
+                    Object.defineProperty(dropStatistic, 'dropAmountAverage', {
+                        get: function() {
+                            return parseFloat(parseInt(dropStatistic.dropAmountSum)/horseStatistic.countDrops);  // Berechnung des erfragten Durchschnitts
+                        },
+                        enumerable: true, // Das Member wird in Schleifen sichtbar
+                        configurable: true // Das Member kann später modifiziert werden
+                    });
+                    Object.defineProperty(dropStatistic, 'dropTypeAmountAverage', {
+                        get: function() {
+                            return parseFloat(dropStatistic.dropAmountSum / dropStatistic.countDropType);  // Berechnung des erfragten Durchschnitts
+                        },
+                        enumerable: true, // Das Member wird in Schleifen sichtbar
+                        configurable: true // Das Member kann später modifiziert werden
+                    });
+                    Object.defineProperty(dropStatistic, 'averageDaysUntilDrop', {
+                        get: () => { // alle x Tage gibts diesen Drop
+                            //console.log("avgDaysUntilDrop rechnet:", "alter jetzt: ", horseStatistic.lastDropHorseAge, "alter am Anfang: ", horseStatistic.HorseAgeAtFirstDrop," verrechnen: ",parseInt(this.subtractHorseAges(horseStatistic.lastDropHorseAge,horseStatistic.HorseAgeAtFirstDrop)));
+                            //console.log("durch: ",parseInt(dropStatistic.countDropType));
+                            return parseFloat(parseInt(this.subtractHorseAges(horseStatistic.lastDropHorseAge,horseStatistic.HorseAgeAtFirstDrop,horseStatistic.HorseAgeAtWOY)+1) / parseInt(dropStatistic.countDropType));  // Berechnung des erfragten Durchschnitts
+                        },
+                        enumerable: true, // Das Member wird in Schleifen sichtbar
+                        configurable: true // Das Member kann später modifiziert werden
+                    });
+                    Object.defineProperty(dropStatistic, 'averageDropAmountPerHorseAge', {
+                        get: () => {
+                            return parseFloat(parseInt(dropStatistic.dropAmountSum) / parseInt(this.subtractHorseAges(horseStatistic.lastDropHorseAge,horseStatistic.HorseAgeAtFirstDrop,horseStatistic.HorseAgeAtWOY)+1));  // Berechnung des erfragten Durchschnitts
+                        },
+                        enumerable: true, // Das Member wird in Schleifen sichtbar
+                        configurable: true // Das Member kann später modifiziert werden
+                    });
                 }
 
 
-                //TODO: hier müssen jetzt die berechnungen rein die die statistic updaten.
                 // alles was bei <dropType> steht, soll hier gebastelt werden
 
                 dropStatistic.dropAmountSum = dropStatistic.dropAmountSum ? parseInt(parseInt(dropStatistic.dropAmountSum) + parseInt(drop.dropAmount)) : drop.dropAmount; // 1x 35 Apfelsamen wären dann +35.
                 dropStatistic.countDropType = dropStatistic.countDropType? parseInt(parseInt(dropStatistic.countDropType) + 1) : 1;
-                // ^ dropAmountAverage klingt nach (Menge gedropter Äpfel) / (Anzahl wie oft dieser obertyp ("n Äpfel") gedropt wurde) oder evtl. durch Anzahl drops insgesamt
-                dropStatistic.dropTypeAmountAverage = parseFloat(dropStatistic.countDropType / dropStatistic.dropAmountSum);
-                dropStatistic.averageDropRateByHorseAge = parseFloat(dropStatistic.countDropType / this.#subtractHorseAges(horseStatistic.lastDropHorseAge,horseStatistic.HorseAgeAtFirstDrop));
+                // Averages - TODO - am Ende in der Anzeige aktualisieren
+                // horseStatistic.dropAmountAverage = parseFloat(parseInt(dropStatistic.dropAmountSum)/horseStatistic.countDrops); 
+                // dropStatistic.dropTypeAmountAverage = parseFloat(dropStatistic.countDropType / dropStatistic.dropAmountSum);
+                // dropStatistic.averageDropRateByHorseAge = parseFloat(dropStatistic.countDropType / this.#subtractHorseAges(horseStatistic.lastDropHorseAge,horseStatistic.HorseAgeAtFirstDrop));
 
                 if (thisIsANewDropStat) {
                     horseStatistic.displayDrops[displayDropType] = dropStatistic;
@@ -195,13 +238,13 @@ class DataParser{
      * @param {*} secondAge - when it grew older 
      * @param {*} ageAtWOY - optional, in case the horse received Water Of Youth at some point
      */
-    #getHorseAgeDiff(firstAge,secondAge,ageAtWOY) {
-        //
-        let ageings = 0; 
-        if (!ageAtWOY) {
-            ageings = (secondAge[0]-firstAge[0])*6 + (secondAge[1]-firstAge[1])/2; 
-        }
-    }
+    // #getHorseAgeDiff(firstAge,secondAge,ageAtWOY) {
+    //     //
+    //     let ageings = 0; 
+    //     if (!ageAtWOY) {
+    //         ageings = (secondAge[0]-firstAge[0])*6 + (secondAge[1]-firstAge[1])/2; 
+    //     }
+    // }
 
     /**
      * determines, whether the first age is less than the second age, i.e. whether they are "in order"
@@ -223,7 +266,7 @@ class DataParser{
         else if (parseInt(firstAge[0]) < parseInt(secondAge[0])) {
             return true;
         }
-        else if (parseInt(firstAge[1]) < parseInt(secondAge[1])) {
+        else if (parseInt(firstAge[1]) < parseInt(secondAge[1])) { // gleiches Alter in Jahren
             return true;
         }
         return false; // else
@@ -236,14 +279,26 @@ class DataParser{
      * @param {*} ageAtWOY 
      * @returns {Int} amount of ageings between these two numbers
      */
-    #subtractHorseAges(firstAge,secondAge,ageAtWOY) {
+    subtractHorseAges(firstAge,secondAge,ageAtWOY) {
         let yearDiff = 0;
         let monthDiff = 0;
         let totalDiffInAgeings = 0;
+        //console.log("age at WOY!!",ageAtWOY);
         if (!ageAtWOY) {
             yearDiff = firstAge[0]-secondAge[0];
             monthDiff = firstAge[1]-secondAge[1];
             totalDiffInAgeings = yearDiff * 6 + parseInt(monthDiff/2);
+        }
+        else {
+            if (this.#horseAgeIsLessThan(secondAge,ageAtWOY)) {// if it didn't always have WoY apparently
+                yearDiff = ageAtWOY[0]-secondAge[0];
+                monthDiff = ageAtWOY[1]-secondAge[1];
+                totalDiffInAgeings = yearDiff * 6 + parseInt(monthDiff/2);
+            }
+            //console.log("hallo ganz normaler edelstein hier");
+            yearDiff = firstAge[0] - ageAtWOY[0];
+            monthDiff = firstAge[1] - ageAtWOY[1];
+            totalDiffInAgeings = totalDiffInAgeings + (yearDiff * 12) + parseInt(monthDiff);
         }
         return parseInt(totalDiffInAgeings);
     }
