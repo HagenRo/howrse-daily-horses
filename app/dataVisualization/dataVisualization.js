@@ -14,7 +14,7 @@ class DataParser {
 
     //TODO: hier die member anpassen, anhand der Spalten und den anzeigetabellen.
     accumulatedStatisticExample = {
-        dropDeltaTimestamp: null,//Zeitpunkt des zuletzt aufgenommenen drops. //TODO: muss noch in acumulated drops jedesmal gesetzt werden, sodass hier am ende der timestamp des äletesten drops drin steht.
+        dropDeltaTimestamp: null,//Zeitpunkt des zuletzt aufgenommenen drops. 
         horses: {
             "<horseURL>": {
                 horseDomain: null, // aus der URL ausgelesen
