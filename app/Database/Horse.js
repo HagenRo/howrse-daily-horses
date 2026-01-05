@@ -23,7 +23,7 @@ class Horse {
 
     dropMapping = {
         // main prize
-        "/marche/voir?qName=defi-titans": "Herausforderung der Titanen | Titans Challenge",
+        "/marche/voir?qName=defi-titans": "Herausforderung der Titanen | Titans Challenge", // 
         "/marche/voir?qName=toison-or": "Goldenes Vlies | Golden Fleece",
         "/marche/voir?qName=don-hestia": "Hestias Gabe",
         "/marche/voir?qName=pack-poseidon": "Poseidon-Paket",

@@ -72,7 +72,7 @@ class DataParser {
             // horse domain
             let horseURL = drop.horseURL;
             let displayDropTypes = this.#getDisplayDropTypes(drop.dropType, drop.dropSubType, drop.dropAmount, drop.amountClicks);
-            accumulatedStatistic.dropDeltaTimestamp = this.#getLastDropTimeStamp(accumulatedStatistic.dropDeltaTimestamp, drop.timeStamp);
+            this.accumulatedStatistic.dropDeltaTimestamp = this.#getLastDropTimeStamp(this.accumulatedStatistic.dropDeltaTimestamp, drop.timeStamp);
             let horseStatistic = this.accumulatedStatistic.horses[horseURL];
             let thisIsANewEntry = false;
             // falls sie nicht existiert: anlegen
@@ -194,7 +194,7 @@ class DataParser {
             });
 
             if (thisIsANewEntry) { // falls nicht existent war
-                this.accumulatedStatistic[horseURL] = horseStatistic;// ganz am Ende nochmal, beim ersten erstellen
+                this.accumulatedStatistic.horses[horseURL] = horseStatistic;// ganz am Ende nochmal, beim ersten erstellen
             }
         });
     }
@@ -339,7 +339,9 @@ class StatisticForHorsesHandler {
     // expose API
     window.rebuildHorseStatistics = () => this.buildTable();
     // initial build
+    console.log("vor build table",this.accumulatedStatistic);
     this.buildTable();
+    console.log("hinter build table");
   }
 
   buildTable() {
