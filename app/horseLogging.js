@@ -28,6 +28,7 @@ const horseType_sherlock = "sherlockAdventures";
 const horseType_spice = "spice";
 const horseType_stellar = "stellar";
 const horseType_alien = "alien";
+const horseType_artHistory = "artHistory";
 const horseType_tea = "tea"; // hab ich noch keins, aber scheinen Passdropper zu sein
 
 // de
@@ -52,6 +53,7 @@ let agate_de = [pass_de];
 let amber_de = [/Du hast (\d+)  gewonnen\!/,/Bernstein hat gestern \d+ kg Pferdeäpfel produziert/];
 let pluto_de = [/Du hast (\d+)  gewonnen\!/];//,/Ausflug in der Andromeda-Galaxie mit Pluto .+/]; //%
 let fairytale_de = [/.+ hat eine Geschichte gelesen und (\d+) Handlungselemente entdeckt/,/.+ hat eine Geschichte gelesen/]; //% // handlungselemente entdeckt?
+let artHistory_de = [/Schade! Du hast heute kein Teil des Gemäldes gefunden ... Versuche es morgen noch einmal!/,/Herzlichen Glückwunsch! Du hast ein Teil des Gemäldes gefunden!/];
 
 // english
 // log types for proper classification (2 results)
@@ -75,7 +77,7 @@ let opal_en = [/You won (\d+) !/];//,/Opal ate a carrot \(energy: \+\d+\)/,/Opal
 let skinfaxi_au = [/Skínfaxi gave \+(\d+) rays of light/]; // if that's okay
 let fairytale_en = [/.+ has read a story and discovered (\d+) plot element/,/.+ has read a story/]; // TODO ergänzen wenn er 2 handlungselemente findet
 let celtic_en = [/.+ used their powers of divination but found no letter from the prediction/,/.+ used their powers of divination and found (\d+) new letter from the prediction/]; // TODO ergänzen wenn er 2 findet
-let maori_en = [];
+let maori_en = [/.+ found \d+ x baby turtle. Their Tiki received (\d+) x mana./];
 
 // exemptions from com english?
 
@@ -219,6 +221,7 @@ const horseName_bonsai = "bonsai";
 const horseName_onyx = "onyx";
 const horseName_skinfaxi = "skinfaxi";
 const horseName_pixiu = "pixiu";
+const horseName_pixelArt = "pixel-art";
 
 // divine family specific drops
 const familyDropType_spice = "Spices";
@@ -228,6 +231,7 @@ const familyDropType_celtic = "ogham letter";
 const familyDropType_stellar = "star dust";
 const familyDropType_maori = "Mana";
 const familyDropType_chinese = "Bonus";
+const familyDropType_artHistory = "piece of painting";
 
 // drops of multiple families
 const dropType_pass = "pass"; // is not a family specific drop
@@ -244,6 +248,7 @@ const dropType_mythological_skinfaxi = "rays of light";
 
 let horses ={
     "https://www.howrse.de/elevage/chevaux/cheval?id=81394568": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=81394568",chinese_de,true,horseType_chinese,horseName_shenma,familyDropType_chinese,1,false,undefined,undefined,undefined,true), // shenma
+    "https://www.howrse.de/elevage/chevaux/cheval?id=106105725": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=106105725",artHistory_de,true,horseType_artHistory,horseName_pixelArt,familyDropType_artHistory,undefined,false,undefined,false,undefined,true), // pixelchen for fun tracken?
     "https://www.howrse.de/elevage/chevaux/cheval?id=106067817": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=106067817",spice_de,false,horseType_spice,horseName_anise,familyDropType_spice,0),
     "https://www.howrse.de/elevage/chevaux/cheval?id=106117361": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=106117361",groom_de,false,horseType_metal,horseName_silver,familyDropType_metal,0),
     "https://www.howrse.de/elevage/chevaux/cheval?id=105792233": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=105792233",sherlockAdventures_de,false,horseType_sherlock,horseName_moriarty,undefined,0,false,undefined,false,undefined,true), 
@@ -387,6 +392,7 @@ let horses ={
     "https://www.howrse.com/elevage/chevaux/cheval?id=87236940": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=87236940",[pass_en],true,horseType_gemstone,horseName_ruby,dropType_pass,0),
     "https://www.howrse.com/elevage/chevaux/cheval?id=87198474": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=87198474",stellar_en,false,horseType_stellar,horseName_blueHypergiant,familyDropType_stellar,0,false,undefined,false,undefined,true),
     "https://www.howrse.com/elevage/chevaux/cheval?id=86891889": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=86891889",[pass_en],true,horseType_gemstone,horseName_gypsum,dropType_pass,0,false,undefined,0,undefined,true), // int gypse
+    "https://www.howrse.com/elevage/chevaux/cheval?id=86715001": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=86715001",maori_en,false,horseType_maori,horseName_rongo,familyDropType_maori,0,false,undefined,false,undefined,true),
     "https://www.howrse.com/elevage/chevaux/cheval?id=86830002": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=86830002",japanese_en,false,horseType_japanese,horseName_yokai,undefined,0,false,undefined,undefined,undefined,true), // int yokai
     "https://www.howrse.com/elevage/chevaux/cheval?id=86776339": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=86776339",sherlockAdventures_en,false,horseType_sherlock,horseName_sherlockHolmes,undefined,0,false,undefined,undefined,undefined,true),// int sherlock
     "https://www.howrse.com/elevage/chevaux/cheval?id=86768295": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=86768295",fairytale_en,false,horseType_fairyTale,horseName_snowWhite,familyDropType_fairyTale,0,false,undefined,false,undefined,true),
