@@ -53,7 +53,7 @@ let agate_de = [pass_de];
 let amber_de = [/Du hast (\d+)  gewonnen\!/,/Bernstein hat gestern \d+ kg Pferdeäpfel produziert/];
 let pluto_de = [/Du hast (\d+)  gewonnen\!/];//,/Ausflug in der Andromeda-Galaxie mit Pluto .+/]; //%
 let fairytale_de = [/.+ hat eine Geschichte gelesen und (\d+) Handlungselemente entdeckt/,/.+ hat eine Geschichte gelesen/]; //% // handlungselemente entdeckt?
-let artHistory_de = [/Schade! Du hast heute kein Teil des Gemäldes gefunden ... Versuche es morgen noch einmal!/,/Herzlichen Glückwunsch! Du hast ein Teil des Gemäldes gefunden!/];
+let artHistory_de = [/Schade! Du hast heute (kein) Teil des Gemäldes gefunden ... Versuche es morgen noch einmal!/,/Herzlichen Glückwunsch! Du hast (ein) Teil des Gemäldes gefunden!/];
 
 // english
 // log types for proper classification (2 results)
@@ -244,11 +244,27 @@ const dropType_mythological_skinfaxi = "rays of light";
 
 // bitte nicht direkt über horses klatschen.
 
+const parameters_pixelArt = {
+  url: "https://www.howrse.de/elevage/chevaux/cheval?id=106105725",
+  searchStrings: artHistory_de,
+  isReadyOnWakeup: true,
+  horseType: horseType_artHistory,
+  horseName: horseName_pixelArt,
+  defaultType: familyDropType_artHistory,
+  defaultAmount: undefined,
+  isExemption: false,
+  exemptionFunction: undefined,
+  countClicks: false,
+  buttonIdentifier: undefined,
+  isUnimportant: true,
+  searchEndStrings: undefined,
+  dropValueMapping: {"kein": 0, "ein": 1}
+};
 
 
 let horses ={
     "https://www.howrse.de/elevage/chevaux/cheval?id=81394568": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=81394568",chinese_de,true,horseType_chinese,horseName_shenma,familyDropType_chinese,1,false,undefined,undefined,undefined,true), // shenma
-    "https://www.howrse.de/elevage/chevaux/cheval?id=106105725": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=106105725",artHistory_de,true,horseType_artHistory,horseName_pixelArt,familyDropType_artHistory,undefined,false,undefined,false,undefined,true), // pixelchen for fun tracken?
+    "https://www.howrse.de/elevage/chevaux/cheval?id=106105725": new Horse(parameters_pixelArt), // pixelchen for fun tracken?
     "https://www.howrse.de/elevage/chevaux/cheval?id=106067817": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=106067817",spice_de,false,horseType_spice,horseName_anise,familyDropType_spice,0),
     "https://www.howrse.de/elevage/chevaux/cheval?id=106117361": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=106117361",groom_de,false,horseType_metal,horseName_silver,familyDropType_metal,0),
     "https://www.howrse.de/elevage/chevaux/cheval?id=105792233": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=105792233",sherlockAdventures_de,false,horseType_sherlock,horseName_moriarty,undefined,0,false,undefined,false,undefined,true), 
