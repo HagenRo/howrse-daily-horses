@@ -28,11 +28,12 @@ class Horse {
         "/marche/voir?qName=don-hestia": "Hestias Gabe",
         "/marche/voir?qName=pack-poseidon": "Poseidon-Paket",
         "/marche/voir?qName=talon-achille": "Achillesferse",
+        "/marche/voir?qName=sablier-chronos": "Chronos' Zeitgeber", 
         "/marche/voir?qName=pack-bonus": "Bonuspaket",
         "/marche/voir?qName=monster-egg": "Monster-Ei",
         "/marche/voir?qName=arthur-conan-doyle-inkwell": "Tintenfass von Arthur Conan Doyle",
         "/marche/voir?qName=alexandre-dumas-inkwell": "Tintenfass von Alexandre Dumas",
-
+        // kleinkram
         "/marche/voir?qName=vieillissement": "Alterungspunkte",
         "/marche/voir?qName=ressource-cuir": "Leder",
         "/marche/voir?qName=ressource-bois": "Holz",
@@ -80,61 +81,33 @@ class Horse {
     }
 
     constructor(url, searchStrings, isReadyOnWakeup, horseType, horseName, defaultType, defaultAmount, isExemption, exemptionFunction, countClicks, buttonIdentifier, isUnimportant, searchEndStrings) {
-        if (typeof url === 'object' && url !== null) {
-            this.url = url.url;
-            this.searchStrings = url.searchStrings; // which regex expressions we're looking for
-            this.isReadyOnWakeup = url.isReadyOnWakeup; // whether the message will be there when the horse wakes up
-            this.searchEndStrings = url.searchEndStrings;
-            this.isExemption = url.isExemption; // like Onyx with the UFOs or Pluto, with a message that doesn't trigger at one specific point in time
-            this.exemptionFunction = url.exemptionFunction; // how to work this exemption
-            this.countClicks = url.countClicks;
-            this.defaultType = url.defaultType;
-            this.defaultAmount = url.defaultAmount;
-            this.buttonIdentifier = url.buttonIdentifier; // Button der gedrückt wird, woraufhin ein drop passiert oder nicht
-            this.isUnimportant = url.isUnimportant;
-            this.dropValueMapping = url.dropValueMapping;
+        this.url = url;
+        this.searchStrings = searchStrings; // which regex expressions we're looking for
+        //console.log(searchStrings);
+        this.isReadyOnWakeup = isReadyOnWakeup; // whether the message will be there when the horse wakes up
+        this.searchEndStrings = searchEndStrings;
+        this.isExemption = isExemption; // like Onyx with the UFOs or Pluto, with a message that doesn't trigger at one specific point in time
+        this.exemptionFunction = exemptionFunction; // how to work this exemption
+        this.countClicks = countClicks;
+        this.defaultType = defaultType;
+        this.defaultAmount = defaultAmount;
+        this.buttonIdentifier = buttonIdentifier; // Butto der gedrückt wird, woraufhin ein drop passiert oder nicht
+        this.isUnimportant = isUnimportant;
+        //
 
-            this.horseLoggingObject.horseURL = url.url;
-            this.horseLoggingObject.horseType = url.horseType;
-            this.horseLoggingObject.horseName = url.horseName; // von howrse gesetzter internationaler name
-            this.horseLoggingObject.dropAmount = this.defaultAmount;
-            this.horseLoggingObject.amountClicks = 0;//this.countClicks;
+        this.horseLoggingObject.horseURL = url;
+        this.horseLoggingObject.horseType = horseType;
+        this.horseLoggingObject.horseName = horseName; // von howrse gesetzter internationaler name
+        this.horseLoggingObject.dropAmount = this.defaultAmount;
+        //this.horseLoggingObject.dropType = this.defaultType;
+        this.horseLoggingObject.amountClicks = 0;//this.countClicks;
 
-            this.popupHorseObject.horseName = url.horseName;
-            this.popupHorseObject.horseURL = url.url;
-            this.popupHorseObject.showInPopup = !url.isUnimportant;
-
-        } else {
-            this.url = url;
-            this.searchStrings = searchStrings; // which regex expressions we're looking for
-            //console.log(searchStrings);
-            this.isReadyOnWakeup = isReadyOnWakeup; // whether the message will be there when the horse wakes up
-            this.searchEndStrings = searchEndStrings;
-            this.isExemption = isExemption; // like Onyx with the UFOs or Pluto, with a message that doesn't trigger at one specific point in time
-            this.exemptionFunction = exemptionFunction; // how to work this exemption
-            this.countClicks = countClicks;
-            this.defaultType = defaultType;
-            this.defaultAmount = defaultAmount;
-            this.buttonIdentifier = buttonIdentifier; // Butto der gedrückt wird, woraufhin ein drop passiert oder nicht
-            this.isUnimportant = isUnimportant;
-            //
-
-            this.horseLoggingObject.horseURL = url;
-            this.horseLoggingObject.horseType = horseType;
-            this.horseLoggingObject.horseName = horseName; // von howrse gesetzter internationaler name
-            this.horseLoggingObject.dropAmount = this.defaultAmount;
-            //this.horseLoggingObject.dropType = this.defaultType;
-            this.horseLoggingObject.amountClicks = 0;//this.countClicks;
-
-            this.popupHorseObject.horseName = horseName;
-            this.popupHorseObject.horseURL = url;
-            this.popupHorseObject.showInPopup = !isUnimportant;
-            // this.popupHorseObject.dropHorseAge = [0,0]; // initial
-            // this.horseLoggingObject.dropHorseAge = [0,0];
-            //console.log(url);
-        }
-
-
+        this.popupHorseObject.horseName = horseName;
+        this.popupHorseObject.horseURL = url;
+        this.popupHorseObject.showInPopup = !isUnimportant;
+        // this.popupHorseObject.dropHorseAge = [0,0]; // initial
+        // this.horseLoggingObject.dropHorseAge = [0,0];
+        //console.log(url);
 
         chrome.runtime.sendMessage({ function: "addOrUpdatePopupHorseToDB", popupHorseObject: this.popupHorseObject }, (response) => {
             //console.log(response);
@@ -247,42 +220,38 @@ class Horse {
      * Wenn das nicht der Fall ist, werden die default Werte des Drops verwendet für den Eintrag.
      */
     #onDifferentDrop() {
-        let observer = new MutationObserver((mutationRecords) => {
-            let horseTimeLines = [];
-            let historyoderso = mutationRecords[0].addedNodes[0].firstChild;
-            $(historyoderso).find("li").each(function () {
-                horseTimeLines.push($(this).text().trim());
+            let observer = new MutationObserver((mutationRecords) => {
+                let horseTimeLines = [];
+                let historyoderso = mutationRecords[0].addedNodes[0].firstChild;
+                $(historyoderso).find("li").each(function () {
+                    horseTimeLines.push($(this).text().trim());
+                });
+                let dropShoudBeThereOrWontComeToday = this.#couldBeDrop(horseTimeLines);
+                if (dropShoudBeThereOrWontComeToday) {
+                    let regexResult = this.#searchSearchStringInTimeLine(horseTimeLines);
+                    
+                    this.#setTimestamp();
+                    this.#setDropAmount(regexResult[1]);
+                    this.#setDropType(regexResult[2]);
+                    this.#saveHorseDropToDB();
+
+
+                    showNotification(this.horseLoggingObject.dropAmount, this.horseLoggingObject.dropType, this.horseLoggingObject.dropSubType);
+                    this.#doApplicationLog(this.horseLoggingObject, "#onDifferentDrop");
+                    console.log('observer: ', observer);
+                    observer.disconnect();
+                }
+                
+
             });
-            let dropShoudBeThereOrWontComeToday = this.#couldBeDrop(horseTimeLines);
-            if (dropShoudBeThereOrWontComeToday) {
-                let regexResult = this.#searchSearchStringInTimeLine(horseTimeLines);
 
-                this.#setTimestamp();
-                this.#setDropAmount(regexResult[1]);
-                this.#setDropType(regexResult[2]);
-                this.#saveHorseDropToDB();
-
-
-                showNotification(this.horseLoggingObject.dropAmount, this.horseLoggingObject.dropType, this.horseLoggingObject.dropSubType);
-                this.#doApplicationLog(this.horseLoggingObject, "#onDifferentDrop");
-                console.log('observer: ', observer);
-                observer.disconnect();
-            }
-
-
-        });
-
-        let historyParent = $('#history-body-content')[0];
-        observer.observe(historyParent, { childList: true }); // subtree: true, // das im kommentar vermutlich unnötig
+            let historyParent = $('#history-body-content')[0];
+            observer.observe(historyParent, { childList: true }); // subtree: true, // das im kommentar vermutlich unnötig
 
 
     }
     #setDropAmount(dropAmount) {
-        if (this.dropValueMapping) {
-            this.horseLoggingObject.dropAmount = dropAmount ? dropValueMapping[dropAmount] : this.defaultAmount;
-        } else {
-            this.horseLoggingObject.dropAmount = dropAmount ? dropAmount : this.defaultAmount;
-        }
+        this.horseLoggingObject.dropAmount = dropAmount ? dropAmount : this.defaultAmount;
     }
     #setDropType(dropType) {
         this.horseLoggingObject.dropType = dropType ? dropType : this.defaultType;
@@ -311,11 +280,11 @@ class Horse {
 
     }
 
-    /**
-         * Durchsucht die Timline des Pferdes, indem es für jeden eintrag der Timeline prüft ob ein search end string darauf zutrifft.
-         * Falls ja wird dessen ergebis zurückgegeben
-         * @returns regexResult
-         */
+/**
+     * Durchsucht die Timline des Pferdes, indem es für jeden eintrag der Timeline prüft ob ein search end string darauf zutrifft.
+     * Falls ja wird dessen ergebis zurückgegeben
+     * @returns regexResult
+     */
     #searchSearchStringInTimeLine(horseTimeLines) {
         if (!horseTimeLines) {
             horseTimeLines = [];
@@ -400,8 +369,12 @@ class Horse {
                 console.log("link! ", $(timeLineWithLink).find("[href]").attr("href"));
 
                 // drop amount
-                this.#setDropAmount(ergebnis[1]);
-
+                this.horseLoggingObject.dropAmount = ergebnis[1];
+                //Frage: Wann kann es denn vorkommen, dass der string gefunden wurde, allerdings kein dropAmount darin definiert wurde. und wäre dann nicht die variable defaultAmount nicht sinvoller haben wir da eine dopplung?
+                if (this.horseLoggingObject.dropAmount == undefined) {
+                    console.log("value not found. setting amount to default");
+                    this.horseLoggingObject.dropAmount = this.defaultAmount;
+                }
                 console.log("dropAmount: ", this.horseLoggingObject.dropAmount);
                 this.#doApplicationLog(this.horseLoggingObject.dropAmount, "drop amount found");
 
@@ -512,7 +485,7 @@ class Horse {
 
     }
 
-    //Veraltetercode
+    //führt die logik von onDrop aus beim laden der seite statt über den mutation record change
     #testOnDrop() {
         let historyItems = $('#history-body-content').find('.grid-row.dashed');
         console.log("[test] testOnDrop is here");
