@@ -263,6 +263,9 @@ class Horse {
         console.log("#clickCounter ist hier");
         console.log("#clickCounter, buttonIdentifier: ", this.buttonIdentifier);
 
+        let isCooldown = false; // Variable für die Entprellung
+        const cooldownTime = 300; // Zeit in Millisekunden, hier 300ms
+
         $("body")[0].addEventListener('click', (event) => {
             console.log("Eventtarget: ", event.target);
             //let closestButton = $(event.target).closest("button.button.button-style-0")[0];
@@ -275,6 +278,11 @@ class Horse {
                 console.log("horse logging object", this.horseLoggingObject);
                 this.horseLoggingObject.amountClicks += 1;
                 console.log("#clickCounter registrierte Klick Nummer ", this.horseLoggingObject.amountClicks);
+
+                isCooldown = true; // Cooldown aktivieren
+                setTimeout(() => {
+                    isCooldown = false; // Cooldown zurücksetzen nach der definierten Zeit
+                }, cooldownTime);
             }
         }, true);
 
