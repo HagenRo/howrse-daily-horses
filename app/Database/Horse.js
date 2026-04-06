@@ -16,7 +16,7 @@ class Horse {
     // general types
     type_equus = { "type": "Equus", "searchStrings": [/.+ bringt Dir  (\d+) x  Equus\./, /.+ bringt Dir (\d+) x  Equus\./, /.+ brings you (\d+) x  Equus./, /.+ brengt je (\d+) x  Equus\./, /.+ ger dig (\d+) x  Equus\./] };
     // skills TODO: NL & SE chinese!
-    type_skills = { "type": "Skillpunkte", "searchStrings": [/.+ hat (\d+) Fähigkeitspunkte gewonnen, die verteilt werden können/, /.+ bringt Dir  (\d+) Fähigkeitenpunkte./, /.+ brings you  (\d+) skill points./, /.+ won (\d+) skill points you can spend whichever way you like/, /.+ brengt je  (\d+) vaardigheidspunten./, /.+ ger dig  (\d+) färdighetspoäng./] };
+    type_skills = { "type": "Skillpunkte", "searchStrings": [/.+ hat (\d+) Fähigkeitspunkte gewonnen, die verteilt werden können/, /.+ bringt Dir  (\d+) Fähigkeitenpunkte./, /.+ bringt Dir  (\d+) Fähigkeitenpunkt./, /.+ brings you  (\d+) skill points./, /.+ won (\d+) skill points you can spend whichever way you like/, /.+ brengt je  (\d+) vaardigheidspunten./, /.+ ger dig  (\d+) färdighetspoäng./] };
     type_passes = { "type": "Pässe", "searchStrings": [/Du hast (\d+)  gewonnen\!/, /.+ bringt Dir (\d+) \./, /You won (\d+) \!/, /Je won (\d+) \!/, /Du vann (\d+) \!/] };
 
     dropTypesToSearch = [this.type_equus, this.type_skills, this.type_passes];
