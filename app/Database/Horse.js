@@ -36,7 +36,7 @@ class Horse {
         // kleinkram
         "/marche/voir?qName=vieillissement": "Alterungspunkte",
         "/marche/voir?qName=ressource-cuir": "Leder",
-        "/marche/voir?qName=ressource-bois": "Holz",
+        "/marche/voir?qName=ressource-bois": "Holz",    
         "/marche/voir?qName=ressource-fer": "Eisen",
         "/marche/voir?qName=ressource-sable": "Sand",
         "/marche/voir?qName=avoine": "Hafer | Oats",
