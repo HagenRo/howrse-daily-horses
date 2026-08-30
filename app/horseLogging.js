@@ -6,8 +6,8 @@
 
 const spicesButtonIdentifier = ".grid-cell.odd.last button.button.button-style-0"; // " .button:eq(1)" bzw. " .button:last"
 const carrotButtonIdentifier = "#boutonCarotte";
-const opalEndStrings_de = [/Opal hat eine Karotte gefressen \(Energie: \+\d+\)/,/Opal hat eine Karotte gefressen \(Energie: \+\d+, Moral: \+\d+\)/];
-const opalEndStrings_en = [/Opal ate a carrot \(energy: \+\d+\)/,/Opal ate a carrot \(energy: \+\d+, morale: \+\d+\)/];
+const opalEndStrings_de = [/Opal hat eine Karotte gefressen \(Energie: \+(?:\d+|\d.\d)\)/,/Opal hat eine Karotte gefressen \(Energie: \+(?:\d+|\d.\d), Moral: \+\d+\)/];
+const opalEndStrings_en = [/Opal ate a carrot \(energy: \+(?:\d+|\d.\d)\)/,/Opal ate a carrot \(energy: \+(?:\d+|\d.\d), morale: \+\d+\)/];
 const opalEndStrings_se = [/Opal åt en morot .+/];
 const plutoEndStrings_de = [/Ausflug in der Andromeda-Galaxie mit Pluto .+/];
 
@@ -67,7 +67,7 @@ let sherlockAdventures_en = [/.+ brings you  (\d+) (.+)./,/.+ brings you (\d+) x
 let equus_en = /.+ brings you (\d+) x  Equus./;
 let pass_en = /You won (\d+) \!/;
 let stellar_en = [/You found (\d+) x Stardusts by uncovering the Space Odyssey star./];
-let spice_en = [/You have obtained (\d+) spices for your meter./];
+let spice_en = [/You have obtained (\d+) spices for your meter./,/You have obtained (\d+) spices for your metre./];
 let spice_uk_au = [/You have obtained (\d+) spices for your metre./];
 let groom_en = [/You found (\d+) .+ by grooming .+\./]; // minerals or scales
 let agate_en = [pass_en];
@@ -227,6 +227,8 @@ const horseName_pixelArt = "pixel-art";
 const horseName_sakura = "sakura";
 const horseName_rhenium = "metal-rhenium";
 const horseName_tyr = "tyr";
+const horseName_platinum = "metal-platinum";
+const horseName_jupiter = "jupiter";
 
 // divine family specific drops
 const familyDropType_spice = "Spices";
@@ -249,6 +251,7 @@ const dropType_mythological_skinfaxi = "rays of light";
 
 // bitte nicht direkt über horses klatschen.
 
+/*
 const parameters_pixelArt = {
   url: "https://www.howrse.de/elevage/chevaux/cheval?id=106105725",
   searchStrings: artHistory_de,
@@ -264,15 +267,18 @@ const parameters_pixelArt = {
   isUnimportant: true,
   searchEndStrings: undefined,
   dropValueMapping: {"kein": 0, "ein": 1}
-};
+}; */
 
 
 let horses ={
     "https://www.howrse.de/elevage/chevaux/cheval?id=81394568": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=81394568",chinese_de,true,horseType_chinese,horseName_shenma,familyDropType_chinese,1,false,undefined,undefined,undefined,true), // shenma
+    "https://www.howrse.de/elevage/chevaux/cheval?id=109114198": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=109114198",pass_de,false,horseType_solarSystem,horseName_jupiter,dropType_pass,0,false,undefined,false,undefined,false), // juppppiiiiter
+    "https://www.howrse.de/elevage/chevaux/cheval?id=109082902": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=109082902",fairytale_de,false,horseType_fairyTale,horseName_jack,familyDropType_fairyTale,0,false,undefined,false,undefined,false), // jack 3
+    "https://www.howrse.de/elevage/chevaux/cheval?id=108136453": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=108136453",groom_de,false,horseType_metal,horseName_platinum,familyDropType_metal,0,false,undefined,false,undefined,false), // platin
     "https://www.howrse.de/elevage/chevaux/cheval?id=107577501": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=107577501",[],false,horseType_nordic,horseName_tyr), // tyr
     "https://www.howrse.de/elevage/chevaux/cheval?id=107577485": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=107577485",groom_de,false,horseType_metal,horseName_rhenium,familyDropType_metal,0,false,undefined,false,undefined,false),    
     "https://www.howrse.de/elevage/chevaux/cheval?id=107516786": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=107516786",[],false,horseType_dragon,horseName_kaiju,undefined,0,false,undefined,false,undefined,false),
-    "https://www.howrse.de/elevage/chevaux/cheval?id=106105725": new Horse(parameters_pixelArt), // pixelchen for fun tracken?
+    "https://www.howrse.de/elevage/chevaux/cheval?id=106105725": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=106105725",artHistory_de,true,horseType_artHistory,horseName_pixelArt,familyDropType_artHistory,undefined,false,undefined,false,undefined,true), //parameters_pixelArt), // pixelchen for fun tracken?
     "https://www.howrse.de/elevage/chevaux/cheval?id=106067817": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=106067817",spice_de,false,horseType_spice,horseName_anise,familyDropType_spice,0,false,undefined,true,spicesButtonIdentifier,false),
     "https://www.howrse.de/elevage/chevaux/cheval?id=106117361": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=106117361",groom_de,false,horseType_metal,horseName_silver,familyDropType_metal,0),
     "https://www.howrse.de/elevage/chevaux/cheval?id=105792233": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=105792233",sherlockAdventures_de,false,horseType_sherlock,horseName_moriarty,undefined,0,false,undefined,false,undefined,true), 
@@ -289,7 +295,7 @@ let horses ={
     "https://www.howrse.de/elevage/chevaux/cheval?id=104625634": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=104625634",[pass_de],true,horseType_gemstone,horseName_ruby,dropType_pass,0), // de Rubin
     "https://www.howrse.de/elevage/chevaux/cheval?id=104228738": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=104228738",[pass_de],true,horseType_gemstone,horseName_gypsum,dropType_pass,0,false,undefined,0,undefined,true), // de gypse
     "https://www.howrse.de/elevage/chevaux/cheval?id=104005047": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=104005047",sherlockAdventures_de,false,horseType_sherlock,horseName_sherlockHolmes,undefined,0,false,undefined,undefined,undefined,true), // de sherlock holmes
-    "https://www.howrse.de/elevage/chevaux/cheval?id=104005018": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=104005018",fairytale_en,false,horseType_fairyTale,horseName_snowWhite,familyDropType_fairyTale,0,false,undefined,false,undefined,true),
+    "https://www.howrse.de/elevage/chevaux/cheval?id=104005018": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=104005018",fairytale_de,false,horseType_fairyTale,horseName_snowWhite,familyDropType_fairyTale,0,false,undefined,false,undefined,true),
     "https://www.howrse.de/elevage/chevaux/cheval?id=103999426": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=103999426",japanese_de,false,horseType_japanese,horseName_yokai,undefined,0,false,undefined,undefined,undefined,true), // de yokai
     "https://www.howrse.de/elevage/chevaux/cheval?id=103843370": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=103843370",[],false,horseType_alien,horseName_roptader), // de roptader
     "https://www.howrse.de/elevage/chevaux/cheval?id=103182464": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=103182464",[],false,horseType_musketeer,horseName_athos), // de athos
@@ -318,8 +324,9 @@ let horses ={
     "https://www.howrse.de/elevage/chevaux/cheval?id=93504128": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=93504128",fairytale_de,false,horseType_fairyTale,horseName_jack,familyDropType_fairyTale,0), // de jack 1
     "https://www.howrse.de/elevage/chevaux/cheval?id=42987125": new Horse("https://www.howrse.de/elevage/chevaux/cheval?id=42987125",[],false,horseType_solarSystem,horseName_moon), // de mond
 
+    "https://nl.howrse.com/elevage/chevaux/cheval?id=19365298": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=19365298",groom_nl,false,horseType_metal,horseName_platinum,familyDropType_metal,0,false,undefined,false,undefined,false),
     "https://nl.howrse.com/elevage/chevaux/cheval?id=19273670": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=19273670",[],false,horseType_nordic,horseName_tyr),
-    "https://nl.howrse.com/elevage/chevaux/cheval?id=19272807": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=19272807",groom_en,false,horseType_metal,horseName_rhenium,familyDropType_metal,0,false,undefined,false,undefined,false),
+    "https://nl.howrse.com/elevage/chevaux/cheval?id=19272807": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=19272807",groom_nl,false,horseType_metal,horseName_rhenium,familyDropType_metal,0,false,undefined,false,undefined,false),
     "https://nl.howrse.com/elevage/chevaux/cheval?id=19262125": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=19262125",[],false,horseType_dragon,horseName_kaiju,undefined,0,false,undefined,false,undefined,false),
     "https://nl.howrse.com/elevage/chevaux/cheval?id=19031819": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=19031819",spice_nl,false,horseType_spice,horseName_anise,familyDropType_spice,0,false,undefined,true,spicesButtonIdentifier,false),
     "https://nl.howrse.com/elevage/chevaux/cheval?id=19030253": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=19030253",groom_nl,false,horseType_metal,horseName_silver,familyDropType_metal,0),
@@ -353,6 +360,7 @@ let horses ={
     "https://nl.howrse.com/elevage/chevaux/cheval?id=17726326": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=17726326",fairytale_nl,false,horseType_fairyTale,horseName_rapunzel,familyDropType_fairyTale,0,false,undefined,undefined,undefined,true), // nl rapunzel
     "https://nl.howrse.com/elevage/chevaux/cheval?id=17473613": new Horse("https://nl.howrse.com/elevage/chevaux/cheval?id=17473613",egypt_nl,false,horseType_egypt,horseName_anubis), // nl anubis
 
+    "https://www.howrse.se/elevage/chevaux/cheval?id=11245610": new Horse("https://www.howrse.se/elevage/chevaux/cheval?id=11245610",fairytale_se,false,horseType_fairyTale,horseName_jack,familyDropType_fairyTale,0,false,undefined,false,undefined,false), // jack 2
     "https://www.howrse.se/elevage/chevaux/cheval?id=11134808": new Horse("https://www.howrse.se/elevage/chevaux/cheval?id=11134808",[],false,horseType_nordic,horseName_tyr), // tyr
     "https://www.howrse.se/elevage/chevaux/cheval?id=11099251": new Horse("https://www.howrse.se/elevage/chevaux/cheval?id=11099251",groom_se,false,horseType_metal,horseName_roseGold,familyDropType_metal,0,false,undefined,false,undefined,false),
     "https://www.howrse.se/elevage/chevaux/cheval?id=11021828": new Horse("https://www.howrse.se/elevage/chevaux/cheval?id=11021828",spice_se,false,horseType_spice,horseName_anise,familyDropType_spice,0,false,undefined,true,spicesButtonIdentifier,false),
@@ -379,6 +387,7 @@ let horses ={
     "https://www.howrse.se/elevage/chevaux/cheval?id=10490067": new Horse("https://www.howrse.se/elevage/chevaux/cheval?id=10490067",japanese_se,false,horseType_japanese,horseName_kigurumi), // se kigurumi
     "https://www.howrse.se/elevage/chevaux/cheval?id=10335881": new Horse("https://www.howrse.se/elevage/chevaux/cheval?id=10335881",egypt_se,false,horseType_egypt,horseName_anubis), // se nubi
 
+    "https://www.howrse.co.uk/elevage/chevaux/cheval?id=9721177": new Horse("https://www.howrse.co.uk/elevage/chevaux/cheval?id=9721177",fairytale_en,false,horseType_fairyTale,horseName_jack,familyDropType_fairyTale,0,false,undefined,false,undefined,false), // jack 2
     "https://www.howrse.co.uk/elevage/chevaux/cheval?id=9613701": new Horse("https://www.howrse.co.uk/elevage/chevaux/cheval?id=9613701",[],false,horseType_nordic,horseName_tyr), // Tyr
     "https://www.howrse.co.uk/elevage/chevaux/cheval?id=9603781": new Horse("https://www.howrse.co.uk/elevage/chevaux/cheval?id=9603781",japanese_en,false,horseType_japanese,horseName_sakura,undefined,0,false,undefined,false,undefined,true),
     "https://www.howrse.co.uk/elevage/chevaux/cheval?id=9580337": new Horse("https://www.howrse.co.uk/elevage/chevaux/cheval?id=9580337",groom_en,false,horseType_metal,horseName_roseGold,familyDropType_metal,0,false,undefined,false,undefined,false),
@@ -411,6 +420,8 @@ let horses ={
     "https://www.howrse.co.uk/elevage/chevaux/cheval?id=8992215": new Horse("https://www.howrse.co.uk/elevage/chevaux/cheval?id=8992215",fairytale_en,false,horseType_fairyTale,horseName_littleTomThumb,familyDropType_fairyTale,0,false,undefined,undefined,undefined,true), // uk tom
     "https://www.howrse.co.uk/elevage/chevaux/cheval?id=8943937": new Horse("https://www.howrse.co.uk/elevage/chevaux/cheval?id=8943937",japanese_en,false,horseType_japanese,horseName_kigurumi), // uk kigu
 
+    "https://www.howrse.com/elevage/chevaux/cheval?id=91076182": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=91076182",fairytale_en,false,horseType_fairyTale,horseName_jack,familyDropType_fairyTale,0,false,undefined,false,undefined,false), // jack 2
+    "https://www.howrse.com/elevage/chevaux/cheval?id=90212071": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=90212071",groom_en,false,horseType_metal,horseName_platinum,familyDropType_metal,0,false,undefined,false,undefined,false),
     "https://www.howrse.com/elevage/chevaux/cheval?id=89687655": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=89687655",[],false,horseType_nordic,horseName_tyr),
     "https://www.howrse.com/elevage/chevaux/cheval?id=89682847": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=89682847",groom_en,false,horseType_metal,horseName_rhenium,familyDropType_metal,0,false,undefined,false,undefined,false),
     "https://www.howrse.com/elevage/chevaux/cheval?id=88439413": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=88439413",spice_en,false,horseType_spice,horseName_anise,familyDropType_spice,0,false,undefined,true,spicesButtonIdentifier,false),
@@ -449,6 +460,8 @@ let horses ={
     "https://www.howrse.com/elevage/chevaux/cheval?id=82521123": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=82521123",fairytale_en,false,horseType_fairyTale,horseName_littleTomThumb,familyDropType_fairyTale,0,false,undefined,undefined,undefined,true),
     "https://www.howrse.com/elevage/chevaux/cheval?id=41425212": new Horse("https://www.howrse.com/elevage/chevaux/cheval?id=41425212",[],false,horseType_gemstone,horseName_onyx,dropType_pass,0), // int onyx
 
+    "https://au.howrse.com/elevage/chevaux/cheval?id=4270651": new Horse("https://au.howrse.com/elevage/chevaux/cheval?id=4270651",fairytale_en,false,horseType_fairyTale,horseName_jack,familyDropType_fairyTale,0,false,undefined,false,undefined,false), // jack 2
+    "https://au.howrse.com/elevage/chevaux/cheval?id=4214111": new Horse("https://au.howrse.com/elevage/chevaux/cheval?id=4214111",groom_en, false, horseType_metal,horseName_platinum,familyDropType_metal,0,false,undefined,false,undefined,false),
     "https://au.howrse.com/elevage/chevaux/cheval?id=4181619": new Horse("https://au.howrse.com/elevage/chevaux/cheval?id=4181619",[],false,horseType_nordic,horseName_tyr),
     "https://au.howrse.com/elevage/chevaux/cheval?id=4181603": new Horse("https://au.howrse.com/elevage/chevaux/cheval?id=4181603",groom_en,false,horseType_metal,horseName_rhenium,familyDropType_metal,0,false,undefined,false,undefined,false),
     "https://au.howrse.com/elevage/chevaux/cheval?id=4111634": new Horse("https://au.howrse.com/elevage/chevaux/cheval?id=4111634",spice_en,false,horseType_spice,horseName_anise,familyDropType_spice,0,false,undefined,true,spicesButtonIdentifier,false),

@@ -261,6 +261,7 @@ class Horse {
     #clickCounter() {
         // TODO: Count-Wert behalten, selbst wenn die Seite neu geladen wird, bis der Drop kommt. window.localstorage.setItem
         console.log("#clickCounter ist hier");
+        //*
         console.log("#clickCounter, buttonIdentifier: ", this.buttonIdentifier);
 
         let isCooldown = false; // Variable für die Entprellung
@@ -278,14 +279,16 @@ class Horse {
                 console.log("horse logging object", this.horseLoggingObject);
                 this.horseLoggingObject.amountClicks += 1;
                 console.log("#clickCounter registrierte Klick Nummer ", this.horseLoggingObject.amountClicks);
+                console.log("wir befinden uns auf Niveau ",$("#spiceGame-body-content").find(".grid-cell.even.first")[0].textContent);
+                console.log("hier gibt es so viele Gewürze: ",$("#spiceGame-body-content").find(".pix__quantity__value")[0].textContent);
+                console.log("und die Wahrscheinlichkeit, weiterzukommen, liegt bei: ",$("#spiceGame-body-content").find(".align-right.text--xs.mr--2")[0].textContent);
 
                 isCooldown = true; // Cooldown aktivieren
                 setTimeout(() => {
                     isCooldown = false; // Cooldown zurücksetzen nach der definierten Zeit
                 }, cooldownTime);
             }
-        }, true);
-
+        }, true); // */
     }
 
 /**
